@@ -82,13 +82,15 @@ export const getQuestionnaire = () =>
 export const getGuidance = () => request<Guidance>('/api/guidance', () => mockGuidance as unknown as Guidance);
 export const getMeasurements = () =>
   request<Measurements>('/api/measurements', () => mockMeasurements as unknown as Measurements);
-export const getCpr = () => request<CprConfig>('/api/cpr', () => mockCpr as CprConfig);
+export const getCpr = () => request<CprConfig>('/api/cpr', () => mockCpr as unknown as CprConfig);
 export const postCheck = (body: CheckRequest, env: string) =>
   request<CheckResult>(`/api/check?env=${env}`, () => mockCheck as unknown as CheckResult, post(body));
 
 // ---- stored records (SQLite) ----
-export const postEvent = (event: UnresponsiveEvent, persona?: string) =>
-  request<{ ok: boolean }>(`/api/events${persona ? `?persona=${persona}` : ''}`, () => ({ ok: false }), post(event));
+export const postEvent = (event: UnresponsiveEvent, persona?: string, env?: string) => {
+  const query = new URLSearchParams({ ...(persona ? { persona } : {}), ...(env ? { env } : {}) }).toString();
+  return request<{ ok: boolean; alert_id?: string | null }>(`/api/events${query ? `?${query}` : ''}`, () => ({ ok: false }), post(event));
+};
 export const getAlerts = (persona: string) => request<Alert[] | null>(`/api/alerts?persona=${persona}`, () => null);
 export const ackAlert = (id: string) => request<Alert | null>(`/api/alerts/${id}/ack`, () => null, post());
 export const postEmergencyLog = (body: EmergencyLogIn) =>
@@ -143,6 +145,21 @@ export const getMissions = (persona: string) =>
   request<MissionsResponse | null>(`/api/missions?persona=${persona}`, () => ({ ...(mockMissions as unknown as MissionsResponse), streak: { persona, current: 0, best: 0, last_date: null } }));
 export const getStreak = (persona: string) =>
   request<Streak>(`/api/streaks/${persona}`, () => ({ persona, current: 0, best: 0, last_date: null }));
+
+// ---- optional "Polish wording" (the backend holds the key; offline or without a key the button is hidden) ----
+export const getAssistStatus = () => request<{ available: boolean }>('/api/assist/status', () => ({ available: false }));
+/** Not through request(): a 503 here only means "no polish", never "backend off" (that would switch the app to mock data). */
+export async function polishText(text: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/assist/polish`, { ...post({ text }), signal: AbortSignal.timeout(35_000) });
+    if (!res.ok) return null;
+    return ((await res.json()) as { text?: string }).text ?? null;
+  } catch {
+    return null;
+  }
+}
+export const getEmergencyLogs = (persona?: string) =>
+  request<EmergencyLog[] | null>(`/api/emergency-logs${persona ? `?persona=${persona}` : ''}`, () => null);
 
 // ---- admin ----
 export interface AdminSummary { db: string; counts: Record<string, number>; sensor_live: boolean }

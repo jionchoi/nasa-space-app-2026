@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import db, ws
-from .routers import core, environment, records, status
+from .routers import assist, core, environment, records, status
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,5 +31,6 @@ app.include_router(core.router)
 app.include_router(status.router)
 app.include_router(records.router)
 app.include_router(environment.router)
+app.include_router(assist.router)
 app.include_router(ws.router)
 

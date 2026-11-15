@@ -1,4 +1,4 @@
-/** Theme: dashboard v1 (docs/design/dashboard-v1.dc.html). Colors are CSS variables (src/index.css) so SVG and charts share them.
+/** Theme: v4 (design-handoff/v4/*.dc.html). Colors are CSS variables (src/index.css) so SVG and charts share them.
  *  Use these tokens everywhere; never raw hex in components. One accent (info); status colors carry meaning only. */
 const token = (name) => `rgb(var(--c-${name}) / <alpha-value>)`;
 
@@ -30,6 +30,7 @@ export default {
       },
       fontFamily: {
         sans: ['"Inter Variable"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Inter Variable"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       borderRadius: {

@@ -5,6 +5,7 @@ import type { NavigateFunction } from 'react-router-dom';
 import { replayRadiation } from '../../api/client';
 import { clearCrewAlarm } from '../../lib/crewAlarm';
 import { sendDemoCommand } from '../../lib/demo';
+import { scenarioLabel } from '../../lib/locations';
 import type { Persona, RegionId } from '../../types/contracts';
 
 export interface DemoContext {
@@ -152,11 +153,11 @@ export const DEMO_STEPS: DemoStep[] = [
   },
 ];
 
-/** The crew member badge: persona C is a simulated recording until Jian's real clinical recording replaces it. */
+/** The scenario badge: persona C is a simulated recording until Jian's real clinical recording replaces it. */
 export function personaBadge(persona: Persona | undefined): { text: string; kind: 'real' | 'simulated' } | null {
   if (!persona) return null;
   const recording = (persona as Persona & { recording?: string }).recording;
   if (recording === 'real') return { text: `Real clinical recording (${persona.name})`, kind: 'real' };
   if (persona.id === 'C') return { text: 'Simulated recording', kind: 'simulated' };
-  return persona.simulated ? { text: `Simulated crew member ${persona.id}`, kind: 'simulated' } : { text: persona.name, kind: 'real' };
+  return persona.simulated ? { text: `Simulated scenario: ${scenarioLabel(persona.id)}`, kind: 'simulated' } : { text: persona.name, kind: 'real' };
 }

@@ -1,4 +1,3 @@
-import { Toolbox } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { mmss } from '../../lib/status';
 import type { ProtocolStep } from '../../types/contracts';
@@ -6,6 +5,8 @@ import type { Answer } from './useEmergency';
 
 interface Props {
   step: ProtocolStep;
+  /** 0-based position, for the progress bar. */
+  index: number;
   total: number;
   answer?: Answer;
   timerDone: boolean;
@@ -37,83 +38,71 @@ function StepTimer({ seconds, done, onDone }: { seconds: number; done: boolean; 
   }, [left, running, onDone]);
 
   return (
-    <div className="flex items-center gap-6">
-      <span className={`font-mono text-8xl font-bold ${done ? 'text-ok' : ''}`} role="timer">{mmss(done ? 0 : left)}</span>
-      {!done && !running && <button className="btn px-8 py-4 text-3xl" onClick={() => setRunning(true)}>Start</button>}
-      {!done && <button className="btn px-8 py-4 text-3xl" onClick={() => { setRunning(false); onDone(); }}>Done</button>}
-      {done && <span className="text-3xl font-semibold text-ok">Timer done</span>}
+    <div className="flex flex-wrap items-center gap-3 self-start rounded-card border border-[#5A2A30] px-4 py-2">
+      <span aria-hidden>⏱</span>
+      <span className={`font-mono text-3xl ${done ? 'text-ok' : ''}`} role="timer">{mmss(done ? 0 : left)}</span>
+      <span className="text-sm text-[#D9A9AE]">{done ? 'Timer done' : running ? 'remaining' : 'timer'}</span>
+      {!done && !running && <button type="button" className="btn h-11 border-[#5A2A30]" onClick={() => setRunning(true)}>Start</button>}
+      {!done && <button type="button" className="btn h-11 border-[#5A2A30]" onClick={() => { setRunning(false); onDone(); }}>Done</button>}
     </div>
   );
 }
 
-/** One action per screen, readable from 2 metres. */
+/** One action per screen, readable from 2 metres (Emergency-v4). */
 export function StepView(p: Props) {
   const { step } = p;
-  const big = 'rounded-2xl border-4 px-14 py-6 text-5xl font-bold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-text';
   return (
-    <section
-      className={`flex min-h-0 flex-1 flex-col gap-5 rounded-xl border-4 p-6 ${
-        step.red_flag ? 'border-alert bg-alert/5' : 'border-line bg-panel'
-      }`}
-    >
-      <div className="flex items-center gap-4">
-        <span className="text-3xl font-bold text-info">Step {step.n} of {p.total}</span>
-        {step.red_flag && (
-          <span className="rounded-lg bg-alert px-4 py-1 text-2xl font-bold text-bg">This is a danger sign</span>
-        )}
+    <section aria-label={`Step ${step.n} of ${p.total}`} className={`flex min-h-0 flex-1 flex-col gap-5 ${step.red_flag ? 'rounded-panel border-2 border-alert/60 p-4' : ''}`}>
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-[13px] tracking-[0.12em] text-[#B8999C]">STEP {step.n} OF {p.total}</span>
+        <span className="flex gap-1.5" aria-hidden>
+          {Array.from({ length: p.total }, (_, k) => (
+            <span key={k} className={`h-1.5 w-[26px] rounded-sm ${k < p.index ? 'bg-[#FF8A95]' : k === p.index ? 'bg-[#F2EEEE]' : 'bg-[#3A2226]'}`} />
+          ))}
+        </span>
+        {step.red_flag && <span className="rounded-full bg-alert px-3 py-0.5 text-sm font-bold text-white">This is a danger sign</span>}
       </div>
 
-      <p className="text-5xl font-semibold leading-tight">{step.text}</p>
-
-      {p.kitNotes?.map((note) => (
-        <p key={note} className="flex items-start gap-3 rounded-xl border-2 border-watch bg-watch/10 px-5 py-3 text-2xl font-medium text-watch">
-          <Toolbox className="mt-1 h-7 w-7 shrink-0" weight="fill" aria-hidden /> {note}
-        </p>
-      ))}
+      <p className="max-w-[900px] font-display text-[40px] font-bold leading-[1.15]">{step.text}</p>
+      {step.check && <p className="max-w-[820px] text-[22px] text-[#F5DE8A]">{step.check}</p>}
 
       {step.timer_s && <StepTimer key={step.n} seconds={step.timer_s} done={p.timerDone} onDone={p.onTimerDone} />}
 
-      {step.check && (
-        <div>
-          <p className="mb-3 text-4xl font-semibold text-watch">{step.check}</p>
-          <div className="flex gap-5">
-            <button
-              onClick={() => p.onAnswer('yes')}
-              aria-pressed={p.answer === 'yes'}
-              className={`${big} ${p.answer === 'yes' ? 'border-text bg-text text-bg' : 'border-line bg-raised hover:border-text'}`}
-            >
-              YES
-            </button>
-            <button
-              onClick={() => p.onAnswer('no')}
-              aria-pressed={p.answer === 'no'}
-              className={`${big} ${p.answer === 'no' ? 'border-text bg-text text-bg' : 'border-line bg-raised hover:border-text'}`}
-            >
-              NO
-            </button>
-          </div>
-        </div>
-      )}
+      {p.kitNotes?.map((note) => (
+        <p key={note} className="self-start rounded-card border border-[#5A4A12] bg-watch/10 px-4 py-2 text-sm text-[#F5DE8A]">Rover · limited kit: {note}</p>
+      ))}
 
       {p.finished && (
-        <p className="text-3xl font-semibold text-ok">
-          All steps done. Stay with them and keep watching the vitals. End the emergency when it is over.
-        </p>
+        <p className="text-2xl font-semibold text-ok">All steps done. Stay with them and keep watching the vitals. End the emergency when it is over.</p>
       )}
 
-      <div className="mt-auto flex items-center justify-between">
-        <button className="btn px-8 py-3 text-2xl" disabled={!p.canBack} onClick={p.onBack}>Back</button>
-        {!p.canNext && (
-          <span className="text-xl text-muted">{step.check ? 'Answer YES or NO to continue' : 'Finish the timer to continue'}</span>
+      <span className="flex-1" />
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" className="h-[60px] rounded-[14px] border border-[#3A2226] px-6 text-[17px] text-[#B8999C] hover:bg-white/5 disabled:opacity-40" disabled={!p.canBack} onClick={p.onBack}>‹ Back</button>
+        <span className="flex-1" />
+        {step.check ? (
+          <>
+            {(['no', 'yes'] as const).map((v) => (
+              <button key={v} type="button" onClick={() => p.onAnswer(v)} aria-pressed={p.answer === v}
+                className={`h-[72px] min-w-[180px] rounded-2xl border-2 text-[22px] font-extrabold ${p.answer === v ? 'border-[#F2EEEE] bg-[#F2EEEE] text-[#0A0506]' : 'border-[#F2EEEE] hover:bg-white/10'}`}>
+                {v === 'yes' ? 'Yes' : 'No'}
+              </button>
+            ))}
+            {p.answer && (
+              <button type="button" disabled={!p.canNext || p.finished} onClick={p.onNext}
+                className={`h-[72px] min-w-[200px] rounded-2xl text-xl font-extrabold disabled:opacity-40 ${p.nextLabel === 'Start CPR' ? 'bg-alert text-white' : 'bg-[#F2EEEE] text-[#0A0506]'}`}>
+                {p.nextLabel}
+              </button>
+            )}
+          </>
+        ) : (
+          <button type="button" disabled={!p.canNext || p.finished} onClick={p.onNext}
+            className={`h-[72px] min-w-[240px] rounded-2xl text-xl font-extrabold disabled:opacity-40 ${p.nextLabel === 'Start CPR' ? 'bg-alert text-white' : 'bg-[#F2EEEE] text-[#0A0506]'}`}>
+            {p.nextLabel}
+          </button>
         )}
-        <button
-          className={`btn px-12 py-4 text-3xl font-bold ${p.nextLabel === 'Next' ? 'btn-primary' : 'btn-danger'}`}
-          disabled={!p.canNext || p.finished}
-          onClick={p.onNext}
-        >
-          {p.nextLabel}
-        </button>
       </div>
+      {!p.canNext && !p.finished && <span className="text-right text-sm text-[#B8999C]">{step.check ? 'Answer Yes or No to continue' : 'Finish the timer to continue'}</span>}
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { ArrowCounterClockwise, Database, Play, PresentationChart, Radioactive, Siren, Stop } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, Database, Play, PresentationChart, Radioactive, Siren, Stop, UserSwitch } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { getAdminSummary, getRadiation, replayRadiation, resetDemoData, type AdminSummary } from '../api/client';
@@ -6,13 +6,14 @@ import { AppHeader } from '../components/common/AppHeader';
 import { Card } from '../components/common/Card';
 import { CvDebugPanel } from '../components/cv/CvDebugPanel';
 import { startDemo } from '../lib/demo';
+import { SCENARIOS } from '../lib/locations';
 import { useApp } from '../state/AppContext';
 import type { RadiationSummary } from '../types/contracts';
 import { CV_EMERGENCY_URL, CV_PULSE_LOST_URL, triggerCrewAlarm } from '../lib/crewAlarm';
 
 /** Hidden page (/admin, not linked anywhere): what the local database holds, and a reset before each demo. */
 export default function Admin() {
-  const { setCheckDoneAt, refreshStreak, persona, env } = useApp();
+  const { setCheckDoneAt, refreshStreak, persona, setPersona, env } = useApp();
   const [radiation, setRadiation] = useState<RadiationSummary | null>(null);
   const [minutes, setMinutes] = useState(10);
   const [summary, setSummary] = useState<AdminSummary | null>(null);
@@ -66,10 +67,24 @@ export default function Admin() {
         </Card>
 
         <Card className="mt-4" inner="p-5">
+          <div className="flex items-center gap-2 text-sm font-medium"><UserSwitch className="h-4 w-4 text-info" aria-hidden /> Scenario</div>
+          <p className="mt-1 text-sm text-muted">
+            The astronaut is always Alex Moreno; the scenario picks which simulated data file plays. Also in the presenter bar and
+            the sidebar while demo mode is on.
+          </p>
+          <div role="radiogroup" aria-label="Scenario" className="mt-4 flex flex-wrap gap-2">
+            {SCENARIOS.map((sc) => (
+              <button key={sc.id} type="button" role="radio" aria-checked={persona === sc.id} onClick={() => setPersona(sc.id)}
+                className={`btn ${persona === sc.id ? 'btn-primary' : ''}`}>{sc.label} <span className="text-xs opacity-70">({sc.id})</span></button>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="mt-4" inner="p-5">
           <div className="flex items-center gap-2 text-sm font-medium"><PresentationChart className="h-4 w-4 text-info" aria-hidden /> Demo mode (live pitch)</div>
           <p className="mt-1 text-sm text-muted">
             8 steps, about 3 minutes. A presenter bar (bottom right) shows the step, what to say, and the data badges; Next, Back
-            and Pause. Each step sets the crew member, location, replay position and screen. Shortcuts: Shift+D on/off, arrow
+            and Pause. Each step sets the scenario, location, replay position and screen. Shortcuts: Shift+D on/off, arrow
             keys or a presenter clicker for Back / Next. Also works with the backend off. Tip: reset the demo data first.
           </p>
           <button className="btn btn-primary mt-4" onClick={() => startDemo()}><Play className="h-4 w-4" weight="fill" aria-hidden /> Start demo mode</button>

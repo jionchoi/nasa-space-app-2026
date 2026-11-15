@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getCpr, getProtocol } from '../api/client';
-import { AppHeader } from '../components/common/AppHeader';
-import { DataBadges } from '../components/common/Badges';
-import { VitalsStrip } from '../components/dashboard/VitalsStrip';
+import { EmergencyBar, EmergencyVitals } from '../components/emergency/EmergencyChrome';
 import { CprGuide } from '../components/emergency/CprGuide';
 import { buildDraft } from '../components/emergency/draft';
 import { AutoAdvanceBanner } from '../components/emergency/AutoAdvanceBanner';
@@ -18,7 +16,8 @@ import { useEmergency } from '../components/emergency/useEmergency';
 import { useRedFlagRoutes } from '../components/emergency/useRedFlagRoutes';
 import { useVitals } from '../hooks/useVitals';
 import { kitNotes } from '../lib/env';
-import { entryOf, fmt, liveStatus, mmss } from '../lib/status';
+import { entryOf, fmt, liveStatus } from '../lib/status';
+import { currentLocation, locationEntries } from '../lib/locations';
 import { useApp } from '../state/AppContext';
 import type { CprConfig, Message, Protocol, VitalsFrame } from '../types/contracts';
 
@@ -27,7 +26,8 @@ export default function Emergency() {
   const [params, setParams] = useSearchParams();
   // Old links used protocol=collapse; it is now "unresponsive" (the backend also answers the old id).
   const protocolId = params.get('protocol') === 'collapse' ? 'unresponsive' : params.get('protocol');
-  const { persona, personaInfo, thresholds, addEmergency, envInfo } = useApp();
+  const { persona, personaInfo, thresholds, addEmergency, envInfo, environments, env } = useApp();
+  const where = currentLocation(locationEntries(environments), env)?.name ?? env;
   const [protocol, setProtocol] = useState<Protocol | null>(null);
   const [cprConfig, setCprConfig] = useState<CprConfig | null>(null);
   const [lit, setLit] = useState<number[]>([]);
@@ -77,18 +77,21 @@ export default function Emergency() {
   const endRef = useRef<(skip?: boolean) => void>(() => {});
   useDemoCommand(['endEmergency'], () => endRef.current(true));
 
-  const withHeader = (content: ReactNode) => (
-    <div className="flex min-h-[100dvh] flex-col p-2"><AppHeader compact /><div className="min-h-0 flex-1">{content}</div></div>
+  const withHeader = (content: ReactNode, title?: string) => (
+    <div className="flex min-h-[100dvh] flex-col bg-[#0A0506]">
+      <EmergencyBar title={title ?? 'What is happening?'} where={where} />
+      <div className="min-h-0 flex-1">{content}</div>
+    </div>
   );
   if (!protocolId) {
     return withHeader(<EntryScreen onPick={(id) => setParams({ protocol: id })} onExit={() => navigate('/')} />);
   }
   if (!protocol || !em.step) {
-    return withHeader(<div className="grid h-full min-h-[60vh] place-items-center text-4xl text-muted">Loading protocol…</div>);
+    return withHeader(<div className="grid h-full min-h-[60vh] place-items-center text-4xl text-muted">Loading protocol…</div>, 'Loading…');
   }
   if (ended !== null) {
     return withHeader(<EndSummary title={protocol.title} durationS={(ended - em.startedAt) / 1000} log={em.log}
-      messages={Object.values(sentMessages)} onBack={() => navigate('/')} />);
+      stepsTotal={protocol.steps.length} messages={Object.values(sentMessages)} onBack={() => navigate('/')} />, `${protocol.title} · handled`);
   }
 
   const end = (skipConfirm = false) => {
@@ -116,45 +119,36 @@ export default function Emergency() {
   });
 
   return (
-    <div className="flex h-[100dvh] flex-col gap-2 overflow-hidden p-2">
-      <AppHeader compact />
-      <header className="flex shrink-0 items-center gap-4 rounded-lg bg-alert px-4 py-2 text-bg">
-        <span className="text-2xl font-black tracking-wider">EMERGENCY</span>
-        <span className="truncate text-2xl font-semibold">{protocol.title}</span>
-        {protocol.draft && <span className="rounded bg-bg/20 px-2 py-0.5 text-sm font-semibold">{protocol.draft}</span>}
-        <span className="ml-auto text-lg">Time since start <span className="font-mono text-3xl font-bold">{mmss((now - em.startedAt) / 1000)}</span></span>
-        <button className="rounded-md bg-bg px-4 py-2 text-lg font-bold text-text hover:brightness-150" onClick={() => end()}>End emergency</button>
-      </header>
+    <div className="flex min-h-[100dvh] flex-col bg-[#0A0506] text-[#F2EEEE] lg:h-[100dvh] lg:overflow-hidden">
+      <EmergencyBar title={protocol.title} where={where} draft={protocol.draft} startedAt={em.startedAt} now={now} onEnd={() => end()} />
+      <EmergencyVitals frames={frames} />
 
-      {flags.pending && (
-        <AutoAdvanceBanner key={`${flags.pending.route.flag}-${em.log.length}`} message={flags.pending.route.message}
-          target={flags.pending.target} seconds={flags.pending.seconds} onGo={flags.go} onCancel={flags.cancel} />
-      )}
-
-      <div className="flex shrink-0 items-start gap-2">
-        <div className="min-w-0 flex-1"><VitalsStrip frames={frames} thresholds={thresholds} compact /></div>
-        <div className="flex gap-1 pt-1"><DataBadges /></div>
-      </div>
-
-      <main className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_380px] gap-2">
-        {em.cpr ? (
-          <CprGuide config={cprConfig} latest={latest} onLog={(text) => em.addLog('cpr', text)} onBack={em.back} />
-        ) : (
-          <StepView
-            step={em.step} total={protocol.steps.length} answer={em.answer} timerDone={em.timerDone}
-            canNext={em.canNext} canBack={em.canBack} finished={em.finished}
-            nextLabel={em.route === 'cpr' ? 'Start CPR' : 'Next'} kitNotes={kitNotes(envInfo, em.step.equipment)}
-            onAnswer={em.giveAnswer} onTimerDone={em.finishTimer} onNext={em.next} onBack={em.back}
-          />
-        )}
-        <aside className="flex min-h-0 flex-col gap-2">
+      <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <main className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-5 py-6 sm:px-9">
+          {flags.pending && (
+            <AutoAdvanceBanner key={`${flags.pending.route.flag}-${em.log.length}`} message={flags.pending.route.message}
+              target={flags.pending.target} seconds={flags.pending.seconds} onGo={flags.go} onCancel={flags.cancel} />
+          )}
+          {em.cpr ? (
+            <CprGuide config={cprConfig} latest={latest} onLog={(text) => em.addLog('cpr', text)} onBack={em.back}
+              onPulseBack={() => { em.addLog('cpr', 'Pulse is back: CPR stopped, back to the steps'); em.back(); }} />
+          ) : (
+            <StepView
+              step={em.step} index={em.index} total={protocol.steps.length} answer={em.answer} timerDone={em.timerDone}
+              canNext={em.canNext} canBack={em.canBack} finished={em.finished}
+              nextLabel={em.route === 'cpr' ? 'Start CPR' : em.index === protocol.steps.length - 1 ? 'Finish' : 'Done, next step'}
+              kitNotes={kitNotes(envInfo, em.step.equipment)}
+              onAnswer={em.giveAnswer} onTimerDone={em.finishTimer} onNext={em.next} onBack={em.back}
+            />
+          )}
+        </main>
+        <aside className="flex min-h-0 flex-col gap-4 border-t border-[#2A1416] bg-[#0E0708] p-5 lg:border-l lg:border-t-0">
           <RedFlags flags={protocol.red_flags} lit={lit} />
-          <EventLog log={em.log} className="flex-1" />
+          <SurgeonMessage draft={draft} onLog={(text) => em.addLog('message', text)}
+            onSent={(m) => setSentMessages((all) => ({ ...all, [m.id]: m }))} />
+          <EventLog log={em.log} className="min-h-[180px] flex-1" />
         </aside>
-      </main>
-
-      <SurgeonMessage draft={draft} onLog={(text) => em.addLog('message', text)}
-        onSent={(m) => setSentMessages((all) => ({ ...all, [m.id]: m }))} />
+      </div>
     </div>
   );
 }

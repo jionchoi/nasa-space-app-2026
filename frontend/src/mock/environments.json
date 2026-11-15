@@ -2,6 +2,7 @@
  {
   "id": "iss",
   "label": "ISS",
+  "subtitle": "Low Earth orbit · microgravity",
   "delay_s": [
    0.0,
    2.0
@@ -50,6 +51,7 @@
  {
   "id": "moon",
   "label": "Moon base",
+  "subtitle": "Lunar surface · 1/6 g",
   "delay_s": [
    1.0,
    3.0
@@ -99,6 +101,7 @@
  {
   "id": "mars",
   "label": "Mars transit",
+  "subtitle": "Deep space · microgravity",
   "delay_s": [
    180.0,
    1320.0
@@ -148,6 +151,7 @@
  {
   "id": "rover",
   "label": "Surface rover",
+  "subtitle": "Away from base · limited kit",
   "delay_s": [
    1.0,
    3.0
@@ -192,6 +196,7 @@
   "planets": {
    "moon": {
     "label": "Moon",
+    "subtitle": "Lunar surface · 1/6 g · away from base",
     "delay_s": [
      1.0,
      3.0
@@ -205,6 +210,7 @@
    },
    "mars": {
     "label": "Mars",
+    "subtitle": "Mars surface · 3/8 g · away from base",
     "delay_s": [
      180.0,
      1320.0

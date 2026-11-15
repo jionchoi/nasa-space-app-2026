@@ -106,8 +106,8 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
 
   // The animation-frame loop runs outside React's render, so it reads the newest values from this ref.
   const personaName = personaInfo?.name;
-  const latest = useRef({ thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate });
-  latest.current = { thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate };
+  const latest = useRef({ thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate, env });
+  latest.current = { thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate, env };
 
   // Things kept between frames (refs, because changing them must not re-render the page).
   const models = useRef<Landmarkers | null>(null);
@@ -148,7 +148,7 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
             eyes_closed_s: round(signals?.eyesClosedSeconds), score: round(signals?.unresponsiveScore), pulse: p.status,
             from: effect.from, to: effect.to, reason: effect.reason, text: `Unresponsive detection: ${effect.reason}`,
           },
-        }, who);
+        }, who, latest.current.env);
       }
       // Show or hide "Are you OK?" here and in every other open tab.
       if (effect.kind === 'showCheckIn') { setCheckInDeadline(effect.deadline); sendCheckIn({ type: 'show', deadlineWallMs: toWallMs(effect.deadline) }); }

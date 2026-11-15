@@ -131,7 +131,7 @@ describe('eyes', () => {
   });
 });
 
-describe('fall (Moon base only)', () => {
+describe('fall (gravity only)', () => {
   it('detects a fast hip drop followed by stillness, and ignores sitting down slowly', () => {
     const fall = framesOf(40, (i) => ({ hipDown: Math.min(i, 3) }));
     expect(fallDetected(fall, t.fall!)).toBe(true);

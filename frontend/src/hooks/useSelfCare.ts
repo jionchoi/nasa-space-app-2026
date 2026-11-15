@@ -22,6 +22,9 @@ function writeLocal(key: string, ticked: string[]) {
   try { window.localStorage.setItem(key, JSON.stringify(ticked)); } catch { /* private window: keep in memory only */ }
 }
 
+/** Self-care items ticked today for an area and status (this browser's copy), for the auto-drafted surgeon message. */
+export const tickedToday = (persona: string, region: string, status: Status) => readLocal(storageKey(persona, region, status));
+
 export function useSelfCare(persona: string, region: string, status: Status) {
   const key = storageKey(persona, region, status);
   const [ticked, setTicked] = useState<string[]>(() => readLocal(key));

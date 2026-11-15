@@ -32,7 +32,7 @@ const median = (xs: number[]) => {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 };
 
-const CABIN_FIELD: Record<string, CabinField> = { co2_ppm: 'co2_ppm', cabin_temp_c: 'temp_c', cabin_noise_dba: 'noise_dba' };
+const CABIN_FIELD: Record<string, CabinField> = { co2_ppm: 'co2_ppm', cabin_temp_c: 'temp_c', cabin_noise_dba: 'noise_dba', cabin_rh_pct: 'rh_pct' };
 
 /** Rows for the "All metrics" list. Every colour comes from the backend: daily metrics from the region's
  *  `metric_status` (GET /api/status, which includes the personal reaction-time rule), cabin values from the cabin

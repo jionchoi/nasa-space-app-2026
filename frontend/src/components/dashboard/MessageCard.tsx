@@ -12,7 +12,8 @@ interface Props {
   focused: boolean;
   onEdit(text: string): void;
   onSend(text: string): void;
-  onReply(): void;
+  /** Demo mode only: "Simulate reply" (omit it to hide the button). */
+  onReply?(): void;
 }
 
 /** One flight-surgeon message: an editable draft with Send, or a sent message with its delivery status. */

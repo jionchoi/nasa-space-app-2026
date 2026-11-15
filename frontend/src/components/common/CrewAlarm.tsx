@@ -1,3 +1,4 @@
+import { ASTRONAUT_NAME } from '../../lib/locations';
 import { Siren, SpeakerSlash, X } from '@phosphor-icons/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +51,7 @@ function useAlarmTone(on: boolean) {
 export function CrewAlarm() {
   const alarm = useCrewAlarm();
   const navigate = useNavigate();
-  const { persona, setPersona, personaInfo, envInfo } = useApp();
+  const { persona, setPersona, envInfo } = useApp();
   useAlarmTone(!!alarm);
   const muted = useMuted();
   // The crew member the alarm is about (it may come from another tab showing someone else).
@@ -65,7 +66,7 @@ export function CrewAlarm() {
 
   if (!alarm) return null;
   const location = alarm.location ?? envInfo?.label ?? 'unknown location';
-  const name = alarm.personaName ?? personaInfo?.name;
+  const name = ASTRONAUT_NAME; // one astronaut in v4 (the persona file only picks the scenario)
   const respond = () => {
     void postEvent({ t: new Date().toISOString(), type: 'alarm', signals: { source: 'crew_alarm', text: 'Crew responding to the alarm' } }, who);
     clearCrewAlarm();

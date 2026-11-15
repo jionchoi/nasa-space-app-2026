@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>v4 Today's routine</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#050608}button{font-family:inherit}</style>
+</helmet>
+<div style="min-height: 940px; background: #050608; color: #EEF1F5; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-direction: column">
+  <header style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; border-bottom: 1px solid #16191F; background: #07080B">
+    <button type="button" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer">‹ Dashboard</button>
+    <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.04em">CO-PILOT</span>
+    <span style="font-size: 13px; color: #8A93A0">Alex Moreno · Day 45 · ISS</span>
+    <span style="flex: 1 1 auto"></span>
+    <span style="font-family: 'JetBrains Mono', monospace">14:22</span>
+    <button type="button" style="height: 44px; padding: 0 20px; border-radius: 999px; border: none; background: #E5484D; color: #fff; font-weight: 800; letter-spacing: 0.06em; cursor: pointer">EMERGENCY</button>
+  </header>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 32px; padding: 28px 32px">
+    <section style="display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap">
+        <div><span style="display: block; font-size: 13px; color: #8A93A0">Today's routine</span><span style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 700">{{ doneCount }} of {{ total }} done</span></div>
+        <div style="display: flex; flex-direction: column; padding: 8px 14px; border-radius: 12px; border: 1px solid #3A3412; background: rgba(250,204,21,0.06)"><span style="font-size: 12px; color: #FACC15">Streak</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 22px">▲ {{ streak }} days</span></div>
+        <span style="font-size: 13px; color: #8A93A0">Finish all tasks today to keep the streak.</span>
+      </div>
+      <div style="height: 8px; border-radius: 4px; background: #16191F; overflow: hidden"><div style="{{ barStyle }}"></div></div>
+
+      <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="7">
+        <div style="{{ t.row }}">
+          <button type="button" onClick="{{ t.toggle }}" aria-pressed="{{ t.done }}" style="{{ t.box }}">{{ t.mark }}</button>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #8A93A0; width: 52px">{{ t.time }}</span>
+          <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0"><span style="{{ t.titleStyle }}">{{ t.title }}</span><span style="font-size: 13px; color: #8A93A0">{{ t.sub }}</span></span>
+          <span style="{{ t.tagStyle }}">{{ t.tag }}</span>
+          <button type="button" style="{{ t.ctaStyle }}">{{ t.cta }}</button>
+        </div>
+      </sc-for>
+    </section>
+
+    <aside style="display: flex; flex-direction: column; gap: 18px">
+      <div style="border: 1px solid #16191F; border-radius: 14px; padding: 16px">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #8A93A0">DAILY CHECK · 8 STEPS</span>
+        <sc-for list="{{ check }}" as="c" hint-placeholder-count="8">
+          <span style="display: flex; gap: 10px; align-items: center; font-size: 14px; padding: 5px 0; border-bottom: 1px solid #101317"><span style="{{ c.dot }}"></span>{{ c.text }}<span style="margin-left: auto; font-size: 12px; color: #6B7380">{{ c.src }}</span></span>
+        </sc-for>
+        <button type="button" style="margin-top: 12px; width: 100%; height: 44px; border-radius: 999px; border: none; background: #EEF1F5; color: #050608; font-weight: 700; cursor: pointer">Start daily check</button>
+      </div>
+      <div style="border: 1px solid #16191F; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #8A93A0">QUICK LOG</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+          <sc-for list="{{ logs }}" as="l" hint-placeholder-count="4">
+            <button type="button" style="height: 44px; border-radius: 10px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; font-weight: 600; cursor: pointer">{{ l }}</button>
+          </sc-for>
+        </div>
+        <span style="font-size: 12px; color: #6B7380">Opens the log drawer (meals, water, exercise, weekly biomarkers).</span>
+      </div>
+      <div style="border: 1px solid #16191F; border-radius: 14px; padding: 16px; font-size: 13px; color: #8A93A0">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em">REMINDERS</span><br>
+        Pop-up cards at 07:30, 12:30, 16:00 and 19:00 (mission time). Snooze 15 min or Done.
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":940}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { done: { 0: true, 1: true, 2: true } }; }
+  renderVals() {
+    var self = this, S = this.state, NOW = 14.37;
+    var T = [[7.5, 'Daily check', '8 steps · about 6 min', 'Start'], [8, 'Breakfast + 500 mL water', 'Log what you ate', 'Log'], [10, 'Reaction test', '3 min tap test (PVT)', 'Start'], [12.5, 'Lunch + water', 'Water so far: 1.6 L of 2.5 L', 'Log'], [16, 'Exercise · treadmill + ARED', 'Target 120 min today', 'Log'], [19, 'Dinner + water', 'Log what you ate', 'Log'], [21.5, 'Wind down · sleep window 22:00', 'Eye mask, dim screens', 'Done']];
+    var tasks = T.map(function (t, k) {
+      var done = !!S.done[k], overdue = !done && t[0] < NOW, c = done ? '#4ADE80' : overdue ? '#FB923C' : '#8A93A0';
+      var hh = Math.floor(t[0]), mm = Math.round((t[0] % 1) * 60);
+      return { time: (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm, title: t[1], sub: t[2], cta: t[3], done: done, mark: done ? '✓' : '',
+        tag: done ? 'Done' : overdue ? 'Not done · overdue' : 'Upcoming',
+        toggle: function () { var d = Object.assign({}, S.done); d[k] = !done; self.setState({ done: d }); },
+        row: 'display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 1px solid ' + (overdue ? '#FB923C' : '#16191F') + '; background: ' + (overdue ? 'rgba(251,146,60,0.07)' : done ? 'transparent' : '#0B0D11'),
+        box: 'flex: 0 0 28px; height: 28px; border-radius: 8px; cursor: pointer; border: 2px solid ' + c + '; background: ' + (done ? '#4ADE80' : 'transparent') + '; color: #050608; font-weight: 800',
+        titleStyle: 'font-size: 17px; font-weight: 600; ' + (done ? 'color: #6B7380; text-decoration: line-through' : 'color: #EEF1F5'),
+        tagStyle: 'font-size: 12px; font-weight: 700; white-space: nowrap; color: ' + c,
+        ctaStyle: done ? 'display: none' : 'height: 36px; padding: 0 16px; border-radius: 999px; cursor: pointer; font-weight: 700; border: ' + (overdue ? 'none' : '1px solid #2A2F38') + '; background: ' + (overdue ? '#FB923C' : 'transparent') + '; color: ' + (overdue ? '#050608' : '#EEF1F5') };
+    });
+    var dc = tasks.filter(function (t) { return t.done; }).length;
+    var check = [['Heart rate + HRV (PPG)', 'sensor'], ['Blood oxygen', 'sensor'], ['Blood pressure', 'cuff'], ['Temperature', 'sensor'], ['Blood glucose', 'finger-stick'], ['Mood + symptoms', 'you'], ['Reaction test', 'vs CSA PRET'], ['Summary', 'vs your usual + Inspiration4']].map(function (c, k) { return { text: (k + 1) + '. ' + c[0], src: c[1], dot: 'width: 8px; height: 8px; border-radius: 50%; background: ' + (S.done[0] ? '#4ADE80' : '#3A414D') }; });
+    return { tasks: tasks, doneCount: dc, total: T.length, streak: 12, check: check, logs: ['Meal', 'Water', 'Exercise', 'Weekly biomarkers'],
+      barStyle: 'height: 100%; width: ' + Math.round(dc / T.length * 100) + '%; background: #4ADE80' };
+  }
+}
+</script>
+</body>
+</html>

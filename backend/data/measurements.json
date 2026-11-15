@@ -245,6 +245,17 @@
         "note": "DRAFT: Cabin air monitor."
       }
     },
+    "cabin_rh_pct": {
+      "draft": "DRAFT - placeholder, TODO(Yenna): not written yet",
+      "how_to_measure": [
+        "DRAFT: Read from the cabin air monitor (station sensors)."
+      ],
+      "why_check": "DRAFT: TODO(Yenna). Shown for context only; no limits yet.",
+      "can_do_in_space": {
+        "possible": true,
+        "note": "DRAFT: Cabin air monitor."
+      }
+    },
     "cabin_noise_dba": {
       "draft": "DRAFT - placeholder, Yenna has not written this metric yet",
       "how_to_measure": [

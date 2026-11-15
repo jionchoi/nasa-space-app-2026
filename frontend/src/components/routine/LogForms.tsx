@@ -112,3 +112,46 @@ export function BiomarkerForm({ onSave }: FormProps) {
     </div>
   );
 }
+
+/** Symptom choices: the questionnaire's symptom questions (questionnaire.json ids), with short names. */
+export const SYMPTOMS: { id: string; label: string }[] = [
+  { id: 'headache', label: 'Headache' },
+  { id: 'nausea_appetite', label: 'Nausea or no appetite' },
+  { id: 'cough_sore_throat_fever', label: 'Cough, sore throat or fever' },
+  { id: 'muscle_back_pain', label: 'Muscle or back pain' },
+  { id: 'vision', label: 'Blurry vision' },
+];
+
+/** v4 "Mood and symptoms": mood 1-10 and symptoms felt now. Saved as a "mood" form (display and timeline only). */
+export function MoodForm({ onSave }: FormProps) {
+  const [mood, setMood] = useState<number | null>(null);
+  const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [notes, setNotes] = useState('');
+  const s = useSave(onSave);
+  const toggle = (id: string) => setSymptoms((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
+  return (
+    <div className="space-y-4">
+      <fieldset className="flex flex-col gap-1.5 text-sm">
+        <legend className="mb-1.5 font-medium">Mood right now (1 = very low, 10 = very good)</legend>
+        <div role="radiogroup" aria-label="Mood from 1 to 10" className="grid grid-cols-5 gap-1.5 sm:grid-cols-10">
+          {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+            <button key={n} type="button" role="radio" aria-checked={mood === n} onClick={() => setMood(n)}
+              className={`h-11 rounded-lg border font-mono ${mood === n ? 'border-text bg-text text-bg' : 'border-line-strong hover:bg-raised'}`}>{n}</button>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="flex flex-col gap-1.5 text-sm">
+        <legend className="mb-1.5 font-medium">Symptoms now (optional)</legend>
+        {SYMPTOMS.map((o) => (
+          <label key={o.id} className="flex min-h-touch cursor-pointer items-center gap-2.5 rounded-lg px-1 hover:bg-raised/50">
+            <input type="checkbox" className="h-5 w-5 accent-[rgb(var(--c-info))]" checked={symptoms.includes(o.id)} onChange={() => toggle(o.id)} />
+            {o.label}
+          </label>
+        ))}
+      </fieldset>
+      <Field label="Notes (optional)"><textarea className={`${input} font-sans`} rows={2} maxLength={300} value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
+      <p className="text-xs text-muted">Shown on your mission timeline. The daily check questions still set the Brain and mood status.</p>
+      <SaveRow busy={s.busy} message={s.message} onSave={() => (mood === null ? s.setMessage('Pick a mood from 1 to 10') : s.run({ mood, symptoms, notes }))} />
+    </div>
+  );
+}

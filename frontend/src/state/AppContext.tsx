@@ -41,7 +41,11 @@ interface AppState {
   labels: Labels;
   /** Region picked on the dashboard (also set by "View" in the alerts list on any screen). */
   picked: RegionId | null;
-  setPicked(id: RegionId | null): void;
+  /** Select a body area, optionally on one of its metrics (e.g. the CO2 pill selects lungs -> co2_ppm). */
+  setPicked(id: RegionId | null, metric?: string | null): void;
+  /** Metric picked inside the selected area (null = the area's worst / key metric). */
+  pickedMetric: string | null;
+  setPickedMetric(metric: string | null): void;
   checkDoneAt: string | null;
   setCheckDoneAt(t: string | null): void;
   streak: Streak | null;
@@ -76,7 +80,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [regions, setRegions] = useState<RegionMeta[]>([]);
   const [escalation, setEscalation] = useState<EscalationConfig | null>(null);
   const [labels, setLabels] = useState<Labels>(DEFAULT_LABELS);
-  const [picked, setPicked] = useState<RegionId | null>(null);
+  const [picked, setPickedId] = useState<RegionId | null>(null);
+  const [pickedMetric, setPickedMetric] = useState<string | null>(null);
+  const setPicked = useCallback((id: RegionId | null, metric: string | null = null) => { setPickedId(id); setPickedMetric(metric); }, []);
   const [checkDoneAt, setCheckDoneAt] = useState<string | null>(null);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [emergencies, setEmergencies] = useState<EmergencyRecord[]>([]);
@@ -149,10 +155,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AppState>(() => ({
     persona, setPersona: setPersonaId, personas, personaInfo: personas.find((p) => p.id === persona),
     env, setEnv, setPlanet, envInfo, envKeys, environments, measurements, guidance,
-    thresholds, regions, escalation, labels, picked, setPicked, checkDoneAt, setCheckDoneAt, streak, refreshStreak,
+    thresholds, regions, escalation, labels, picked, setPicked, pickedMetric, setPickedMetric, checkDoneAt, setCheckDoneAt, streak, refreshStreak,
     emergencies, addEmergency, replayNonce, jumpTo,
   }), [persona, personas, env, setEnv, setPlanet, envInfo, envKeys, environments, measurements, guidance, thresholds,
-    regions, escalation, labels, picked, checkDoneAt, streak, refreshStreak, emergencies, addEmergency, replayNonce, jumpTo]);
+    regions, escalation, labels, picked, setPicked, pickedMetric, checkDoneAt, streak, refreshStreak, emergencies, addEmergency, replayNonce, jumpTo]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -117,6 +117,7 @@ class ScheduleItem(BaseModel):
 class Planet(BaseModel):
     """A planet a location can be on (the surface rover). Sets the Earth delay; advice texts are taken from `advice_as`."""
     label: str
+    subtitle: Optional[str] = None  # v4 sidebar line under the location name
     delay_s: list[float] = Field(min_length=2, max_length=2)
     advice_as: str
     advice_note: Optional[str] = None
@@ -126,6 +127,7 @@ class Planet(BaseModel):
 class Environment(BaseModel):
     id: str
     label: str
+    subtitle: Optional[str] = None  # v4 sidebar line under the location name, e.g. "Low Earth orbit · microgravity"
     delay_s: list[float] = Field(min_length=2, max_length=2)
     advice_note: str
     schedule: list[ScheduleItem] = []
@@ -178,10 +180,28 @@ class Measurements(BaseModel):
 
 
 class EventSignals(BaseModel):
-    model_config = ConfigDict(extra="allow")
-    motion: Optional[float] = None
-    eyes_closed_s: Optional[float] = None
-    posture: Optional[str] = None
+    """What the frontend sends with an UnresponsiveEvent (Nov 14: matched to frontend/src). Three senders:
+    - source "cv" (cv/useUnresponsiveDetection.ts): limb_motion, body_drift, nbp, eyes_closed_s, score, pulse,
+      from, to, reason, text (one event per detector state change)
+    - source "crew_alarm" (components/common/CrewAlarm.tsx): origin, reason, text
+    - source "emergency" (components/emergency/useEmergency.ts): protocol, kind, text (emergency log entries)
+    Unknown extra fields are still accepted and stored, so an older or newer sender is never rejected."""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+    source: Optional[Literal["cv", "crew_alarm", "emergency"]] = None
+    # Camera detection numbers (all body-relative; see docs/cv-explained.md)
+    limb_motion: Optional[float] = None    # hand / elbow speed relative to the torso, shoulder widths per second
+    body_drift: Optional[float] = None     # whole-body drift speed in the picture (shoulder widths or radians per second)
+    nbp: Optional[float] = None            # neutral body posture score 0-1
+    eyes_closed_s: Optional[float] = None  # seconds both eyes have been closed
+    score: Optional[float] = None          # combined unresponsive score 0-1
+    pulse: Optional[Literal["ok", "lost", "clip_off", "no_data"]] = None  # finger clip status at that moment
+    from_state: Optional[str] = Field(default=None, alias="from")  # detector state change, e.g. CHECK_IN -> ALARM
+    to_state: Optional[str] = Field(default=None, alias="to")
+    reason: Optional[str] = None
+    text: Optional[str] = None             # plain sentence for the event log
+    origin: Optional[str] = None           # crew alarm: what raised it ("cv", "app", ...)
+    protocol: Optional[str] = None         # emergency log: protocol id
+    kind: Optional[str] = None             # emergency log: entry kind (step, answer, vital, message, end, ...)
 
 
 class UnresponsiveEvent(BaseModel):
@@ -268,9 +288,17 @@ class SelfCareForm(BaseModel):
     ticked: list[str] = Field(default=[], max_length=20)
 
 
+class MoodForm(BaseModel):
+    """v4 log drawer "Mood and symptoms": a 1-10 mood and the symptoms felt now (questionnaire symptom ids).
+    Display and timeline only: it does not change any status (the daily check questions still feed brain and mood)."""
+    mood: int = Field(ge=1, le=10)
+    symptoms: list[str] = Field(default=[], max_length=10)
+    notes: str = Field(default="", max_length=300)
+
+
 # Known form kinds are validated; other kinds are stored as given.
 FORM_MODELS = {"meal": MealForm, "exercise": ExerciseForm, "biomarkers": BiomarkerForm, "pvt": PvtResult,
-               "self_care": SelfCareForm}
+               "self_care": SelfCareForm, "mood": MoodForm}
 
 
 class CheckRequest(BaseModel):

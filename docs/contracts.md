@@ -18,10 +18,28 @@ How to measure, why we check and the equipment are in `measurements.json` (Chang
 Environment (`environments.json`): `{ "id": "mars", "label": "Mars transit", "delay_s": [180, 1320], "advice_note": "..." }`
 (the surface rover adds optional `planet`, `planets`, `distance_to_base`, `medical_kit`, `kit_notes`, `estimated_data`: see Changes, Nov 14).
 
-UnresponsiveEvent (frontend → backend POST `/api/events`; was CollapseEvent):
-`{ "t": ISO8601, "type": "unresponsive_suspected|checkin_started|ok_confirmed|alarm|monitoring_resumed", "signals": { "limb_motion": 0.01, "nbp": 0.9, "eyes_closed_s": 24, "pulse": "ok" } }`
+UnresponsiveEvent (frontend → backend POST `/api/events?persona=&env=`; was CollapseEvent):
+`{ "t": ISO8601, "type": "unresponsive_suspected|checkin_started|ok_confirmed|alarm|monitoring_resumed", "signals": { "source": "cv", "limb_motion": 0.01, "body_drift": 0.02, "nbp": 0.9, "eyes_closed_s": 24, "score": 0.85, "pulse": "ok|lost|clip_off|no_data", "from": "CHECK_IN", "to": "ALARM", "reason": "...", "text": "..." } }`
+Other senders use the same event: `source: "crew_alarm"` (`origin`, `reason`, `text`) and `source: "emergency"`
+(`protocol`, `kind`, `text`). An `alarm` with `source: "cv"` also creates an alert (red = Act now, region heart,
+source cv) with a drafted message; the response is `{ "ok": true, "alert_id": "..." | null }`.
 
 ## Changes
+
+### Nov 15, 2026 (v4 UI redesign; all additions optional, nothing removed)
+
+- **Environment: optional `subtitle`** (also on each `planets` entry), e.g. `"Low Earth orbit · microgravity"`. Shown under
+  the location name in the v4 sidebar.
+- **regions.json `lungs.context_metrics`** adds `cabin_temp_c` and `cabin_rh_pct` (context only, never used for status).
+  thresholds.json gets a label-only `cabin_rh_pct` entry (no bands, PLACEHOLDER) and measurements.json a TODO(Yenna) entry.
+- **cpr.json: optional `rate_range_per_min`** `[100, 120]`: limits for the CPR metronome rate stepper.
+- **Forms: new validated kind `mood`** `{ "mood": 1-10, "symptoms": ["headache", ...], "notes": "" }` (log drawer
+  "Mood and symptoms"). Display and timeline only; it does not change any status.
+- **New endpoints (optional "Polish wording" in the Inbox):** `GET /api/assist/status` -> `{ "available": bool }`
+  (true only with `ANTHROPIC_API_KEY` set on the backend and the internet reachable; the key is never returned) and
+  `POST /api/assist/polish` `{ "text" }` -> `{ "text", "model" }`, or 503 when unavailable. The app never needs it.
+- **Frontend only:** the Inbox's message to the flight surgeon is built from a rule-based template
+  (`frontend/src/lib/surgeonDraft.ts`) and sent through the existing `POST /api/messages` + `/send`.
 
 - **ProtocolStep: added `on_yes` and `on_no`** (optional). They say where a YES / NO answer to `check` goes:
   `"next"`, a step number, or `"cpr"` (opens the CPR guide). Missing means `"next"`.
@@ -64,6 +82,14 @@ All additions; no existing field was removed except `estimated_data` on the rove
   `licence`, `validation` `{ "label", "value" }` and `url_note`; the file adds `uses` (what each use means). "TO FILL IN"
   marks a value a team member still has to add. The README "Data" table is generated from this file (between the
   `<!-- sources-table -->` markers).
+- **UnresponsiveEvent signals match what the frontend sends** (backend `EventSignals`): `source` (`cv` |
+  `crew_alarm` | `emergency`), `limb_motion`, `body_drift`, `nbp`, `eyes_closed_s`, `score`, `pulse` (`ok` | `lost` |
+  `clip_off` | `no_data`), `from`, `to`, `reason`, `text`, `origin`, `protocol`, `kind`. The old `motion` and
+  `posture` fields are gone (nothing sent them). Unknown extra fields are still accepted. `POST /api/events` takes
+  `env` too; a camera `alarm` (`source: "cv"`) creates an Act now alert (region heart, source `cv`, link to the
+  unresponsive protocol) and a drafted flight-surgeon message for that location.
+- **Fall detection where there is gravity**: `thresholds.json` `cv.fall.environments` is `["moon", "rover:moon",
+  "rover:mars"]` (was `["moon"]`); ISS and Mars transit stay microgravity-only.
 - **Crew reference** `GET /api/crew-reference` -> `backend/data/crew_reference_osd575.json` `{ "source", "dataset",
   "licence": "CC0", "url", "file", "crew": [{ "id", "sex" }], "timepoints", "timepoint_note", "display": { "pre_flight",
   "post_flight" }, "mgdl_per_mmol", "analytes": { "glucose" | "sodium" | "potassium": { "name", "label", "units",
@@ -294,3 +320,4 @@ Microgravity rework: an unconscious astronaut floats instead of collapsing, so t
 | GET / POST | `/api/emergency-logs`, `/api/messages`, `/api/forms` | stored records |
 | GET | `/api/daily-checks`, `/api/streaks/{persona}` | stored records |
 | GET / POST | `/api/admin/summary`, `/api/admin/reset` | admin (hidden `/admin` page) |
+| GET / POST | `/api/assist/status`, `/api/assist/polish` | optional "Polish wording" (backend key only; hidden when unavailable) |

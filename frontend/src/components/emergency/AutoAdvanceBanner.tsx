@@ -14,8 +14,9 @@ interface Props {
 /** Full-width banner: "Pulse lost: going to CPR in 5 s" with a big Cancel. Goes on its own when the countdown ends. */
 export function AutoAdvanceBanner({ message, target, seconds, onGo, onCancel }: Props) {
   const [left, setLeft] = useState(seconds);
-  const go = useRef(onGo);
-  go.current = onGo;
+  const fired = useRef(false);
+  const go = useRef(() => {});
+  go.current = () => { if (fired.current) return; fired.current = true; onGo(); };
 
   useEffect(() => {
     const until = Date.now() + seconds * 1000;
@@ -32,15 +33,15 @@ export function AutoAdvanceBanner({ message, target, seconds, onGo, onCancel }: 
 
   return (
     <div role="alert" aria-live="assertive"
-      className="flex shrink-0 animate-rise items-center gap-5 rounded-xl bg-alert px-6 py-4 text-white shadow-[0_16px_40px_-12px_rgb(var(--c-alert)/0.7)]">
-      <Warning className="h-10 w-10 shrink-0 animate-pulse" weight="fill" aria-hidden />
-      <p className="flex-1 text-3xl font-bold leading-tight">
-        {message}: going to {target} in <span className="font-mono">{left}</span> s
-      </p>
-      <button onClick={onCancel}
-        className="flex shrink-0 items-center gap-2 rounded-2xl bg-white px-10 py-4 text-3xl font-black text-alert transition active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
-        <X className="h-8 w-8" weight="bold" aria-hidden /> Cancel
+      className="flex shrink-0 flex-wrap items-center gap-3.5 rounded-card border border-alert bg-alert/15 px-4 py-3 text-[#F2EEEE]">
+      <Warning className="h-6 w-6 shrink-0 text-alert" weight="fill" aria-hidden />
+      <span className="font-extrabold text-alert">RED FLAG: {message}</span>
+      <span>Jumping to {target} in <span className="font-mono">{left}</span> s</span>
+      <span className="flex-1" />
+      <button type="button" onClick={onCancel} autoFocus className="flex h-11 items-center gap-1.5 rounded-full border border-[#F2EEEE] px-5 font-bold hover:bg-white/10">
+        <X className="h-4 w-4" weight="bold" aria-hidden /> Cancel
       </button>
+      <button type="button" onClick={() => go.current()} className="h-11 rounded-full bg-alert px-5 font-bold text-white">Go now</button>
     </div>
   );
 }

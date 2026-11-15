@@ -7,6 +7,7 @@ import { isTypingTarget } from '../../lib/sound';
 import { useApp } from '../../state/AppContext';
 import { useCv } from '../../state/CvContext';
 import { DEMO_STEPS, personaBadge, type DemoContext } from './demoSteps';
+import { SCENARIOS } from '../../lib/locations';
 
 const KIND_CLASS = {
   real: 'bg-info/10 text-info ring-info/25',
@@ -73,7 +74,7 @@ export function DemoBar() {
 
   return (
     <div role="region" aria-label="Demo presenter bar"
-      className="fixed bottom-4 right-4 z-[70] flex w-[min(560px,calc(100vw-2rem))] flex-col gap-2 rounded-2xl bg-raised/95 p-3 text-sm shadow-[0_20px_50px_-12px_rgb(0_0_0/0.85)] ring-1 ring-white/15 backdrop-blur">
+      className="fixed bottom-4 right-4 z-[70] flex w-[min(560px,calc(100vw-2rem))] flex-col gap-2 rounded-panel border border-line-strong bg-panel/95 p-3 text-sm shadow-[0_20px_50px_-12px_rgb(0_0_0/0.85)] backdrop-blur">
       <div className="flex items-center gap-2">
         <PresentationChart className="h-4 w-4 shrink-0 text-info" aria-hidden />
         <span className="font-mono text-xs text-muted">{current.label} / 8</span>
@@ -84,6 +85,13 @@ export function DemoBar() {
         </button>
       </div>
       <p className="text-xs leading-relaxed text-muted">{current.note}</p>
+      <div role="radiogroup" aria-label="Scenario" className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="text-muted">Scenario</span>
+        {SCENARIOS.map((sc) => (
+          <button key={sc.id} type="button" role="radio" aria-checked={app.persona === sc.id} onClick={() => app.setPersona(sc.id)}
+            className={`h-8 rounded-full border px-2.5 ${app.persona === sc.id ? 'border-text bg-text text-bg' : 'border-line-strong text-soft hover:bg-raised'}`}>{sc.label}</button>
+        ))}
+      </div>
       {badges.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {badges.map((b) => <span key={b.text} className={`badge ${KIND_CLASS[b.kind]}`}>{b.text}</span>)}

@@ -86,7 +86,7 @@ describe('UnresponsiveDetector: camera', () => {
     expect(events(quiet.effects)).toEqual(['monitoring_resumed']);
   });
 
-  it('a fall (Moon base) goes straight to SUSPECTED; the demo trigger too', () => {
+  it('a fall (where there is gravity) goes straight to SUSPECTED; the demo trigger too', () => {
     expect(run(new UnresponsiveDetector(t), 0, 0.1, makeSignals({ fallDetected: true })).states).toEqual(['SUSPECTED']);
     expect(new UnresponsiveDetector(t).forceSuspected(1).state.name).toBe('SUSPECTED');
   });

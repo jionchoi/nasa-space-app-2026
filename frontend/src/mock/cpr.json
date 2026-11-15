@@ -1,6 +1,7 @@
 {
  "_status": "DRAFT - Yenna reviews",
  "rate_per_min": 110,
+ "rate_range_per_min": [100, 120],
  "compressions": 30,
  "breaths": 2,
  "breaths_pause_s": 5,

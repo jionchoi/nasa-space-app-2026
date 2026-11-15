@@ -37,8 +37,8 @@ def test_config_files(client):
 
 def test_events_log(client):
     event = {"t": "2026-11-14T10:00:00Z", "type": "unresponsive_suspected",
-             "signals": {"motion": 0.02, "eyes_closed_s": 24, "posture": "limp"}}
-    assert client.post("/api/events", json=event).json() == {"ok": True}
+             "signals": {"source": "cv", "limb_motion": 0.02, "nbp": 0.9, "eyes_closed_s": 24, "pulse": "ok"}}
+    assert client.post("/api/events", json=event).json() == {"ok": True, "alert_id": None}
     assert client.get("/api/events").json() == [event]
     assert client.post("/api/events", json={**event, "type": "nope"}).status_code == 422
 

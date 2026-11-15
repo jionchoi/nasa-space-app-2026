@@ -6,3 +6,4 @@ scipy
 scikit-learn
 pytest
 httpx
+anthropic>=2.8,<3  # optional "Polish wording" in the Inbox; only used when ANTHROPIC_API_KEY is set

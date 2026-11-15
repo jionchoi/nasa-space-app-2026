@@ -97,7 +97,9 @@
       ],
       "spaceflight_note": "PLACEHOLDER: Cabin air is recycled, so carbon dioxide and dust can build up and affect breathing.",
       "context_metrics": [
-        "co2_ppm"
+        "co2_ppm",
+        "cabin_temp_c",
+        "cabin_rh_pct"
       ],
       "space_effect": "Dust, floating particles, and high cabin CO2 can irritate your breathing [REF-05]. Fluid shifts can also slightly change how air moves in your lungs [REF-06].",
       "refs": {

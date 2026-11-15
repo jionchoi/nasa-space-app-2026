@@ -1,29 +1,32 @@
 @import '@fontsource-variable/inter';
 @import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/600.css';
+@import '@fontsource/space-grotesk/700.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Theme tokens (R G B), from the dashboard v1 design. tailwind.config.js maps them to color names.
+/* Theme tokens (R G B), from the v4 designs (design-handoff/v4). tailwind.config.js maps them to color names.
    Status colors carry meaning only; tints use /10 (background) and /35 (border). */
 :root {
-  --c-bg: 11 15 20;          /* #0B0F14 page */
-  --c-header: 14 19 26;      /* #0E131A header */
-  --c-panel: 18 24 33;       /* #121821 panels and cards */
-  --c-map: 15 20 27;         /* #0F141B body map panel */
-  --c-inset: 14 19 26;       /* #0E131A insets inside panels (tabs, metric rows) */
-  --c-raised: 24 32 43;      /* #18202B selected row, hover */
-  --c-line: 28 36 48;        /* #1C2430 borders */
-  --c-line-strong: 42 54 68; /* #2A3644 strong borders, unfilled bars */
-  --c-text: 230 235 242;     /* #E6EBF2 */
-  --c-soft: 195 204 216;     /* #C3CCD8 secondary text */
-  --c-muted: 154 166 181;    /* #9AA6B5 */
-  --c-ok: 61 214 140;        /* #3DD68C Nominal */
-  --c-watch: 245 196 81;     /* #F5C451 Watch */
-  --c-warn: 255 138 61;      /* #FF8A3D Warning */
+  --c-bg: 5 6 8;             /* #050608 page */
+  --c-header: 7 8 11;        /* #07080B top bar */
+  --c-panel: 11 13 17;       /* #0B0D11 cards, drawers, dialogs */
+  --c-map: 8 9 12;           /* #08090C body map panel */
+  --c-inset: 7 8 11;         /* #07080B insets (text areas, tabs) */
+  --c-raised: 22 26 33;      /* #161A21 selected / hover */
+  --c-line: 22 25 31;        /* #16191F hairlines */
+  --c-line-strong: 34 38 46; /* #22262E control borders */
+  --c-text: 238 241 245;     /* #EEF1F5 */
+  --c-soft: 201 207 216;     /* #C9CFD8 secondary text */
+  --c-muted: 138 147 160;    /* #8A93A0 */
+  --c-ok: 74 222 128;        /* #4ADE80 Nominal */
+  --c-watch: 250 204 21;     /* #FACC15 Watch */
+  --c-warn: 251 146 60;      /* #FB923C Warning */
   --c-alert: 255 77 94;      /* #FF4D5E Act now */
-  --c-info: 91 157 255;      /* #5B9DFF primary */
+  --c-info: 156 195 255;     /* #9CC3FF accent */
   --c-emergency: 229 72 77;  /* #E5484D EMERGENCY button */
 }
 
@@ -35,8 +38,8 @@ body,
 
 body {
   @apply bg-bg font-sans text-text antialiased;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .font-mono,
@@ -53,12 +56,18 @@ body {
     @apply text-[13px] font-medium text-muted;
   }
   .btn {
-    @apply inline-flex min-h-touch items-center justify-center gap-2 rounded-control border border-line bg-raised/60 px-4 text-sm font-semibold text-text
+    @apply inline-flex min-h-touch items-center justify-center gap-2 rounded-full border border-line-strong bg-transparent px-4 text-sm font-semibold text-text
       transition duration-200 ease-out hover:bg-raised active:scale-[0.98]
       focus:outline-none focus-visible:ring-2 focus-visible:ring-info disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100;
   }
   .btn-primary {
-    @apply border-transparent bg-info font-bold text-bg hover:bg-info/90;
+    @apply border-transparent bg-text font-bold text-bg hover:bg-text/90;
+  }
+  .btn-accent {
+    @apply border-info/40 bg-info/10 font-bold text-info hover:bg-info/20;
+  }
+  .btn-ghost {
+    @apply border-line-strong bg-transparent hover:bg-raised;
   }
   .btn-danger {
     @apply border-transparent bg-emergency font-bold text-white hover:bg-emergency/90;
@@ -109,3 +118,16 @@ body {
   background: rgb(var(--c-line));
   border-radius: 4px;
 }
+
+/* Body map glow (v4): warning pulses slowly, act now pulses fast. */
+@keyframes pulse-slow { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes pulse-fast { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@keyframes bell-ring { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg); } 40% { transform: rotate(14deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(8deg); } }
+.glow-slow { animation: pulse-slow 2.4s ease-in-out infinite; }
+.glow-fast { animation: pulse-fast 0.8s ease-in-out infinite; }
+.bell-ring { display: inline-block; animation: bell-ring 0.6s ease-in-out infinite; }
+
+/* Visible keyboard focus everywhere (buttons, chips, timeline events). */
+:focus-visible { outline: 2px solid rgb(var(--c-info)); outline-offset: 2px; }
+
+.font-display { font-family: 'Space Grotesk', 'Inter Variable', system-ui, sans-serif; letter-spacing: -0.01em; }

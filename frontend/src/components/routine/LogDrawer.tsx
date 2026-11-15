@@ -1,21 +1,23 @@
-import { ForkKnife, PersonSimpleRun, Scales, X } from '@phosphor-icons/react';
+import { ForkKnife, PersonSimpleRun, Scales, Smiley, X } from '@phosphor-icons/react';
 import { useEffect } from 'react';
 import { postForm, useUsingMock } from '../../api/client';
+import { ASTRONAUT_NAME } from '../../lib/locations';
 import { useApp } from '../../state/AppContext';
 import { useRoutine } from '../../state/RoutineContext';
 import type { LogKind } from '../../types/contracts';
-import { BiomarkerForm, ExerciseForm, MealForm } from './LogForms';
+import { BiomarkerForm, ExerciseForm, MealForm, MoodForm } from './LogForms';
 
 const TABS: { id: LogKind; label: string; Icon: typeof ForkKnife }[] = [
   { id: 'meal', label: 'Meal and water', Icon: ForkKnife },
   { id: 'exercise', label: 'Exercise', Icon: PersonSimpleRun },
   { id: 'biomarkers', label: 'Weekly biomarkers', Icon: Scales },
+  { id: 'mood', label: 'Mood and symptoms', Icon: Smiley },
 ];
 
 /** Slide-over with the three log forms. Opened from the missions card, reminders, or the metabolism area. */
 export function LogDrawer() {
   const { logOpen, openLog, closeLog, refreshMissions } = useRoutine();
-  const { persona, personaInfo } = useApp();
+  const { persona } = useApp();
   const usingMock = useUsingMock();
   const open = logOpen !== null;
 
@@ -34,19 +36,19 @@ export function LogDrawer() {
   };
 
   return (
-    <div className={`fixed inset-0 z-40 ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
+    <div className={`fixed inset-0 z-[47] ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
       <div className={`absolute inset-0 bg-bg/60 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`} onClick={closeLog} />
       <aside role="dialog" aria-label="Log"
-        className={`absolute bottom-3 right-3 top-3 flex w-[min(460px,calc(100vw-1.5rem))] flex-col rounded-[1.6rem] bg-panel ring-1 ring-white/[0.08] shadow-[0_24px_64px_-16px_rgb(0_0_0/0.8)] transition-transform duration-500 ease-out ${
+        className={`absolute bottom-0 right-0 top-0 flex w-[min(460px,calc(100vw-1.5rem))] flex-col rounded-l-[18px] border-l border-line bg-panel shadow-[0_24px_64px_-16px_rgb(0_0_0/0.8)] transition-transform duration-500 ease-out ${
           open ? 'translate-x-0' : 'translate-x-[110%]'}`}>
         <header className="flex items-center gap-3 border-b border-white/[0.06] p-5">
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-semibold tracking-tight">Log for today</h2>
-            <p className="text-xs text-muted">{personaInfo?.name} · saved on this laptop</p>
+            <p className="text-xs text-muted">{ASTRONAUT_NAME} · saved on this laptop</p>
           </div>
           <button className="btn h-9 w-9 p-0" onClick={closeLog} aria-label="Close"><X className="h-4 w-4" aria-hidden /></button>
         </header>
-        <nav className="flex gap-1 border-b border-white/[0.06] px-3 py-2" role="tablist">
+        <nav className="flex flex-wrap gap-1 border-b border-line px-3 py-2" role="tablist">
           {TABS.map(({ id, label, Icon }) => (
             <button key={id} role="tab" aria-selected={logOpen === id} onClick={() => openLog(id)}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition ${logOpen === id ? 'bg-white/[0.08] text-text' : 'text-muted hover:text-text'}`}>
@@ -58,6 +60,7 @@ export function LogDrawer() {
           {logOpen === 'meal' && <MealForm key={`meal-${persona}`} onSave={save('meal')} />}
           {logOpen === 'exercise' && <ExerciseForm key={`ex-${persona}`} onSave={save('exercise')} />}
           {logOpen === 'biomarkers' && <BiomarkerForm key={`bio-${persona}`} onSave={save('biomarkers')} />}
+          {logOpen === 'mood' && <MoodForm key={`mood-${persona}`} onSave={save('mood')} />}
         </div>
       </aside>
     </div>

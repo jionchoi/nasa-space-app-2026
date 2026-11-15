@@ -112,12 +112,22 @@ export type Thresholds = Record<string, ThresholdEntry | RedFlagTable | CvThresh
 export interface ScheduleItem { id: string; time: string; text: string; action: string; mission: string }
 
 /** A planet a location can be on (the surface rover): sets the Earth delay; advice texts come from `advice_as`. */
-export interface Planet { label: string; delay_s: [number, number]; advice_as: string; advice_note?: string }
+export interface Planet {
+  label: string; delay_s: [number, number]; advice_as: string; advice_note?: string;
+  /** v4 sidebar line under the location name. */
+  subtitle?: string;
+  /** {"file": real RadLab replay} or {"estimate": thresholds key}: decides the REAL / EST radiation tag. */
+  radiation_feed?: Record<string, string>;
+}
 
 /** environments.json */
 export interface Environment {
   id: string;
   label: string;
+  /** v4 sidebar line under the location name, e.g. "Low Earth orbit · microgravity". */
+  subtitle?: string;
+  /** {"file": real RadLab replay} or {"estimate": thresholds key}: decides the REAL / EST radiation tag. */
+  radiation_feed?: Record<string, string>;
   delay_s: [number, number];
   advice_note: string;
   schedule?: ScheduleItem[];
@@ -320,7 +330,15 @@ export interface UnresponsiveEvent {
   t: string;
   /** Unresponsive detection posts one per state change (renamed from CollapseEvent on Nov 13). */
   type: 'unresponsive_suspected' | 'checkin_started' | 'ok_confirmed' | 'alarm' | 'monitoring_resumed';
-  signals: { motion?: number; eyes_closed_s?: number; posture?: string; [extra: string]: unknown };
+  /** Same fields as backend EventSignals (models.py). source "cv" = detector, "crew_alarm" = alarm screen,
+   *  "emergency" = emergency log entry. A "cv" alarm also creates a backend alert (Act now, heart). */
+  signals: {
+    source?: 'cv' | 'crew_alarm' | 'emergency';
+    limb_motion?: number; body_drift?: number; nbp?: number; eyes_closed_s?: number; score?: number;
+    pulse?: 'ok' | 'lost' | 'clip_off' | 'no_data';
+    from?: string; to?: string; reason?: string; text?: string; origin?: string; protocol?: string; kind?: string;
+    [extra: string]: unknown;
+  };
 }
 
 export interface DailyEntry {
@@ -502,10 +520,12 @@ export interface MissionsResponse {
   streak: Streak;
 }
 
-export type LogKind = 'meal' | 'exercise' | 'biomarkers';
+export type LogKind = 'meal' | 'exercise' | 'biomarkers' | 'mood';
 
 export interface CprConfig {
   rate_per_min: number;
+  /** Allowed range for the rate stepper (v4), e.g. [100, 120]. */
+  rate_range_per_min?: [number, number];
   compressions: number;
   breaths: number;
   breaths_pause_s: number;

@@ -355,6 +355,11 @@
   ],
   "source": "PLACEHOLDER"
  },
+ "cabin_rh_pct": {
+  "label": "Cabin humidity",
+  "unit": "%",
+  "source": "PLACEHOLDER: shown for context only, no limits yet. TODO(Yenna)"
+ },
  "cabin_noise_dba": {
   "label": "Cabin noise",
   "unit": "dBA",
@@ -532,9 +537,11 @@
    "stale_after_s": 5
   },
   "fall": {
-   "_how_to_read": "Moon base only (1/6 g: people can still fall there). Uses the image's 'down' because the Moon base camera is mounted upright. Hips move down faster than hip_drop_speed sw/s, then the body stays still (image motion at or below still_motion sw/s) for still_after_s.",
+   "_how_to_read": "Fall detection runs wherever there is gravity: Moon base (1/6 g), Surface rover on the Moon (1/6 g) and Surface rover on Mars (0.38 g). Not on the ISS or in Mars transit (microgravity: an unconscious person floats, so only the body-relative signals count). Keys are env keys (rover:moon, rover:mars). Uses the image's 'down' because the camera there is mounted upright. Hips move down faster than hip_drop_speed sw/s, then the body stays still (image motion at or below still_motion sw/s) for still_after_s. PLACEHOLDER numbers, tuned for nobody yet; a fall on Mars is faster than on the Moon.",
    "environments": [
-    "moon"
+    "moon",
+    "rover:moon",
+    "rover:mars"
    ],
    "hip_drop_speed": 1.5,
    "still_after_s": 2,

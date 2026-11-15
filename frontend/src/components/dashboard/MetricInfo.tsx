@@ -20,7 +20,7 @@ interface Props {
 }
 
 /** Text with [REF-xx] citations: a known source shows its citation on hover; an unknown one gets "(source pending)". */
-function WithRefs({ text, refs }: { text: string; refs?: Props['refs'] }) {
+export function WithRefs({ text, refs }: { text: string; refs?: Props['refs'] }) {
   const parts = text.split(/(\[REF-\d+\])/);
   return (
     <>
