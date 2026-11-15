@@ -131,7 +131,7 @@ export default function Admin() {
               <Siren className="h-4 w-4" weight="fill" aria-hidden /> Test crew alarm
             </button>
             <Link className="btn" to={CV_EMERGENCY_URL}>Open the unresponsive protocol as detection would</Link>
-            <Link className="btn" to={CV_PULSE_LOST_URL}>Open it as a lost pulse would (straight to CPR)</Link>
+            <Link className="btn" to={CV_PULSE_LOST_URL}>Open it as a lost pulse would (CPR offered after 5 s)</Link>
           </div>
         </Card>
 

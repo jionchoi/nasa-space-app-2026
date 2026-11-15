@@ -66,6 +66,8 @@ export type LiveVital = (typeof LIVE_VITALS)[number];
 
 export interface LiveStatus {
   vitals: Record<LiveVital, Status>;
+  /** Vitals outside thresholds.json "plausible" (a measuring error): shown as "Invalid", never judged. */
+  invalid: LiveVital[];
   irregular: boolean;
   signal: Status;
   /** Signal too poor to trust the numbers. */
@@ -74,16 +76,27 @@ export interface LiveStatus {
   red: string[];
 }
 
+/** True when a value is outside thresholds.json "plausible" for this metric (e.g. heart rate 300, SpO2 104). */
+export function implausible(metric: string, value: number | null | undefined, thresholds: Thresholds | null): boolean {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return false;
+  const table = thresholds?.plausible as Record<string, unknown> | undefined;
+  const band = table?.[metric];
+  if (!Array.isArray(band)) return false;
+  const [lo, hi] = band as [number | null, number | null];
+  return (lo !== null && value < lo) || (hi !== null && value > hi);
+}
+
 export function liveStatus(frame: VitalsFrame | undefined, thresholds: Thresholds | null): LiveStatus | null {
   if (!frame) return null;
   const signal = judge(frame.signal_quality, entryOf(thresholds, 'signal_quality'));
   const poor = signal === 'red';
+  const invalid = LIVE_VITALS.filter((key) => implausible(key, frame[key], thresholds));
   const vitals = Object.fromEntries(
-    LIVE_VITALS.map((key) => [key, judge(frame[key], entryOf(thresholds, key))]),
+    LIVE_VITALS.map((key) => [key, invalid.includes(key) ? 'green' : judge(frame[key], entryOf(thresholds, key))]),
   ) as Record<LiveVital, Status>;
   const red: string[] = poor ? [] : LIVE_VITALS.filter((key) => vitals[key] === 'red');
   if (!poor && judge(frame.irregular ? 1 : 0, entryOf(thresholds, 'irregular')) === 'red') red.push('irregular');
-  return { vitals, irregular: frame.irregular, signal, poor, red };
+  return { vitals, invalid, irregular: frame.irregular, signal, poor, red };
 }
 
 /** Live status per region (only regions with live_metrics, and only with a usable signal). */

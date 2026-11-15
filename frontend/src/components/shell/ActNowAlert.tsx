@@ -1,12 +1,15 @@
 // v4 Act now pop-up (replaces the v1 red banner). A red full-screen alert dialog with a repeating beep, for:
 //  - an open red alert from the backend rules (an area at Act now, incl. the solar event) or the live vitals;
 //  - a live vital in the red range for 10+ s (works with the backend off, like the old banner);
-//  - pulse lost: the crew alarm comes first (it has priority); the pop-up follows if the vitals stay red.
+//  - pulse lost (cv/pulse.ts: clip on, no beats for no_pulse_s): always, camera or not; "Open emergency mode" opens the
+//    unresponsive protocol with "responds? NO" answered, where the pulse_lost red flag offers CPR after 5 s.
 // It never shows on top of the "Are you OK?" check-in, the crew alarm, an open Inbox or in emergency mode.
 // Statuses, thresholds and alerts all come from the backend / thresholds.json; this only presents them.
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { undraft } from '../../lib/env';
+import { postEvent } from '../../api/client';
+import { actNowTrigger } from '../../lib/actNow';
 import { useCrewAlarm } from '../../lib/crewAlarm';
 import { audioOut, useMuted } from '../../lib/sound';
 import { entryOf, fmt, LIVE_VITALS } from '../../lib/status';
@@ -45,37 +48,52 @@ function useAlarmBeep(on: boolean) {
 export function ActNowAlert() {
   const { alerts, ack } = useAlerts();
   const { danger, live, latest, shown, radiation, messages } = useHealth();
-  const { regions, guidance, thresholds, labels } = useApp();
+  const { regions, guidance, thresholds, labels, persona } = useApp();
   const { panel, openInbox } = useShell();
   const crewAlarm = useCrewAlarm();
-  const { checkInDeadline } = useCv();
+  const { checkInDeadline, pulse, enabled: detectionOn } = useCv();
   const muted = useMuted();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [dangerAcked, setDangerAcked] = useState(false);
   useEffect(() => { if (!danger) setDangerAcked(false); }, [danger]);
+  const lost = pulse.status === 'lost';
+  const [pulseAcked, setPulseAcked] = useState(false);
+  useEffect(() => { if (!lost) setPulseAcked(false); }, [lost]);
 
-  // Camera alarms have their own screen (crew alarm); "Emergency handled" is a record, not an alarm.
-  const open = useMemo(() => alerts.filter((a) => a.level === 'red' && !a.acknowledged && (a.source === 'rules' || a.source === 'vitals')), [alerts]);
+  // Camera alarms without a lost pulse have their own screen (crew alarm); "Emergency handled" is a record, not an alarm.
   const redVitals = live && !live.poor ? live.red : [];
-  const triggered = open.length > 0 || (danger && !dangerAcked);
+  const trigger = useMemo(() => actNowTrigger({ alerts, redVitals, danger: danger && !dangerAcked, pulseLost: lost && !pulseAcked, regions }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [alerts, redVitals.join(','), danger, dangerAcked, lost, pulseAcked, regions]);
+  const open = trigger?.open ?? [];
   const blocked = !!crewAlarm || checkInDeadline !== null || pathname.startsWith('/emergency') || panel === 'inbox';
-  const visible = triggered && !blocked;
+  const visible = !!trigger && !blocked;
   useAlarmBeep(visible);
 
-  if (!visible) return null;
-  const first: Alert | undefined = open[0];
-  const vitalRegion = (key: string): RegionId | null => regions.find((r) => r.live_metrics.includes(key))?.id ?? null;
-  const region: RegionId | null = first?.region ?? (redVitals[0] ? vitalRegion(redVitals[0]) : null);
+  // A lost pulse is an alarm event for the record. With detection on, the detector already logs it.
+  const pulseKind = trigger?.kind === 'pulse_lost';
+  useEffect(() => {
+    if (!pulseKind || detectionOn) return;
+    void postEvent({ t: new Date().toISOString(), type: 'alarm',
+      signals: { source: 'cv', pulse: 'lost', reason: pulse.reason, text: `Act now: ${pulse.reason}` } }, persona);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pulseKind]);
+
+  if (!visible || !trigger) return null;
+  const first: Alert | undefined = trigger.alert;
+  const region: RegionId | null = trigger.region;
   const meta = regions.find((r) => r.id === region);
   const status = shown.find((s) => s.region === region);
   const solar = region === 'radiation' && radiation?.event ? radiation.event : null;
 
-  const headline = solar ? solar.alert
+  const headline = pulseKind ? `Pulse lost. ${pulse.reason}.`
+    : solar ? solar.alert
     : first?.source === 'vitals' || !first ? `${redVitals.map((k) => entryOf(thresholds, k)?.label ?? k).join(', ') || 'Live vitals'} in the danger range.`
     : status?.reason ?? first.message;
+  const shownValue = (k: (typeof LIVE_VITALS)[number], digits = 0) => (live?.invalid.includes(k) || !latest ? 'invalid' : fmt(latest[k], digits));
   const vitalsLine = latest
-    ? `Now: heart rate ${fmt(latest.hr, 0)} bpm, HRV ${fmt(latest.hrv_rmssd, 0)} ms, SpO₂ ${fmt(latest.spo2, 0)}%, breathing ${fmt(latest.rr, 0)}/min${latest.irregular ? ', rhythm irregular' : ''}.`
+    ? `Now: heart rate ${shownValue('hr')} bpm, HRV ${shownValue('hrv_rmssd')} ms, SpO₂ ${shownValue('spo2')}%, breathing ${shownValue('rr')}/min${latest.irregular ? ', rhythm irregular' : ''}.`
     : '';
   const ruleLines = redVitals.map((k) => {
     const entry = entryOf(thresholds, k);
@@ -88,8 +106,8 @@ export function ActNowAlert() {
   const item = region ? guidance?.regions[region]?.[guidance.status_keys.red] : undefined;
   const steps = [...(solar ? [solar.advice] : []), ...(item?.self_care ?? [])].map(undraft).filter(Boolean);
 
-  const acknowledge = () => { open.forEach((a) => ack(a.id)); setDangerAcked(true); };
-  const toEmergency = () => { acknowledge(); navigate('/emergency'); };
+  const acknowledge = () => { open.forEach((a) => ack(a.id)); setDangerAcked(true); if (pulseKind) setPulseAcked(true); };
+  const toEmergency = () => { acknowledge(); navigate(trigger.emergencyUrl); };
   const toDraft = async () => { openInbox(first ? await messages.draftFor(first) : null); };
 
   return (

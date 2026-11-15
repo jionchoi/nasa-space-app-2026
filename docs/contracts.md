@@ -115,6 +115,21 @@ All additions; no existing field was removed except `estimated_data` on the rove
   "title", "badge", "provider", "what", "used_for", "locations", "units", "unit_source", "location_note", "file",
   "converter", "draft", "urls" }] }`. Frontend page `/sources`.
 
+### Nov 15, 2026 (fixes after the PPG review, docs/ppg-review.md)
+
+- **thresholds.json `plausible`** (new table, not a metric) `{ "hr": [25, 220], "spo2": [null, 100] }`: values outside are a
+  measuring error: shown as "Invalid", never judged, never a red flag, an alert or part of the daily check.
+- **thresholds.json** `cv.ppg.no_pulse_s` 5 -> **4**; `red_flags.pulse_lost` gains `keywords` (`["no pulse", "pulse lost"]`):
+  an active red flag lights the matching protocol red-flag text.
+- **regions.json `baseline`** `{ "first_days": 14 }`: "your usual" (vitals row, metric list, daily-check comparison) is the
+  median of the first 14 daily entries (pre-flight baseline), frozen. The reaction-time status rule keeps its own baseline.
+- **Lost pulse (Demo mode)**: the Act now pop-up opens on its own, camera or not; the camera detector still skips "Are you
+  OK?" but no longer raises the crew alarm or jumps to CPR for a lost pulse. "Open emergency mode" goes to
+  `/emergency?protocol=unresponsive&trigger=alarm&preanswer=responsive:no` (no `goto=cpr`); emergency mode treats the
+  monitor's lost pulse as the `pulse_lost` red flag, whose route offers CPR after the 5 s countdown (Cancel possible).
+- **UnresponsiveEvent**: an `alarm` with `signals.pulse = "lost"` is also logged when the Act now pop-up opens for a lost
+  pulse with detection off.
+
 ### Nov 14, 2026 (challenge gaps: blood pressure, guidance, measurements, surface rover)
 
 All new texts are DRAFT placeholders (Yenna reviews). No medical text or number is in a component.
@@ -253,8 +268,9 @@ Microgravity rework: an unconscious astronaut floats instead of collapsing, so t
 - **Protocol id `collapse` -> `unresponsive`** (`backend/data/protocols/unresponsive.json`, title "Crew member not
   responding", 8 DRAFT microgravity steps: stop the drift and restrain first, then airway, breathing, pulse, CPR).
   `GET /api/protocols/collapse` still returns it, and `/emergency?protocol=collapse` redirects in the app.
-- **Emergency URL** adds `goto=cpr` (or a step number): opens CPR right after the pre-answer. A lost pulse uses
-  `/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no&goto=cpr`.
+- **Emergency URL** adds `goto=cpr` (or a step number): opens CPR right after the pre-answer. ~~A lost pulse uses
+  `/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no&goto=cpr`.~~ (Nov 15: a lost pulse no longer jumps
+  straight to CPR; see the Nov 15 entry.)
 - **VitalsFrame, optional fields** (old senders may leave them out): `pulse_amplitude` (pulse wave height, AC part, same
   unit every frame), `beats_detected` (heartbeats found in this frame's second), `ppg_baseline` (steady light level,
   DC part). The persona replay now includes them; persona C's pulse goes flat about 515 s into the recording.

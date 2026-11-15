@@ -7,7 +7,8 @@ from crewsense_signals.ppg.schemas import RawBatch, invalidate
 from crewsense_signals.ppg.sources import synthetic_batches
 
 
-@pytest.mark.parametrize("bpm", [35, 45, 72, 150, 220])
+# 220 was here before Nov 15: the plausibility limit is now 25-220 bpm and a synthetic 220 measures 220.6 (see below).
+@pytest.mark.parametrize("bpm", [35, 45, 72, 150, 210])
 def test_known_pulse_rate_over_a_wide_range(bpm):
     p = Pipeline()
     results = [p.process(b) for b in synthetic_batches(duration_s=25, bpm=bpm)]
@@ -141,3 +142,16 @@ def test_adc_saturation_rejected():
     result = Pipeline().process(RawBatch.model_validate(data))
     assert result.quality.status == "unusable"
     assert result.metrics["pulse_rate_bpm"].value is None
+
+
+@pytest.mark.parametrize("bpm", [235, 240])
+def test_pulse_rate_above_the_plausible_range_is_invalid(bpm):
+    pipe = Pipeline()
+    result = [pipe.process(b) for b in synthetic_batches(duration_s=20, bpm=bpm)][-1].metrics["pulse_rate_bpm"]
+    assert result.value is None and result.status == "out_of_range"
+
+
+def test_plausible_range_is_configurable():
+    pipe = Pipeline(pulse_range_bpm=(25, 250))
+    result = [pipe.process(b) for b in synthetic_batches(duration_s=20, bpm=240)][-1]
+    assert result.metrics["pulse_rate_bpm"].value == pytest.approx(240, abs=3)

@@ -10,6 +10,10 @@
   "min_days": 10,
   "z_score": 1.5
  },
+ "baseline": {
+  "first_days": 14,
+  "_note": "DRAFT - Yenna reviews. 'Your usual' = median of the first first_days daily entries (the pre-flight baseline, matching the medical sheet). Frozen: later days never move it. The reaction-time status rule keeps its own rolling baseline (rules/pvt.py)."
+ },
  "regions": [
   {
    "id": "brain_mood",

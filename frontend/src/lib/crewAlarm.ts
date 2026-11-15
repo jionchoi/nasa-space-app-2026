@@ -27,8 +27,9 @@ export interface CrewAlarmState extends CrewAlarmOptions {
 export const DEFAULT_EMERGENCY_URL = '/emergency?protocol=unresponsive&trigger=alarm';
 /** What unresponsive detection passes: the "does the crew member respond?" step is already answered NO. */
 export const CV_EMERGENCY_URL = '/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no';
-/** A lost pulse: same, then straight to the CPR guide (goto=cpr). */
-export const CV_PULSE_LOST_URL = `${CV_EMERGENCY_URL}&goto=cpr`;
+/** A lost pulse (from the Act now pop-up): the unresponsive protocol with "responds? NO" answered. No goto=cpr:
+ *  emergency mode sees the pulse_lost red flag and offers CPR with its 5 s countdown (Cancel possible). */
+export const CV_PULSE_LOST_URL = '/emergency?protocol=unresponsive&trigger=alarm&preanswer=responsive:no';
 
 let state: CrewAlarmState | null = null;
 const listeners = new Set<() => void>();

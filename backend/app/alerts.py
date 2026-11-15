@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from . import db, store
-from .rules.judge import judge
+from .rules.judge import implausible, judge
 from .rules.regions import region_list
 
 log = logging.getLogger("copilot")
@@ -156,7 +156,8 @@ def red_vitals(frame: dict, thresholds: dict) -> list[str]:
     """Same rule as the frontend's liveStatus(): vitals in the red range, ignored when the signal is poor."""
     if judge(float(frame["signal_quality"]), thresholds.get("signal_quality")) == "red":
         return []
-    red = [k for k in LIVE_VITALS if frame.get(k) is not None and judge(float(frame[k]), thresholds.get(k)) == "red"]
+    red = [k for k in LIVE_VITALS if frame.get(k) is not None and not implausible(k, float(frame[k]), thresholds)
+           and judge(float(frame[k]), thresholds.get(k)) == "red"]
     if judge(1.0 if frame.get("irregular") else 0.0, thresholds.get("irregular")) == "red":
         red.append("irregular")
     return red

@@ -16,6 +16,13 @@ from crewsense_signals.ppg.sources import synthetic_batches, bidmc_batches, json
 from .bp import BPBuffer
 from .models import SessionRequest, WaveformBatch
 from . import storage
+from .. import store
+
+
+def new_pipeline() -> Pipeline:
+    """A pipeline with the pulse-rate plausibility limits from thresholds.json "plausible.hr"."""
+    band = (store.thresholds().get('plausible') or {}).get('hr') or [None, None]
+    return Pipeline(pulse_range_bpm=tuple(band))
 
 
 def now():
@@ -44,7 +51,7 @@ class Session:
     def __init__(self, req: SessionRequest):
         self.id = uuid.uuid4().hex
         self.req = req
-        self.pipeline = Pipeline()
+        self.pipeline = new_pipeline()
         self.bp = None
         if req.enable_research_bp:
             self.bp = BPBuffer()
@@ -109,7 +116,7 @@ class Session:
             if self.next_t is not None and b.t0_s < self.next_t - .25/b.sample_rate_hz:
                 raise ValueError('overlapping or backward samples')
             if self.state == 'stale':
-                self.pipeline = Pipeline()
+                self.pipeline = new_pipeline()
                 if self.bp is not None:
                     self.bp.reset('source_stale')
             result = await asyncio.to_thread(self.pipeline.process, b)

@@ -57,7 +57,7 @@ export function pulseReading(samples: PulseSample[], now: number, reference: num
   }
 
   // Red flags from thresholds.json (any of them shortens the camera wait).
-  const active = activeRedFlags(frames, defs);
+  const active = activeRedFlags(frames, defs, all);
   const vitalsRed = active.length > 0;
 
   // STILL HAND: the quality has stayed at or above clean_quality for still_hand_s seconds (samples cover that long).

@@ -21,6 +21,8 @@ import { kitNotes } from '../lib/env';
 import { entryOf, fmt, liveStatus } from '../lib/status';
 import { currentLocation, locationEntries } from '../lib/locations';
 import { useApp } from '../state/AppContext';
+import { useCv } from '../state/CvContext';
+import { litByFlags } from '../lib/redFlags';
 import type { CprConfig, Message, Protocol, VitalsFrame } from '../types/contracts';
 
 export default function Emergency() {
@@ -41,7 +43,9 @@ export default function Emergency() {
   const { frames, latest } = useVitals(persona);
   const trigger = params.get('trigger');
   const em = useEmergency(protocol, demo?trigger:'crew', demo?params.get('preanswer'):null, demo?params.get('goto'):null);
-  const flags = useRedFlagRoutes(protocol, frames, thresholds, em, ended === null);
+  // The pulse monitor runs on every screen; a lost pulse counts as the pulse_lost red flag here (CPR after the countdown).
+  const { pulse } = useCv();
+  const flags = useRedFlagRoutes(protocol, frames, thresholds, em, ended === null, pulse.status);
   const [sentMessages, setSentMessages] = useState<Record<string, Message>>({});
   const live = useMemo(() => liveStatus(latest, thresholds), [latest, thresholds]);
   const wasRed = useRef<string[]>([]);
@@ -77,6 +81,15 @@ export default function Emergency() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [redKey, protocol, thresholds]);
+
+  // An active red flag (thresholds.json red_flags, incl. pulse_lost from the pulse monitor) lights its protocol texts.
+  const flagKey = flags.active.join(',');
+  useEffect(() => {
+    if (!protocol || !flagKey) return;
+    const hits = litByFlags(protocol.red_flags, flagKey.split(','), flags.defs);
+    if (hits.length) setLit((prev) => [...new Set([...prev, ...hits])]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flagKey, protocol]);
 
   // Demo mode: end without the confirm box (step 8). Above the early returns (hooks order)
   const endRef = useRef<(skip?: boolean) => void>(() => {});

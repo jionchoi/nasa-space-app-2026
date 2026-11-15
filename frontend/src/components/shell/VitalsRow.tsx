@@ -5,7 +5,7 @@ import { useUsingMock, useVitalsSource } from '../../api/client';
 import { personaBadge } from '../demo/demoSteps';
 import { useDemo } from '../../lib/demo';
 import { USUAL_FIELD, usualValue } from '../../lib/metrics';
-import { entryOf, fmt, LIVE_VITALS, STATUS_CLASS } from '../../lib/status';
+import { entryOf, fmt, implausible, LIVE_VITALS, STATUS_CLASS } from '../../lib/status';
 import { useApp, useStatusLabel } from '../../state/AppContext';
 import { useHealth } from '../../state/HealthContext';
 import { useSignals } from '../../state/SignalContext';
@@ -44,15 +44,23 @@ export function VitalsRow() {
         const cls = STATUS_CLASS[status];
         const usual = usualValue(daily, USUAL_FIELD[key]);
         const flagged = key === 'hr' && live?.irregular;
+        // Outside thresholds.json "plausible": a measuring error, shown as "Invalid", never as a number.
+        const invalid = !!live?.invalid.includes(key);
         return (
           <div key={key} className={`flex min-w-[170px] flex-1 items-center gap-3 border-l border-line px-4 py-2 ${status !== 'green' && !poor ? cls.soft : ''}`}>
             <span className={`flex min-w-0 flex-col ${poor ? 'opacity-40 grayscale' : ''}`}>
               <span className="flex items-baseline gap-1.5">
                 <span className="text-xs text-muted">{SHORT[key] ?? entry?.label ?? key}</span>
-                <span className={`font-mono text-[22px] font-semibold leading-tight ${status === 'green' ? 'text-text' : cls.text}`}>
-                  {latest ? fmt(latest[key], 0) : '–'}
-                </span>
-                <span className="text-[11px] text-muted">{entry?.unit}</span>
+                {invalid ? (
+                  <span className="text-[15px] font-semibold leading-tight text-watch" title="Outside the possible range: check the sensor">Invalid</span>
+                ) : (
+                  <>
+                    <span className={`font-mono text-[22px] font-semibold leading-tight ${status === 'green' ? 'text-text' : cls.text}`}>
+                      {latest ? fmt(latest[key], 0) : '–'}
+                    </span>
+                    <span className="text-[11px] text-muted">{entry?.unit}</span>
+                  </>
+                )}
                 {status !== 'green' && latest && <span className={`text-[11px] font-semibold ${cls.text}`}>{statusLabel(status)}</span>}
               </span>
               <span className="whitespace-nowrap text-[11px] text-muted">
@@ -60,7 +68,7 @@ export function VitalsRow() {
               </span>
               {flagged && <span className="text-[11px] font-bold text-alert" role="alert">Irregular rhythm</span>}
             </span>
-            <Sparkline values={frames.map((f) => f[key])} className={`ml-auto h-7 w-16 shrink-0 ${poor ? 'text-muted' : status === 'green' ? 'text-muted' : cls.text}`} width={64} height={28} />
+            <Sparkline values={frames.map((f) => (implausible(key, f[key], thresholds) ? null : f[key]))} className={`ml-auto h-7 w-16 shrink-0 ${poor ? 'text-muted' : status === 'green' ? 'text-muted' : cls.text}`} width={64} height={28} />
           </div>
         );
       })}

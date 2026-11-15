@@ -64,7 +64,7 @@ def run_check(req: CheckRequest, env: str = "iss") -> dict:
     try:
         vitals = check_rules.summarize(
             [f.model_dump() for f in req.seated_frames], [f.model_dump() for f in req.stand_frames],
-            questionnaire["measurement"], check_rules.min_quality(thresholds))
+            questionnaire["measurement"], check_rules.min_quality(thresholds), thresholds)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     persona["daily"] = [d for d in persona["daily"] if not d.get("today")]  # redo replaces today's entry
@@ -85,7 +85,8 @@ def run_check(req: CheckRequest, env: str = "iss") -> dict:
         "day": entry["day"],
         "summary": {**vitals, **{k: v for k, v in extra.items() if v is not None}, "symptoms": entry["symptoms"],
                     **({"pvt": req.pvt.model_dump(exclude={"reaction_ms"})} if req.pvt else {})},
-        "comparison": check_rules.compare(entry, store.persona(req.persona, original=True)["daily"], thresholds),
+        "comparison": check_rules.compare(
+            entry, check_rules.baseline_days(store.persona(req.persona, original=True)["daily"], store.regions()), thresholds),
         "before": before,
         "after": after,
         "changed": [{"region": a["region"], "from": b["status"], "to": a["status"]}

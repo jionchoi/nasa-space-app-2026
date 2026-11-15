@@ -447,6 +447,10 @@
       "below": 38,
       "for_s": 3,
       "min_signal_quality": 0.6,
+      "keywords": [
+        "no pulse",
+        "pulse lost"
+      ],
       "source": "PLACEHOLDER"
     },
     "hr_very_low": {
@@ -473,6 +477,18 @@
       "min_signal_quality": 0.6,
       "source": "PLACEHOLDER"
     }
+  },
+  "plausible": {
+    "_how_to_read": "Values outside [low, high] are a measuring error, not a body state: shown as 'Invalid', never as a number, never judged, never alerted on. null = no limit. Live vitals and the PPG pulse rate.",
+    "hr": [
+      25,
+      220
+    ],
+    "spo2": [
+      null,
+      100
+    ],
+    "source": "PLACEHOLDER - plausibility limits agreed Nov 15; Yenna reviews"
   },
   "daily_targets": {
     "_how_to_read": "Behaviour targets for the daily missions (never health results). PLACEHOLDER: Yenna reviews.",
@@ -529,7 +545,7 @@
       "pulse_lost_red_flag": "pulse_lost",
       "good_quality": 0.6,
       "flat_ratio": 0.15,
-      "no_pulse_s": 5,
+      "no_pulse_s": 4,
       "clip_off_quality": 0.2,
       "baseline_jump_ratio": 0.5,
       "clean_quality": 0.9,

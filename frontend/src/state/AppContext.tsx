@@ -7,6 +7,7 @@ import {
 } from '../api/client';
 import { useSignals } from './SignalContext';
 import { envKey, envKeys as keysFor, pickForEnv, resolveEnv } from '../lib/env';
+import { setBaselineDays } from '../lib/metrics';
 import type {
   EmergencyLogIn, Environment, EscalationConfig, Guidance, Labels, Measurements, Persona, RegionId, RegionMeta, Status,
   Streak, Thresholds,
@@ -98,7 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     getThresholds().then(keep(setThresholds));
     getMeasurements().then(keep(setMeasurements));
     getGuidance().then(keep(setGuidance));
-    getRegions().then(keep((r) => setRegions(r.regions)));
+    getRegions().then(keep((r) => { setBaselineDays(r.baseline?.first_days); setRegions(r.regions); }));
     getEscalation().then(keep(setEscalation));
     getLabels().then(keep(setLabels));
     return () => { live = false; };

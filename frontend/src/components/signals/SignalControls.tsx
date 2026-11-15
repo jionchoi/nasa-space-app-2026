@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { signalRequest } from '../../api/signals';
+import { sourceLabel } from '../../lib/signalViewModel';
 import { useSignals } from '../../state/SignalContext';
 import type { SessionOptions, SignalMode } from '../../types/signals';
 
@@ -47,7 +48,7 @@ export function SignalControls() {
       <option value="ingest">Live device</option>
       {signals.mode==='research' && <option value="synthetic">Synthetic waveform · research</option>}
       {signals.session?.recording&&!recordings.some(r=>r.name===signals.session!.recording)&&<option value={signals.session.recording}>{signals.session.recording}</option>}
-      {recordings.map(r=><option key={r.name} value={r.name}>{r.name} · {r.source}</option>)}
+      {recordings.map(r=><option key={r.name} value={r.name}>{r.name} · {sourceLabel(r.source)}</option>)}
     </select></label>
     {!active && input==='synthetic' && <label className="text-sm">Scenario<select aria-label="Signal scenario" className={field} value={scenario} onChange={e=>setScenario(e.target.value)}>
       {['clean','dropout','noise','irregular'].map(s=><option key={s}>{s}</option>)}
@@ -74,7 +75,7 @@ export function SignalControls() {
       <button className="btn btn-primary" disabled={signals.busy || active || !subject || !device} onClick={()=>void start()}>Start session</button>
       <button className="btn" disabled={signals.busy || !active} onClick={()=>{void signals.stop().catch(e=>setError(String(e)));}}>Stop</button>
     </div>
-    {signals.session && <p className="break-all text-xs text-muted">Session {signals.session.id}<br/>{signals.session.subject_id} · {signals.session.source} · {signals.session.status}</p>}
+    {signals.session && <p className="break-all text-xs text-muted">Session {signals.session.id}<br/>{signals.session.subject_id} · {sourceLabel(signals.session.source)} · {signals.session.status}</p>}
     {(signals.error||signals.session?.error||error) && <p role="alert" className="text-sm text-watch">{signals.error||signals.session?.error||error}</p>}
   </section>;
 }

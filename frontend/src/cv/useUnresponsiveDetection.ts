@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { postEvent } from '../api/client';
-import { CV_EMERGENCY_URL, CV_PULSE_LOST_URL, triggerCrewAlarm } from '../lib/crewAlarm';
+import { CV_EMERGENCY_URL, triggerCrewAlarm } from '../lib/crewAlarm';
 import { useApp } from '../state/AppContext';
 import { minuteOfDay, missionDate, useRoutine } from '../state/RoutineContext';
 import { CameraError, startCamera, stopCamera } from './camera';
@@ -154,11 +154,13 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
       if (effect.kind === 'showCheckIn') { setCheckInDeadline(effect.deadline); sendCheckIn({ type: 'show', deadlineWallMs: toWallMs(effect.deadline) }); }
       if (effect.kind === 'hideCheckIn') { setCheckInDeadline(null); sendCheckIn({ type: 'hide' }); }
       if (effect.kind === 'alarm') {
-        // Crew alarm, then the unresponsive protocol with "responds? NO" answered (and straight to CPR on a lost pulse).
-        const url = effect.cpr ? CV_PULSE_LOST_URL : CV_EMERGENCY_URL;
+        // A lost pulse (effect.cpr): the check-in is already skipped (hidden above); the Act now pop-up takes over
+        // (it watches the pulse itself, camera or not) and its "Open emergency mode" leads to CPR. No crew alarm here.
+        if (effect.cpr) continue;
+        // No answer to "Are you OK?": crew alarm, then the unresponsive protocol with "responds? NO" answered.
         // The alarm says who it is about, so every tab shows the right name and can switch to them.
-        triggerCrewAlarm(`Unresponsive detection: ${effect.reason}`, { source: 'cv', emergencyUrl: url, persona: who, personaName: name });
-        go(url);
+        triggerCrewAlarm(`Unresponsive detection: ${effect.reason}`, { source: 'cv', emergencyUrl: CV_EMERGENCY_URL, persona: who, personaName: name });
+        go(CV_EMERGENCY_URL);
       }
     }
   }, []);

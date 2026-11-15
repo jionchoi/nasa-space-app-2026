@@ -74,9 +74,9 @@ means the app shows no number at all):
 | Heart rate | Simulated (persona replay). From a device only if it sends ready-made VitalsFrames to `/ws/sensor`; raw samples sent there are ignored (`compute_vitals()` is not implemented) | Measured: pulse rate from PPG peaks, 8 s window (live device, recorded JSONL or BIDMC replay). Shown, not judged against thresholds | As Measurement; with the synthetic input, computed from a synthetic waveform (labelled) |
 | HRV | Simulated, as above | Measured as PPG RMSSD over 60 s (pulse-rate variability, not ECG HRV). Not judged | As Measurement |
 | SpO₂ | Simulated, as above | Not computed (needs red + IR channels and a validated calibration) | Not computed |
-| Breathing | Simulated, as above | Not computed (card shows "Not supported") | Not computed |
+| Breathing | Simulated, as above | Not computed (no card shown) | Not computed |
 | Rhythm (irregular) | Simulated, as above | Not computed | Not computed |
-| pulse_lost | Worked out in the browser (`cv/pulse.ts`) from the simulated frames: heart-rate red flag, flat pulse wave or no beats with good contact | Not computed: no output, no alarm | Not computed |
+| pulse_lost | Worked out in the browser (`cv/pulse.ts`) from the simulated frames: heart-rate red flag, flat pulse wave or no beats for 4 s with good contact. Opens the Act now pop-up, camera on or off | Not computed: no output, no alarm | Not computed |
 
 **Research blood pressure (optional, off by default).** The model needs synchronized ECG + PPG, and its pilot failed
 its accuracy gate, so it stays unavailable even when switched on. Cuff entry in the daily check always works.

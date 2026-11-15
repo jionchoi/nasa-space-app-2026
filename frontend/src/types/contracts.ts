@@ -101,6 +101,8 @@ export interface RedFlagDef {
   above?: number | null;
   for_s?: number;
   min_signal_quality?: number | null;
+  /** Words that light the matching red-flag text in a protocol (e.g. "no pulse"). */
+  keywords?: string[];
   source?: string;
 }
 export type RedFlagTable = Record<string, RedFlagDef | string>;
@@ -392,7 +394,11 @@ export interface RegionMeta {
   /** Status of each REF id in space_effect (docs/medical/references.csv): "pending" shows "(source pending)". */
   refs?: Record<string, { status: 'ok' | 'pending'; citation?: string }>;
 }
-export interface RegionsConfig { regions: RegionMeta[] }
+export interface RegionsConfig {
+  regions: RegionMeta[];
+  /** "Your usual" = median of the first `first_days` daily entries (pre-flight baseline, frozen). */
+  baseline?: { first_days: number };
+}
 
 export interface EscalationLevel { id: AdviceLevel; label: string; advice: Record<string, string> }
 /** A ladder step for one location only (e.g. "Return to base" on the rover). Shown only; never an advice level. */

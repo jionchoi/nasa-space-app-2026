@@ -3,7 +3,7 @@ from app import db, store
 from app.models import Environment, Guidance, Measurements
 from app.rules.escalation import advice_text
 
-NOT_METRICS = ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt")
+NOT_METRICS = ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt", "plausible")
 
 
 def frames(pid, start, count):

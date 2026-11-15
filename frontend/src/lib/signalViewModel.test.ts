@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { metricValue, metricState, bpValue } from './signalViewModel';
+import { bpValue, displayMetric, HOLD_S, METRICS, metricState, metricValue, sourceLabel } from './signalViewModel';
 import type { Snapshot, Metric } from '../types/signals';
 const metric: Metric = {value:72,unit:'bpm',status:'valid',reason:null,method:'test',measured_start_s:0,measured_end_s:8,window_s:8,valid_window_s:8,computed_at_utc:'2026-11-15T00:00:00Z',valid_until_utc:'2026-11-15T00:00:03Z'};
 const snapshot = {stream_status:'running',quality:{status:'usable',reasons:[]},metrics:{pulse_rate_bpm:metric}} as unknown as Snapshot;
@@ -28,5 +28,49 @@ describe('measured signal display',()=>{
     expect(bpValue({...bp,status:'unavailable'},now,true)).toBeNull();
     expect(bpValue(bp,now+4000,true)).toBeNull();
     expect(bpValue(bp,now,false)).toBeNull();
+  });
+});
+
+describe('Nov 15 fixes: hold, invalid, cards, labels', () => {
+  const at = (s: number) => new Date(Date.parse('2026-11-15T00:00:00Z') + s * 1000).toISOString();
+  const snap = (s: number, status: string, value: number | null, stream = 'running') => ({
+    stream_status: stream, observed_at_utc: at(s), quality: { status: status === 'valid' ? 'usable' : 'unusable', reasons: [] },
+    metrics: { pulse_rate_bpm: { ...metric, status, value, valid_until_utc: at(s + 3) } },
+  }) as unknown as Snapshot;
+  const t = (s: number) => Date.parse(at(s));
+
+  it('a short gap or poor signal keeps the last value greyed with "signal weak"', () => {
+    const list = [snap(0, 'valid', 72), snap(1, 'poor_quality', null)];
+    expect(displayMetric(list, list[1], 'pulse_rate_bpm', t(5), true)).toEqual({ value: 72, held: true, state: 'signal weak' });
+  });
+
+  it('...for at most 10 s, then blanks it', () => {
+    const list = [snap(0, 'valid', 72), snap(1, 'gap', null), snap(11, 'warming_up', null)];
+    expect(HOLD_S).toBe(10);
+    expect(displayMetric(list, list[2], 'pulse_rate_bpm', t(10), true).held).toBe(true);
+    expect(displayMetric(list, list[2], 'pulse_rate_bpm', t(11), true)).toMatchObject({ value: null, held: false });
+  });
+
+  it('a current valid value is shown as is; an ended session holds nothing', () => {
+    expect(displayMetric([snap(0, 'valid', 70)], snap(0, 'valid', 70), 'pulse_rate_bpm', t(1), true)).toMatchObject({ value: 70, held: false });
+    const list = [snap(0, 'valid', 72), snap(1, 'ended', null, 'ended')];
+    expect(displayMetric(list, list[1], 'pulse_rate_bpm', t(2), true).value).toBeNull();
+  });
+
+  it('out of range is "Invalid", never a number, and never covered by an older value', () => {
+    const list = [snap(0, 'valid', 72), snap(1, 'out_of_range', null)];
+    expect(displayMetric(list, list[1], 'pulse_rate_bpm', t(2), true)).toEqual({ value: null, held: false, state: 'Invalid' });
+    expect(metricState(list[1], 'pulse_rate_bpm', t(2), true)).toBe('Invalid');
+  });
+
+  it('no breathing-rate card outside Demo mode', () => {
+    expect(METRICS.map((m) => m.key)).not.toContain('respiration_rate');
+  });
+
+  it('readable source labels', () => {
+    expect(sourceLabel('public_replay')).toBe('Replay · PhysioNet BIDMC');
+    expect(sourceLabel('synthetic')).toMatch(/synthetic/i);
+    expect(sourceLabel('synthetic')).not.toBe('synthetic');
+    expect(sourceLabel('live')).toBe('Live sensor');
   });
 });

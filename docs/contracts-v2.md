@@ -32,6 +32,11 @@ The example channels array describes its contents; actual entries must be number
 
 Snapshot metrics preserve the NASA contract: nullable value, unit, status, reason, method, measured start/end, window, contiguous valid window, computed time, expiry. Sources remain synthetic/public_replay/recorded_live/live. Quality is categorical with reasons, not an invented confidence percentage. Keys are pulse_rate_bpm, ppg_rmssd_ms (PRV, not ECG HRV), and spo2_pct (not implemented). Rhythm, respiratory rate and clinical red flags are not implemented. No absent metric becomes 0 or regular/normal.
 
+Nov 15: `pulse_rate_bpm` outside the plausible range (thresholds.json `plausible.hr`, 25–220 bpm) has status `out_of_range`
+and no value (shown as "Invalid"). A 1 s batch whose height is over 3× the median of the last 10 usable batches is
+`poor_quality` with reason `<channel>:motion_artifact` (after 5 such batches in a row the new height is accepted). The UI
+keeps the last valid value greyed ("signal weak") for up to 10 s after a gap or poor signal.
+
 States: starting, running, stale, ended, error. No input for over 3 wall-clock seconds or producer disconnect invalidates current metrics and BP. Resumed input rewarms the processor. EOF/stop/error also invalidates values. Browsers additionally hide metrics after their own valid_until_utc and on disconnection; no persona fallback occurs. Replay source time controls windows; speed only changes scheduling. Raw waveform output is bounded by the NASA core and is not persisted in SQLite.
 
 ## Checks and manual observations

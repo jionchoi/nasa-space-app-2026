@@ -15,9 +15,22 @@ class Pipeline:
     over a missing or unusable segment. Values use only samples already seen.
     """
 
-    def __init__(self, hr_window_s=8.0, prv_window_s=60.0, settle_s=2.0):
+    def __init__(self, hr_window_s=8.0, prv_window_s=60.0, settle_s=2.0, pulse_range_bpm=(25.0, 220.0),
+                 motion_ratio=3.0, motion_reference_s=10, motion_relearn_s=5):
+        """pulse_range_bpm: a pulse rate outside it is a measuring error (status "out_of_range", no value).
+        motion_ratio: a 1 s batch whose peak-to-peak height is more than this many times the median height of the
+        last `motion_reference_s` usable batches is a movement burst ("motion_artifact": poor signal). After
+        `motion_relearn_s` such batches in a row the new height is accepted (e.g. the clip was re-seated)."""
         if not 4 <= hr_window_s <= prv_window_s <= 300 or settle_s < 0:
             raise ValueError("require 4 <= HR window <= PRV window <= 300 and settle >= 0")
+        if motion_ratio <= 1 or motion_reference_s < 3 or motion_relearn_s < 1:
+            raise ValueError("require motion_ratio > 1, motion_reference_s >= 3, motion_relearn_s >= 1")
+        self.pulse_range_bpm = (float("-inf") if pulse_range_bpm[0] is None else float(pulse_range_bpm[0]),
+                                float("inf") if pulse_range_bpm[1] is None else float(pulse_range_bpm[1]))
+        self.motion_ratio = motion_ratio
+        self.motion_relearn_s = motion_relearn_s
+        self.heights = deque(maxlen=motion_reference_s)
+        self.motion_run = 0
         self.hr_window_s = hr_window_s
         self.prv_window_s = prv_window_s
         self.settle_s = settle_s
@@ -54,7 +67,11 @@ class Pipeline:
         self.expected_t0 = batch.end_s
         if gap:
             self._reset()
+            self.heights.clear()  # after a gap the clip may sit differently: learn the height again
+            self.motion_run = 0
         quality = assess(batch)
+        if quality.status == "usable":
+            quality = self._motion_check(batch, quality)
         now = datetime.now(timezone.utc)
         waveform = {}
         if quality.status != "usable":
@@ -106,6 +123,21 @@ class Pipeline:
                           "red_flags": "disabled_no_reviewed_rules"},
         )
 
+    def _motion_check(self, batch, quality):
+        """A sudden movement burst: the wave is suddenly much taller than this person's usual 1 s wave."""
+        channel = "ir" if "ir" in batch.channels else "ppg"
+        height = float(np.ptp(np.asarray(batch.channels[channel], dtype=float)))
+        if len(self.heights) >= 3:
+            reference = float(np.median(self.heights))
+            if reference > 0 and height > self.motion_ratio * reference:
+                self.motion_run += 1
+                if self.motion_run < self.motion_relearn_s:
+                    return Quality(status="unusable", reasons=[f"{channel}:motion_artifact"])
+                self.heights.clear()  # a lasting new height, not a burst: accept it
+        self.motion_run = 0
+        self.heights.append(height)
+        return quality
+
     def _metric(self, batch, quality, now, window, kind):
         duration = 0.0 if self.segment_start is None else max(
             0.0, batch.end_s - self.segment_start - self.settle_s)
@@ -143,6 +175,10 @@ class Pipeline:
         # Do not discard variable intervals just because they are irregular.
         value = (60000 / float(np.median(intervals_ms)) if kind == "pulse"
                  else float(np.sqrt(np.mean(np.diff(intervals_ms) ** 2))))
+        if kind == "pulse" and not self.pulse_range_bpm[0] <= value <= self.pulse_range_bpm[1]:
+            metric.status = "out_of_range"  # a measuring error: never shown as a number
+            metric.reason = "outside_plausible_range"
+            return metric
         metric.value = round(value, 3)
         metric.status = "valid"
         metric.reason = None

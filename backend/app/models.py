@@ -102,7 +102,7 @@ class RedFlagDef(BaseModel):
 
 
 class Thresholds(RootModel[dict[str, Union[ThresholdEntry, dict, str]]]):
-    """Metrics (ThresholdEntry), the "red_flags" table (RedFlagDef per flag), "daily_targets", "cv" and "_..." notes."""
+    """Metrics (ThresholdEntry), the "red_flags" table (RedFlagDef per flag), "plausible" (measuring-error limits), "daily_targets", "cv" and "_..." notes."""
 
 
 class ScheduleItem(BaseModel):

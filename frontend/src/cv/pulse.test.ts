@@ -62,3 +62,11 @@ describe('pulseReading', () => {
     expect(pulseReading(samples, 10 + p.stale_after_s + 1, 1, ALL_THRESHOLDS, FILE_THRESHOLDS).status).toBe('no_data');
   });
 });
+
+describe('pulse lost after 4 s (thresholds.json cv.ppg.no_pulse_s)', () => {
+  it('no beats for 4 s with good contact -> lost; 3 s -> still ok', () => {
+    const at = (seconds: number) => samplesOf(30 + seconds + 1, (i) => ({ ...NORMAL, beats_detected: i <= 30 ? 1 : 0 }));
+    expect(read(at(4)).status).toBe('lost');
+    expect(read(at(3)).status).toBe('ok');
+  });
+});

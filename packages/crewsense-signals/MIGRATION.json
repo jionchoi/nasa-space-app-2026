@@ -32,5 +32,12 @@
       "target": "packages/crewsense-signals/src/crewsense_signals/ppg/validation.py",
       "sha256": "251ddd2c407f9a1240ace3e2e03adfd5ac4f6e7ddd3222a02d64a50545e80abf"
     }
+  ],
+  "changes_after_migration": [
+    {
+      "date": "2026-11-15",
+      "file": "packages/crewsense-signals/src/crewsense_signals/ppg/pipeline.py",
+      "note": "Added pulse-rate plausibility limits (status out_of_range, default 25-220 bpm; the app passes thresholds.json plausible.hr) and a motion-burst check (a 1 s batch over 3x the recent median height is poor signal: motion_artifact). The sha256 above is the original file before this change. See docs/ppg-review.md."
+    }
   ]
 }

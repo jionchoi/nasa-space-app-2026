@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getQuestionnaire } from '../api/client';
 import { saveSignalCheck } from '../api/signals';
+import { sourceLabel } from '../lib/signalViewModel';
 import { CheckShell } from '../components/check/CheckShell';
 import { BloodPressureStep } from '../components/check/BloodPressureStep';
 import { ReactionTest } from '../components/check/ReactionTest';
@@ -44,7 +45,7 @@ export default function SignalCheck() {
   return <CheckShell steps={STEPS} current={step} onCancel={()=>navigate('/')}>
     {error&&<p role="alert" className="text-watch">{error}</p>}
     {!config?<p>Loading daily check…</p>:<>
-      {step===0&&<><h1 className="text-4xl font-semibold">Daily check</h1><p className="text-soft">{session.subject_id} · {session.source}</p><p className="text-muted">Sit still for the pulse and PRV measurement. Cuff readings and your answers are recorded separately.</p><button className="btn btn-primary" disabled={!session.latest || session.status!=='running'} onClick={()=>setStep(1)}>Start seated measurement</button></>}
+      {step===0&&<><h1 className="text-4xl font-semibold">Daily check</h1><p className="text-soft">{session.subject_id} · {sourceLabel(session.source)}</p><p className="text-muted">Sit still for the pulse and PRV measurement. Cuff readings and your answers are recorded separately.</p><button className="btn btn-primary" disabled={!session.latest || session.status!=='running'} onClick={()=>setStep(1)}>Start seated measurement</button></>}
       {step===1&&<SignalMeasureStep key="seated" title="Sit still and breathe slowly" duration={120} onDone={i=>{setSeated(i);setStep(2);}}/>}
       {step===2&&<SignalMeasureStep key="stand" title="Stand when it is appropriate for your environment" duration={60} onDone={i=>{setStand(i);setStep(3);}} onSkip={()=>setStep(3)}/>}
       {step===3&&<TempGlucoseStep limits={config.entry_limits} measurements={measurements} onDone={v=>{setExtra(v);setStep(4);}}/>}
@@ -54,7 +55,7 @@ export default function SignalCheck() {
       {step===7&&<>
         <h2 className="text-3xl font-semibold">{result?'Daily check saved':'Review and save'}</h2>
         {result?<>
-          <p className="text-sm text-muted">{result.subject_id} · {result.source} · {new Date(result.created_at).toLocaleString()}</p>
+          <p className="text-sm text-muted">{result.subject_id} · {sourceLabel(result.source)} · {new Date(result.created_at).toLocaleString()}</p>
           {Object.entries(result.metrics).map(([key,m])=><p key={key}>{key==='ppg_rmssd_ms'?'PPG RMSSD · PRV':key}: <span className="font-mono">{m.value??'Not measured'} {m.unit??''}</span></p>)}
           <p>Cuff: {result.cuff?`${result.cuff.systolic_mmHg}/${result.cuff.diastolic_mmHg} mmHg`:'Not measured'}</p>
           <p className="text-sm text-muted">No health score assigned. Research estimates remain separate.</p><Link className="btn btn-primary" to="/">Back to dashboard</Link>

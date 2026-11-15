@@ -16,7 +16,7 @@ export interface MetricRow {
   status: Status;
   baseline: number | null;
   delta: number | null;
-  /** What the baseline is: "30-day usual" or "24 h average". */
+  /** What the baseline is: "pre-flight usual" or "24 h average". */
   baselineLabel: string;
   series: number[];
   /** Cabin rows: where the values come from, in a few words ("real ISS telemetry" or "simulated"). */
@@ -60,9 +60,9 @@ export function metricRows(region: RegionMeta, daily: DailyEntry[], thresholds: 
     if (days.length) {
       const series = days.map((d) => d[metric] as number);
       const value = series[series.length - 1];
-      const baseline = median(series.slice(-31, -1));
+      const baseline = usualValue(daily, metric);
       rows.push({ ...base, kind: 'daily', value, status: metricStatus?.[metric] ?? 'green', baseline,
-        delta: baseline === null ? null : value - baseline, baselineLabel: '30-day usual', series,
+        delta: baseline === null ? null : value - baseline, baselineLabel: `pre-flight usual, first ${baselineDays} days`, series,
         points: days.map((d) => ({ x: d.day, value: d[metric] as number, label: `Day ${d.day}` })) });
       continue;
     }
@@ -85,8 +85,17 @@ export function pvtBaseline(daily: DailyEntry[]): { median_ms: number | null; la
 /** Daily field that holds each live vital's personal baseline ("Your usual"): resting HR for live HR. */
 export const USUAL_FIELD = { hr: 'hr_rest', hrv_rmssd: 'hrv_rmssd', spo2: 'spo2', rr: 'rr' } as const;
 
-/** The personal usual value: median of the last 30 daily entries that have this field, or null. */
-export function usualValue(daily: DailyEntry[], field: string): number | null {
-  const values = daily.map((d) => d[field]).filter((v): v is number => typeof v === 'number').slice(-30);
+// "Your usual" is frozen to the pre-flight baseline: the first `first_days` daily entries (regions.json "baseline").
+// AppContext sets it when regions.json loads; the 14 here is only used until then (same value as the file).
+let baselineDays = 14;
+export function setBaselineDays(days: number | null | undefined) {
+  if (typeof days === 'number' && days > 0) baselineDays = Math.round(days);
+}
+
+/** The personal usual value: median of the first `days` daily entries that have this field (never today's), or null.
+ *  Later days never move it, so a slow drift stays visible against the pre-flight value. */
+export function usualValue(daily: DailyEntry[], field: string, days = baselineDays): number | null {
+  const values = [...daily].sort((a, b) => a.day - b.day).filter((d) => !d.today)
+    .map((d) => d[field]).filter((v): v is number => typeof v === 'number').slice(0, days);
   return median(values);
 }

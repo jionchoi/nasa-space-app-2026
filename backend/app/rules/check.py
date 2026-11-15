@@ -3,17 +3,20 @@ from __future__ import annotations
 
 from statistics import mean, median
 
-from .judge import bounds, judge
+from .judge import bounds, implausible, judge
 from .status import fmt
 
 MEASURED = ["hr_rest", "hrv_rmssd", "spo2", "rr", "stand_hr_rise", "bp_sys", "bp_dia", "temp_c", "glucose_mmol",
             "pvt_median_ms", "pvt_lapse_rate_pct", "sleep_h", "mood", "stress"]
 
 
-def summarize(seated: list[dict], stand: list[dict], cfg: dict, min_quality: float | None) -> dict:
-    """Vitals for today from the seated and standing recordings."""
+def summarize(seated: list[dict], stand: list[dict], cfg: dict, min_quality: float | None,
+              thresholds: dict | None = None) -> dict:
+    """Vitals for today from the seated and standing recordings. Frames with a poor signal or an implausible heart rate
+    or SpO2 (thresholds.json "plausible": a measuring error) are left out."""
     def usable(frames: list[dict]) -> list[dict]:
-        good = [f for f in frames if min_quality is None or f["signal_quality"] >= min_quality]
+        good = [f for f in frames if (min_quality is None or f["signal_quality"] >= min_quality)
+                and not any(implausible(k, f.get(k), thresholds or {}) for k in ("hr", "spo2"))]
         return good
 
     seated, stand = usable(seated), usable(stand) if stand else []
@@ -57,8 +60,16 @@ def build_today(persona: dict, vitals: dict, answers: dict, questionnaire: dict,
     return entry, carried
 
 
+def baseline_days(daily: list[dict], regions_cfg: dict) -> list[dict]:
+    """The pre-flight baseline: the first `baseline.first_days` daily entries (regions.json), frozen.
+    Without the setting, every recorded day (the old behaviour)."""
+    first = (regions_cfg.get("baseline") or {}).get("first_days")
+    ordered = sorted((d for d in daily if not d.get("today")), key=lambda d: d["day"])
+    return ordered[:int(first)] if first else ordered
+
+
 def compare(entry: dict, baseline_daily: list[dict], thresholds: dict) -> list[dict]:
-    """Each measured number next to the personal baseline (median of the persona's recorded days)."""
+    """Each measured number next to the personal baseline (pass baseline_days(...): the pre-flight days)."""
     rows = []
     for metric in MEASURED:
         info = thresholds.get(metric)

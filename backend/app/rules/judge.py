@@ -50,3 +50,12 @@ def score(value: float, entry: dict | None) -> int:
     lows = [bounds(entry, lv)[0] for lv in LEVELS]
     highs = [bounds(entry, lv)[1] for lv in LEVELS]
     return int(round(min(_side_score(value, lows, -1), _side_score(value, highs, +1))))
+
+
+def implausible(metric: str, value, thresholds: dict) -> bool:
+    """True when `value` is outside thresholds.json "plausible" for this metric: a measuring error, never judged."""
+    band = (thresholds.get("plausible") or {}).get(metric)
+    if value is None or not isinstance(band, list):
+        return False
+    lo, hi = band
+    return (lo is not None and value < lo) or (hi is not None and value > hi)

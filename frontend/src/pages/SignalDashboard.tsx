@@ -5,6 +5,7 @@ import { AppHeader } from '../components/common/AppHeader';
 import { BodyMap } from '../components/dashboard/BodyMap';
 import { SignalControls } from '../components/signals/SignalControls';
 import { SignalVitals } from '../components/signals/SignalVitals';
+import { sourceLabel } from '../lib/signalViewModel';
 import { ResearchPressure } from '../components/signals/ResearchPressure';
 import { useApp } from '../state/AppContext';
 import { useSignals } from '../state/SignalContext';
@@ -53,7 +54,7 @@ export default function SignalDashboard() {
           <h2 className="font-semibold">Saved daily checks</h2>
           {!records.length && <p className="mt-2 text-sm text-muted">{subject?'No checks recorded for this crew identifier.':'Start a session to view this crew member’s records.'}</p>}
           {records.slice(0,10).map(r=><div key={r.id} className="mt-3 border-t border-line pt-3 text-sm">
-            <p>{new Date(r.created_at).toLocaleString()} · {r.source}</p>
+            <p>{new Date(r.created_at).toLocaleString()} · {sourceLabel(r.source)}</p>
             <p className="text-muted">Pulse {r.metrics.pulse_rate_bpm.value ?? '—'} bpm · PRV {r.metrics.ppg_rmssd_ms.value ?? '—'} ms</p>
             <p className="text-muted">Cuff: {r.cuff?`${r.cuff.systolic_mmHg}/${r.cuff.diastolic_mmHg} mmHg`:'Not measured'}</p>
           </div>)}

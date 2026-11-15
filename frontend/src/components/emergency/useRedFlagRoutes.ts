@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
-import { activeRedFlags, redFlagDefs } from '../../lib/redFlags';
+import { activeRedFlags, redFlagDefs, withPulseLost } from '../../lib/redFlags';
 import type { Protocol, RedFlagRoute, Thresholds, VitalsFrame } from '../../types/contracts';
 import type { useEmergency } from './useEmergency';
 
@@ -14,9 +14,10 @@ export interface PendingJump { route: RedFlagRoute; target: string; seconds: num
 /** Red flags that move the protocol forward (protocol "red_flag_routes", flags from thresholds.json "red_flags").
  *  A firing flag starts a countdown the crew can cancel; when it ends the protocol jumps and the log says so. */
 export function useRedFlagRoutes(protocol: Protocol | null, frames: VitalsFrame[], thresholds: Thresholds | null,
-  em: Emergency, enabled: boolean) {
+  em: Emergency, enabled: boolean, pulseStatus?: string) {
   const defs = useMemo(() => redFlagDefs(thresholds), [thresholds]);
-  const active = useMemo(() => activeRedFlags(frames, defs), [frames, defs]);
+  const pulseFlag = (thresholds?.cv as { ppg?: { pulse_lost_red_flag?: string } } | undefined)?.ppg?.pulse_lost_red_flag;
+  const active = useMemo(() => withPulseLost(activeRedFlags(frames, defs, thresholds), pulseStatus, pulseFlag), [frames, defs, thresholds, pulseStatus, pulseFlag]);
   const [pending, setPending] = useState<PendingJump | null>(null);
   const lastFired = useRef<Record<string, number>>({});
   const emRef = useRef(em);
