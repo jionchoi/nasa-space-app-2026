@@ -41,6 +41,9 @@ export interface RegionStatus {
   /** Per-metric status judged by the backend (bands plus the personal reaction-time rule). The "All metrics" list
    *  uses these; the browser does not judge daily metrics itself. */
   metric_status?: Partial<Record<string, Status>>;
+  /** The metric time_to_act_days was forecast on (key metric at Watch; the metric causing Warning when the forecast
+   *  is to Act now). Null or missing without a forecast. */
+  forecast_metric?: string | null;
 }
 
 /** "next", a step number, or "cpr". */

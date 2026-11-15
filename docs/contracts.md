@@ -304,7 +304,10 @@ Microgravity rework: an unconscious astronaut floats instead of collapsing, so t
 - **Threshold bands** are `[low, high]`: a value below `low` or above `high` is at least that status; `null` means
   no limit on that side; the worst status wins. Each metric may also carry `label`, `unit`, `source`, and
   `keywords` (words that link a live vital to a protocol red-flag text).
-- **RegionStatus.time_to_act_days** is `0` when the region is already orange or red ("act now").
+- **RegionStatus.time_to_act_days** is days to the *next* level if the trend continues (Nov 15): Watch → Warning on
+  the key metric; Warning → Act now on the metric causing Warning. `0` when red, or orange with no Act-now forecast
+  ("act today"). **RegionStatus adds `forecast_metric`** (additive, string or null): the metric the forecast was made
+  on, so the chart draws the dotted line on that series.
 - **RegionStatus.reason** ends with "Unusual for you today." when the anomaly check flags the day (kept in the
   text so the contract has no new field).
 - **Emergency log entries** are posted to `/api/events` as `type: "alarm"` with the details in `signals`:

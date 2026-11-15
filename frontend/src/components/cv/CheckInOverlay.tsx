@@ -1,5 +1,5 @@
 // Full-screen "Are you OK?" shown when unresponsive detection suspects the crew member is not responding. Any tap,
-// any key, speaking, a purposeful hand movement (seen by the detector) or the "I'm OK" button answers it. If nobody answers before the countdown ends, the detector raises the crew alarm.
+// any key, speaking, a purposeful hand movement (seen by the detector) or the "I'm OK" button answers it. The crew alarm is raised when this opens (it never waits for the timer); if nobody answers before the countdown ends, emergency mode opens.
 import { useEffect, useState } from 'react';
 import { listenForVoice } from '../../cv/voice';
 import { audioOut } from '../../lib/sound';

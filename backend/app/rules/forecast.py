@@ -10,14 +10,15 @@ from .judge import bounds
 
 
 def time_to_act(values: list[float], entry: dict | None, window_days: int = 14,
-                horizon_days: int = 30, min_signal_to_noise: float = 2) -> int | None:
-    """Days until the trend line crosses the orange limit, or None if it is not heading there."""
+                horizon_days: int = 30, min_signal_to_noise: float = 2, level: str = "orange") -> int | None:
+    """Days until the trend line crosses the `level` limit (orange = Warning, red = Act now), or None if it is not
+    heading there. Values must be on the thresholds' scale (see daily_rules.scaled)."""
     y = np.asarray(values[-window_days:], dtype=float)
     if len(y) < 5 or not isinstance(entry, dict):
         return None
     x = np.arange(len(y))
     slope, intercept = np.polyfit(x, y, 1)
-    lo, hi = bounds(entry, "orange")
+    lo, hi = bounds(entry, level)
     target = hi if slope > 0 else lo
     if target is None or abs(slope) < 1e-9:
         return None

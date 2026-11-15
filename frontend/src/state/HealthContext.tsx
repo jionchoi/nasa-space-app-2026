@@ -10,7 +10,7 @@ import { useDaily, useStatus } from '../hooks/useStatus';
 import { useVitals } from '../hooks/useVitals';
 import { usualValue } from '../lib/metrics';
 import { symptomsConfig, useActiveSymptoms } from '../lib/symptoms';
-import { byUrgency, liveRegionStatus, liveStatus, raiseLevel, worse, type LiveOptions, type LiveStatus } from '../lib/status';
+import { byUrgency, liveReason, liveRegionStatus, liveStatus, raiseLevel, worse, type LiveOptions, type LiveStatus } from '../lib/status';
 import type { CabinSummary, DailyEntry, RadiationSummary, RegionId, RegionStatus, Status, VitalsFrame } from '../types/contracts';
 import { useAlerts } from './AlertsContext';
 import { useApp, useStatusLabel } from './AppContext';
@@ -74,8 +74,10 @@ export function HealthProvider({ children }: { children: ReactNode }) {
   const shown = useMemo(() => statuses.map((s) => {
     const now = liveRegions[s.region] ?? 'green';
     if (worse(now, s.status) === s.status) return s;
-    return { ...s, status: now, advice_level: raiseLevel(s.advice_level, now), reason: `Live vitals right now: ${statusLabel(now)}.` };
-  }), [statuses, liveRegions, statusLabel]);
+    // Lead with what the live vitals show (S1): "Heart rate 148 bpm + chest pain logged"; the daily trend stays in `statuses`.
+    const why = liveReason(regions.find((r) => r.id === s.region), live, latest, thresholds, now, symptoms, symptomsConfig(thresholds));
+    return { ...s, status: now, advice_level: raiseLevel(s.advice_level, now), reason: why ? `${why}.` : `Live vitals right now: ${statusLabel(now)}.` };
+  }), [statuses, liveRegions, statusLabel, regions, live, latest, thresholds, symptoms]);
   const worst = useMemo(() => [...shown].sort(byUrgency)[0] ?? null, [shown]);
   const selected = picked ?? (worst ? (worst.status === 'green' ? 'heart' : worst.region) : null);
   const attention = shown.filter((s) => s.status !== 'green').length;

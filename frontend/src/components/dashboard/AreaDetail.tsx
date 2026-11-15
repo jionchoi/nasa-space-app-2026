@@ -21,7 +21,9 @@ export function useAreaMetric() {
   const status = shown.find((s) => s.region === selected);
   const rows = useMemo(() => (meta ? metricRows(meta, daily, thresholds, latest, cabin, status?.metric_status) : []),
     [meta, daily, thresholds, latest, cabin, status?.metric_status]);
-  const worst = [...rows].sort((a, b) => rank(b) - rank(a))[0];
+  // Ties go to the metric the forecast was made on, so the dotted forecast is on screen first.
+  const fm = status?.forecast_metric;
+  const worst = [...rows].sort((a, b) => rank(b) - rank(a) || Number(b.metric === fm) - Number(a.metric === fm))[0];
   const row = rows.find((r) => r.metric === pickedMetric)
     ?? (worst && rank(worst) > 0 ? worst : rows.find((r) => r.metric === meta?.key_metric) ?? rows[0]);
   return { meta, status, rows, row };
@@ -39,6 +41,9 @@ export function AreaDetail() {
   const entry = entryOf(thresholds, row?.metric ?? meta.key_metric);
   const color = row && row.status !== 'green' ? tokenColor(STATUS_TOKEN[row.status]) : tokenColor('text');
   const points = row ? (row.kind === 'daily' ? row.points.slice(-range) : row.points) : [];
+  // The forecast belongs to one metric: the key metric (to Warning) or the metric causing Warning (to Act now).
+  const forecastHere = row?.metric === (status.forecast_metric ?? meta.key_metric) && status.status !== 'red' && !!status.time_to_act_days;
+  const forecastTo = status.status === 'orange' ? 'red' : 'orange';
 
   return (
     <div className="flex flex-col gap-3">
@@ -86,7 +91,7 @@ export function AreaDetail() {
           </div>
           <div className="min-w-0 flex-[1_1_380px]">
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-xs text-muted">dashed lines = {statusLabel('yellow')} / {statusLabel('orange')} limits{row.metric === meta.key_metric && status.time_to_act_days ? ' · dotted = forecast' : ''}</span>
+              <span className="text-xs text-muted">dashed lines = {statusLabel('yellow')} / {statusLabel('orange')} limits{forecastHere ? ' · dotted = forecast' : ''}</span>
               <span className="flex-1" />
               {row.kind === 'daily' && (
                 <span role="radiogroup" aria-label="Chart range" className="flex gap-1">
@@ -101,7 +106,7 @@ export function AreaDetail() {
             </div>
             {row.metric === 'glucose_mmol' && <CrewGlucoseLine className="mb-2" />}
             <MetricChart points={points} entry={entry} baseline={row.baseline} color={color} title={row.label}
-              forecastDays={row.metric === meta.key_metric && status.status !== 'red' ? status.time_to_act_days : null}
+              forecastDays={forecastHere ? status.time_to_act_days : null} forecastTo={forecastTo}
               endLabel={row.kind === 'cabin' ? 'now' : 'today'} />
           </div>
         </div>

@@ -165,3 +165,26 @@ export const mmss = (seconds: number) => {
   const s = Math.max(0, Math.round(seconds));
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 };
+
+const LIVE_SHORT: Record<string, string> = { hr: 'Heart rate', spo2: 'Blood oxygen', rr: 'Breathing', hrv_rmssd: 'HRV' };
+
+/** Plain reason when live vitals drive a region's status, e.g. "Heart rate 148 bpm + chest pain logged" (S1, Nov 15).
+ *  Only the vitals at the region's live level, irregular rhythm when it counts, and red-flag symptoms of this region. */
+export function liveReason(region: RegionMeta | undefined, live: LiveStatus | null, frame: VitalsFrame | undefined,
+  thresholds: Thresholds | null, level: Status, symptoms: string[] = [],
+  symptomCfg: { red_flag: Record<string, string>; region: Record<string, RegionId> } | null = null): string | null {
+  if (!region || !live || !frame || live.poor) return null;
+  const parts: string[] = [];
+  for (const key of region.live_metrics) {
+    if (key === 'irregular') { if (live.red.includes('irregular')) parts.push('irregular rhythm'); continue; }
+    if (live.vitals[key as LiveVital] !== level) continue;
+    const unit = entryOf(thresholds, key)?.unit ?? '';
+    parts.push(`${LIVE_SHORT[key] ?? key} ${fmt(frame[key as LiveVital], 0)}${unit ? ` ${unit}` : ''}`);
+  }
+  for (const id of symptoms) {
+    if (symptomCfg?.region[id] === region.id && symptomCfg.red_flag[id]) parts.push(`${symptomCfg.red_flag[id].toLowerCase()} logged`);
+  }
+  if (!parts.length) return null;
+  const text = parts.join(' + ');
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

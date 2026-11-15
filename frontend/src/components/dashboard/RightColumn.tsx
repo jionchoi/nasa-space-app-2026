@@ -40,7 +40,15 @@ export function StatusLine() {
     <div role="status" className={`flex flex-wrap items-center gap-2.5 rounded-control border px-3 py-2 ${cls.edge} ${cls.soft}`}>
       <span className={`rounded-full px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.1em] text-bg ${cls.bg}`}>{statusLabel(s.status)}</span>
       <span className="text-sm font-bold">{regions.find((r) => r.id === s.region)?.label}</span>
-      <span className="min-w-[200px] flex-1 text-sm text-soft">{daily?.reason ?? s.reason}</span>
+      {liveWorse ? (
+        // Live vitals drive the status: their reason first, the daily trend second (S1), so the sentence matches the badge.
+        <span className="flex min-w-[200px] flex-1 flex-col">
+          <span className="text-sm font-semibold">{s.reason}</span>
+          {daily?.reason && <span className="text-xs text-muted">Daily trend: {daily.reason}</span>}
+        </span>
+      ) : (
+        <span className="min-w-[200px] flex-1 text-sm text-soft">{daily?.reason ?? s.reason}</span>
+      )}
       {liveWorse && <span className={`pill ${STATUS_CLASS[live].soft} ${STATUS_CLASS[live].text}`}>Live vitals: {statusLabel(live)}</span>}
       <span className={`text-xs ${s.status === 'green' ? 'text-muted' : cls.text}`}>{timeToAct(s.status, s.time_to_act_days, live, statusLabel)}</span>
     </div>

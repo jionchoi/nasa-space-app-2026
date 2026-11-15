@@ -43,6 +43,9 @@ class RegionStatus(BaseModel):
     # Status of each metric of the region that has a value today, as judged here (bands plus the personal reaction-time
     # rule). The "All metrics" list shows these; the browser does not judge daily metrics itself (Nov 14).
     metric_status: dict[str, Status] = {}
+    # The metric the time_to_act_days forecast was made on (key metric at Watch; the metric causing Warning when the
+    # forecast is to Act now), so the chart draws the dotted line on the right series. None without a forecast (Nov 15).
+    forecast_metric: Optional[str] = None
 
 
 class StepLink(BaseModel):

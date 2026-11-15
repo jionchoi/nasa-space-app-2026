@@ -16,7 +16,7 @@ export default function Dashboard() {
     <div className="flex min-h-[100dvh] flex-col lg:h-[100dvh]">
       <AppHeader />
       <main className="flex flex-1 flex-col lg:min-h-0 lg:flex-row">
-        <div className="lg:shrink-0">
+        <div id="bodymap-col" className="lg:shrink-0">
           <BodyMapV4 />
         </div>
         {/* One page on wide screens: if the selected area is ever taller than the window, only this column scrolls. */}

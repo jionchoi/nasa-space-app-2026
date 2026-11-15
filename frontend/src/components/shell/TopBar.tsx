@@ -58,12 +58,21 @@ export function WhoWhere() {
   );
 }
 
+/** Short delay text for the bar (S2): delays over a minute as a range in minutes from environments.json
+ *  ("3–22 min delay"); the full wording stays in the tooltip. */
+function shortDelay(info: Environment | undefined, pill: string): string {
+  const [lo, hi] = info?.delay_s ?? [0, 0];
+  if (hi <= 60) return pill;
+  const m = (s: number) => Math.max(1, Math.round(s / 60));
+  return m(lo) === m(hi) ? `~${m(hi)} min delay` : `${m(lo)}–${m(hi)} min delay`;
+}
+
 export function SurgeonLink() {
   const { envKeys, envInfo, escalation } = useApp();
   const pill = linkText(escalation, envKeys).pill.replace(/^Flight surgeon link:\s*/i, '');
   return (
-    <span className="flex items-center gap-1.5 whitespace-nowrap text-[11px] text-muted">
-      <span className={`h-[7px] w-[7px] rounded-full ${linkDot(envInfo)}`} aria-hidden />Surgeon link · {pill}
+    <span className="flex items-center gap-1.5 whitespace-nowrap text-[11px] text-muted" title={`Flight surgeon link: ${pill}`}>
+      <span className={`h-[7px] w-[7px] rounded-full ${linkDot(envInfo)}`} aria-hidden />Surgeon link · {shortDelay(envInfo, pill)}
     </span>
   );
 }
@@ -96,9 +105,9 @@ function RadiationPill() {
   const hot = status !== 'green' || picked === 'radiation';
   const cls = STATUS_CLASS[status];
   return (
-    <button type="button" onClick={() => pick('radiation')}
-      aria-label={`Radiation ${feed ? `${fmt(feed.dose_rate_now, 1)} ${feed.unit}, ${feed.kind}` : 'loading'}. Show the radiation area`}
-      className={`flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 transition hover:bg-raised ${
+    <button type="button" onClick={() => pick('radiation')} title={radiation?.event ? 'Solar event: open the radiation area' : undefined}
+      aria-label={`Radiation ${feed ? `${fmt(feed.dose_rate_now, 1)} ${feed.unit}, ${feed.kind}` : 'loading'}${radiation?.event ? ', solar event' : ''}. Show the radiation area`}
+      className={`flex h-10 min-w-0 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 transition hover:bg-raised ${
         status !== 'green' ? `${cls.border} ${cls.soft}` : hot ? 'border-info bg-info/10' : 'border-line-strong bg-panel'}`}>
       <span className="text-[11px] tracking-[0.1em] text-muted">RADIATION</span>
       <span className="font-mono text-base font-semibold">{feed ? fmt(feed.dose_rate_now, 1) : '–'}</span>
@@ -108,7 +117,8 @@ function RadiationPill() {
           {feed.kind === 'real' ? 'REAL' : 'EST'}
         </span>
       )}
-      {status !== 'green' && <span className={`text-[11px] font-semibold ${cls.text}`}>{radiation?.event ? 'Solar event' : ''}</span>}
+      {/* Solar event: a coloured dot with a tooltip (the word made the bar wrap at 1440 px, S2). */}
+      {status !== 'green' && radiation?.event && <span className={`glow-slow h-2 w-2 rounded-full ${cls.bg}`} aria-hidden />}
     </button>
   );
 }
@@ -122,14 +132,14 @@ function Co2Pill() {
   const hours = cabin?.co2_high_hours_24h ?? 0;
   const note = status === 'green' ? (hours > 0 ? `high ${fmt(hours, 0)} h / 24 h` : 'normal') : `${labels[status]} · high for ${fmt(hours, 0)} h`;
   return (
-    <button type="button" onClick={() => pick('lungs', 'co2_ppm')}
+    <button type="button" onClick={() => pick('lungs', 'co2_ppm')} title={note !== 'normal' ? `Cabin CO₂: ${note}` : undefined}
       aria-label={`Cabin CO2 ${cabin ? Math.round(cabin.now.co2_ppm) : ''} ppm, ${note}. Show cabin CO2`}
-      className={`flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 transition hover:bg-raised ${
+      className={`flex h-10 min-w-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 transition hover:bg-raised ${
         status !== 'green' ? `${cls.border} ${cls.soft}` : 'border-line-strong bg-panel'}`}>
       <span className="text-[11px] tracking-[0.1em] text-muted">CABIN CO₂</span>
       <span className="font-mono text-base font-semibold">{cabin ? Math.round(cabin.now.co2_ppm).toLocaleString('en-US') : '–'}</span>
       <span className="text-[11px] text-muted">ppm</span>
-      {note !== 'normal' && <span className={`text-[11px] ${status === 'green' ? 'text-muted' : cls.text}`}>{note}</span>}
+      {note !== 'normal' && <span className={`min-w-0 truncate text-[11px] ${status === 'green' ? 'text-muted' : cls.text}`}>{note}</span>}
     </button>
   );
 }
@@ -249,20 +259,22 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
       </header>
     );
   }
+  // One row from xl (1280 px) up in every location (S2): the outer groups keep their size, the middle pills shrink and
+  // their notes end in an ellipsis (the full text stays in the tooltip and aria-label).
   return (
     <header className="relative z-30 shrink-0 border-b border-line bg-header">
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 2xl:px-6">
-        <div className="flex min-w-0 flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 xl:flex-nowrap 2xl:px-6">
+        <div className="flex min-w-0 flex-wrap items-center gap-3 xl:shrink-0 xl:flex-nowrap">
           <MenuButton />
           <Wordmark />
           <WhoWhere />
           <RoutineButton />
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex min-w-0 flex-wrap gap-2 xl:flex-nowrap">
           <RadiationPill />
           <Co2Pill />
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 xl:shrink-0 xl:flex-nowrap">
           <Clock />
           <CameraButton />
           <MuteToggle />

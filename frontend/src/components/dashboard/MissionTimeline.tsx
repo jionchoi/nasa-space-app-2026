@@ -59,7 +59,7 @@ export function MissionTimeline() {
   const history = useHistory();
   const now = useMissionClock();
 
-  const forecastDays = Math.min(7, Math.max(1, ...shown.map((s) => (s.time_to_act_days && s.time_to_act_days > 0 ? Math.ceil(s.time_to_act_days) : 0))));
+  const forecastDays = Math.min(14, Math.max(1, ...shown.map((s) => (s.time_to_act_days && s.time_to_act_days > 0 ? Math.ceil(s.time_to_act_days) : 0))));
   const dayStart = useMemo(() => { const d = new Date(now); d.setUTCHours(0, 0, 0, 0); return d.getTime(); }, [now]);
   const start = dayStart - BACK_DAYS * DAY_H * 3_600_000;
   const days = BACK_DAYS + 1 + forecastDays;

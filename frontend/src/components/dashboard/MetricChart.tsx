@@ -13,8 +13,10 @@ interface Props {
   entry?: ThresholdEntry;
   baseline: number | null;
   color: string;
-  /** Days until the backend expects the Warning limit (key metric only), else null. */
+  /** Days until the backend expects the next limit on this metric, else null. */
   forecastDays: number | null;
+  /** The level the forecast heads to: Warning (from Watch) or Act now (from Warning). */
+  forecastTo?: 'orange' | 'red';
   /** "today" for daily series, "now" for the 24 h cabin series. */
   endLabel: string;
   title: string;
@@ -23,7 +25,7 @@ interface Props {
 const VW = 600;
 const VH = 170;
 
-export function MetricChart({ points, entry, baseline, color, forecastDays, endLabel, title }: Props) {
+export function MetricChart({ points, entry, baseline, color, forecastDays, forecastTo = 'orange', endLabel, title }: Props) {
   const statusLabel = useStatusLabel();
   if (points.length < 2) return <p className="py-8 text-center text-sm text-muted">No trend data yet.</p>;
   const last = points[points.length - 1];
@@ -37,9 +39,11 @@ export function MetricChart({ points, entry, baseline, color, forecastDays, endL
   };
   const watch = nearestLimit(toShown(entry?.yellow), last.value);
   const warning = nearestLimit(toShown(entry?.orange), last.value);
-  const forecast = forecastDays && forecastDays > 0 && warning !== null ? { days: forecastDays, value: warning } : null;
+  const actNow = forecastTo === 'red' ? nearestLimit(toShown(entry?.red), last.value) : null;
+  const target = forecastTo === 'red' ? actNow : warning;
+  const forecast = forecastDays && forecastDays > 0 && target !== null ? { days: forecastDays, value: target } : null;
 
-  const values = [...points.map((p) => p.value), ...[watch, warning, baseline, forecast?.value].filter((v): v is number => v !== null && v !== undefined)];
+  const values = [...points.map((p) => p.value), ...[watch, warning, actNow, baseline, forecast?.value].filter((v): v is number => v !== null && v !== undefined)];
   let lo = Math.min(...values);
   let hi = Math.max(...values);
   const pad = (hi - lo) * 0.12 || Math.abs(hi) * 0.05 || 1;
@@ -48,7 +52,7 @@ export function MetricChart({ points, entry, baseline, color, forecastDays, endL
   const x = (i: number) => (i / (points.length - 1)) * plotW;
   const y = (v: number) => VH - 10 - ((v - lo) / (hi - lo)) * (VH - 20);
   const line = points.map((p, i) => `${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
-  const bands = [[watch, 'yellow', 'watch'], [warning, 'orange', 'warn']] as const;
+  const bands = [[watch, 'yellow', 'watch'], [warning, 'orange', 'warn'], [forecast ? actNow : null, 'red', 'alert']] as const;
   // Tinted zones outside each band (they stack: Act now looks darkest).
   const zones = (['yellow', 'orange', 'red'] as const).flatMap((level) => {
     const b = toShown(entry?.[level]);
@@ -63,7 +67,7 @@ export function MetricChart({ points, entry, baseline, color, forecastDays, endL
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <svg viewBox={`0 0 ${VW} ${VH}`} width="100%" height={VH} preserveAspectRatio="none" role="img"
-        aria-label={`${title}: ${points.length} values, latest ${fmt(last.value)} ${entry?.unit ?? ''}${forecast ? `, forecast to reach ${statusLabel('orange')} in about ${forecast.days} days` : ''}`}>
+        aria-label={`${title}: ${points.length} values, latest ${fmt(last.value)} ${entry?.unit ?? ''}${forecast ? `, forecast to reach ${statusLabel(forecastTo)} in about ${forecast.days} days` : ''}`}>
         {bands.map(([v, status, token]) => v === null ? null : (
           <g key={status}>
             <line x1={0} x2={VW} y1={y(v)} y2={y(v)} stroke={tokenColor(token)} strokeWidth={1} strokeDasharray="5 5" vectorEffect="non-scaling-stroke" />

@@ -27,7 +27,7 @@ body posture", their hands stop doing anything, and their whole body may slowly 
 in the camera picture. Every body point is measured relative to the person's own torso (origin between the shoulders,
 in shoulder widths), which makes the numbers the same whatever the camera angle or the way the person is floating.
 From that we score "no purposeful movement + floating posture + eyes closed + smooth drift" and, if it stays high for
-25 s outside sleep hours (10 s with red vitals), ask "Are you OK? Tap, speak or move your hand." with a 15 s countdown.
+25 s outside sleep hours (10 s with red vitals), ask "Are you OK? Tap, speak or move your hand." with a 15 s countdown. The crew alarm sounds at the start of the check-in (it never waits for the timer); the countdown only escalates.
 Independently, the finger clip watches the pulse: a lost pulse with the clip on skips the question and goes straight
 to the crew alarm and CPR, with or without the camera.
 
@@ -146,10 +146,10 @@ The "normal" amplitude is learned only while the pulse is OK, so a long flat str
 | MONITORING | fall detected (gravity only: Moon base, rover on the Moon or Mars) | SUSPECTED | post `unresponsive_suspected` |
 | MONITORING | score < 0.7 | MONITORING (timer reset) | none |
 | MONITORING | score ≥ 0.7 for 25 s (10 s with red vitals) | SUSPECTED | post `unresponsive_suspected` |
-| SUSPECTED | next update | CHECK_IN | post `checkin_started`, show "Are you OK? Tap, speak or move your hand." (15 s) |
+| SUSPECTED | next update | CHECK_IN | post `checkin_started`, show "Are you OK? Tap, speak or move your hand." (15 s) and raise the crew alarm at once |
 | CHECK_IN | tap, key, voice or "I'm OK" | COOLDOWN | post `ok_confirmed`, hide overlay |
 | CHECK_IN | limb motion ≥ 0.4 sw/s (a purposeful hand movement; body drift does not count) | COOLDOWN | same |
-| CHECK_IN | 15 s, no answer | ALARM | post `alarm` (the backend also creates an Act now alert, heart, source `cv`, with a drafted message), crew alarm, open `/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no` |
+| CHECK_IN | 15 s, no answer | ALARM | post `alarm` (the backend also creates an Act now alert, heart, source `cv`, with a drafted message), alarm keeps sounding, open `/emergency?protocol=unresponsive&trigger=cv` at CL00 (nothing pre-answered) |
 | COOLDOWN / ALARM | 120 s passed | MONITORING | post `monitoring_resumed` |
 
 The protocol (DRAFT, Yenna reviews) follows the microgravity order: 1 respond? (answered NO) → 2 stop the drift (hold

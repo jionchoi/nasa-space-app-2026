@@ -29,7 +29,8 @@
     "stress": "green",
     "pvt_median_ms": "green",
     "pvt_lapse_rate_pct": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "heart",
@@ -60,7 +61,8 @@
     "stand_hr_rise": "green",
     "bp_sys": "green",
     "bp_dia": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "lungs",
@@ -88,7 +90,8 @@
    "metric_status": {
     "spo2": "green",
     "rr": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "immune",
@@ -115,7 +118,8 @@
    "advice_level": "self",
    "metric_status": {
     "symptoms_immune": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "metabolism",
@@ -142,7 +146,8 @@
    "advice_level": "self",
    "metric_status": {
     "hydration_l": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "bones_muscles",
@@ -169,7 +174,8 @@
    "advice_level": "self",
    "metric_status": {
     "exercise_min_7d": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "radiation",
@@ -196,7 +202,8 @@
    "advice_level": "self",
    "metric_status": {
     "radiation_total_msv": "green"
-   }
+   },
+   "forecast_metric": null
   }
  ],
  "B": [
@@ -220,7 +227,7 @@
     5.48,
     5.39
    ],
-   "time_to_act_days": 0,
+   "time_to_act_days": 3,
    "reason": "Mood down 0.7 of 5 over 7 days (now 2 of 5). 2 points below your usual 4. 3 days in a row. Unusual for you today.",
    "advice_level": "surgeon_next",
    "metric_status": {
@@ -229,7 +236,8 @@
     "stress": "yellow",
     "pvt_median_ms": "yellow",
     "pvt_lapse_rate_pct": "green"
-   }
+   },
+   "forecast_metric": "mood"
   },
   {
    "region": "heart",
@@ -251,7 +259,7 @@
     72.0,
     73.1
    ],
-   "time_to_act_days": 0,
+   "time_to_act_days": 12,
    "reason": "Heart rate rise on standing up 4.8 bpm over 7 days (now 32.7 bpm). Unusual for you today.",
    "advice_level": "surgeon_next",
    "metric_status": {
@@ -260,7 +268,8 @@
     "stand_hr_rise": "orange",
     "bp_sys": "green",
     "bp_dia": "green"
-   }
+   },
+   "forecast_metric": "stand_hr_rise"
   },
   {
    "region": "lungs",
@@ -288,7 +297,8 @@
    "metric_status": {
     "spo2": "green",
     "rr": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "immune",
@@ -315,7 +325,8 @@
    "advice_level": "self",
    "metric_status": {
     "symptoms_immune": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "metabolism",
@@ -342,7 +353,8 @@
    "advice_level": "self",
    "metric_status": {
     "hydration_l": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "bones_muscles",
@@ -369,7 +381,8 @@
    "advice_level": "self",
    "metric_status": {
     "exercise_min_7d": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "radiation",
@@ -396,7 +409,8 @@
    "advice_level": "self",
    "metric_status": {
     "radiation_total_msv": "green"
-   }
+   },
+   "forecast_metric": null
   }
  ],
  "C": [
@@ -429,7 +443,8 @@
     "stress": "green",
     "pvt_median_ms": "green",
     "pvt_lapse_rate_pct": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "heart",
@@ -460,7 +475,8 @@
     "stand_hr_rise": "green",
     "bp_sys": "green",
     "bp_dia": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "lungs",
@@ -488,7 +504,8 @@
    "metric_status": {
     "spo2": "green",
     "rr": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "immune",
@@ -515,7 +532,8 @@
    "advice_level": "self",
    "metric_status": {
     "symptoms_immune": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "metabolism",
@@ -542,7 +560,8 @@
    "advice_level": "self",
    "metric_status": {
     "hydration_l": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "bones_muscles",
@@ -569,7 +588,8 @@
    "advice_level": "self",
    "metric_status": {
     "exercise_min_7d": "green"
-   }
+   },
+   "forecast_metric": null
   },
   {
    "region": "radiation",
@@ -596,7 +616,8 @@
    "advice_level": "self",
    "metric_status": {
     "radiation_total_msv": "green"
-   }
+   },
+   "forecast_metric": null
   }
  ]
 }

@@ -81,10 +81,25 @@ def region_statuses(persona: dict, thresholds: dict, regions_cfg: dict, escalati
         if unusual & set(region.get("daily_fields", [])):
             reason += " Unusual for you today."
 
-        if status in ("orange", "red"):
+        forecast_metric = None
+        if status == "red":
             days = 0
+        elif status == "orange":
+            # Forecast the next level (Act now) on the metrics causing Warning; 0 ("act today") when none is heading there.
+            days = 0
+            for metric, level, _ in judged:
+                m_entry = thresholds.get(metric)
+                if level != "orange" or m_entry.get("no_act_now") or m_entry.get("requires_symptoms"):
+                    continue
+                vals = [scaled(m_entry, v) for v in series(daily, metric)]
+                d = time_to_act(vals, m_entry, level="red", **forecast_cfg)
+                if d and (days == 0 or d < days):
+                    days, forecast_metric = d, metric
         else:
-            days = time_to_act(key_series, thresholds.get(key), **forecast_cfg)
+            k_entry = thresholds.get(key)
+            vals = [scaled(k_entry, v) for v in key_series] if isinstance(k_entry, dict) else key_series
+            days = time_to_act(vals, k_entry, **forecast_cfg)
+            forecast_metric = key if days else None
 
         rows.append({
             "region": region["id"],
@@ -92,6 +107,7 @@ def region_statuses(persona: dict, thresholds: dict, regions_cfg: dict, escalati
             "score": region_score,
             "trend": [round(v, 2) for v in key_series[-14:]],
             "time_to_act_days": days,
+            "forecast_metric": forecast_metric,
             "reason": reason,
             "metric_status": {m: level for m, level, _ in judged},
         })

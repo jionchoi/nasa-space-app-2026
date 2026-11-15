@@ -11,7 +11,15 @@ def test_status_endpoint(client):
     assert [r["region"] for r in rows] == [
         "brain_mood", "heart", "lungs", "immune", "metabolism", "bones_muscles", "radiation"]
     assert set(rows[0]) == {"region", "status", "score", "trend", "time_to_act_days", "reason", "advice_level",
-                            "metric_status"}  # metric_status added Nov 14 (additive)
+                            "metric_status", "forecast_metric"}  # metric_status Nov 14, forecast_metric Nov 15 (additive)
+
+
+def test_warning_forecasts_act_now(client):
+    """S13: at Warning the forecast is to the next level (Act now) on the metric causing Warning, not 'act today'."""
+    heart = next(r for r in client.get("/api/status?persona=B&env=iss").json() if r["region"] == "heart")
+    assert heart["status"] == "orange"
+    assert heart["time_to_act_days"] and heart["time_to_act_days"] > 0
+    assert heart["forecast_metric"] == "stand_hr_rise"
 
 
 def test_unknown_persona_falls_back_to_a(client):

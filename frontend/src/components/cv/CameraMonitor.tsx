@@ -1,7 +1,7 @@
 // The camera's floating panel (CameraMonitor); the on/off button is the top bar's "◉ Camera" (shell/TopBar.tsx). Camera detection is off until the crew member turns it on;
 // the pulse check on the finger clip runs either way.
 import { CaretDown, CaretUp, Eye, EyeSlash, ShieldCheck, WarningCircle, X } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useCv } from '../../state/CvContext';
 import { SkeletonCanvas } from './SkeletonCanvas';
@@ -33,8 +33,24 @@ function useCameraStatus(): { text: string; tone: Tone } {
 const TONE_CLASS: Record<Tone, string> = { ok: 'text-ok', watch: 'text-watch', alert: 'text-alert', muted: 'text-muted' };
 const DOT_CLASS: Record<Tone, string> = { ok: 'bg-ok', watch: 'bg-watch', alert: 'bg-alert', muted: 'bg-muted' };
 
-/** Floating panel (bottom left; on the dashboard it sits right of the body map so it never covers the chips or the
- *  badge). v4 contents: posture, limb motion vs body drift, still-for timer, fall check. Collapsible to a small pill. */
+/** Where the panel sits on the dashboard: inside the body-map column (#bodymap-col), bottom left, never over the right
+ *  column at any window size (S3, Nov 15). Null elsewhere or when the column is stacked full width. */
+function useBodyMapBox(active: boolean): { left: number; width: number } | null {
+  const [box, setBox] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    const el = active ? document.getElementById('bodymap-col') : null;
+    if (!el) { setBox(null); return; }
+    const update = () => { const r = el.getBoundingClientRect(); setBox({ left: r.left, width: r.width }); };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener('resize', update);
+    return () => { ro.disconnect(); window.removeEventListener('resize', update); };
+  }, [active]);
+  return box;
+}
+
+/** Floating panel (bottom left; on the dashboard it stays inside the body-map column). v4 contents: posture, limb motion vs body drift, still-for timer, fall check. Collapsible to a small pill. */
 export function CameraMonitor() {
   const { phase, error, videoRef, previewVisible, setPreviewVisible, skeletonVisible, start, stop, live, pulse, thresholds } = useCv();
   const status = useCameraStatus();
@@ -47,11 +63,13 @@ export function CameraMonitor() {
   const stillFor = st?.highSince != null ? Math.max(0, live.now - st.highSince) : 0;
   const askAfter = thresholds ? (pulse.vitalsRed ? thresholds.suspect_after_s_with_red_vitals : thresholds.suspect_after_s) : null;
   const posture = !sig ? '–' : sig.nbpScore >= 0.6 ? 'Neutral body posture (arms floating)' : 'Working posture';
-  const place = pathname === '/' ? 'left-4 lg:left-[616px]' : 'left-4';
+  const box = useBodyMapBox(pathname === '/' && !hidden);
+  // Inside the body-map column with a 16 px gutter; never wider than the column (the panel content wraps).
+  const style = box ? { left: box.left + 16, maxWidth: Math.max(200, box.width - 32) } : undefined;
 
   return (
     <aside aria-label="Unresponsive detection camera"
-      className={`fixed bottom-4 z-40 rounded-panel border border-line-strong bg-panel shadow-[0_20px_50px_rgb(0_0_0/0.6)] ${collapsed ? 'w-auto' : 'w-[300px]'} ${place} ${hidden ? 'hidden' : ''}`}>
+      className={`fixed bottom-4 z-40 rounded-panel border border-line-strong bg-panel shadow-[0_20px_50px_rgb(0_0_0/0.6)] ${collapsed ? 'w-auto' : 'w-[300px]'} left-4 ${hidden ? 'hidden' : ''}`} style={style}>
       <div className="flex items-center gap-2 px-3 py-2">
         <span className={`h-2 w-2 shrink-0 rounded-full ${DOT_CLASS[status.tone]}`} aria-hidden />
         <span className="text-sm font-semibold">◉ Camera</span>
