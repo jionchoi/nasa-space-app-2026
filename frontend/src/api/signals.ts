@@ -1,7 +1,9 @@
 import { API_URL, WS_URL } from './mockFlag';
+import { NEEDS_BACKEND, PUBLIC_DEMO } from './publicDemo';
 import type { SessionOptions, SignalCheckRequest, SignalCheckResult, SignalSession } from '../types/signals';
 
 export async function signalRequest<T>(path: string, body?: unknown): Promise<T> {
+  if (PUBLIC_DEMO) throw new Error(NEEDS_BACKEND);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 8000);
   try {
@@ -23,7 +25,7 @@ export function subscribeSignals(id: string, receive: (s: SignalSession) => void
   let closed = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const open = () => {
-    if (closed) return;
+    if (closed || PUBLIC_DEMO) return;
     ws = new WebSocket(`${WS_URL}/ws/v2/vitals?session_id=${encodeURIComponent(id)}`);
     ws.onopen = () => connection('connected');
     ws.onmessage = ({ data }) => {

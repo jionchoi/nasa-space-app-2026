@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { currentMode, setCurrentMode } from '../api/mode';
+import { PUBLIC_DEMO } from '../api/publicDemo';
 import { getSession, startSession, stopSession, subscribeSignals } from '../api/signals';
 import type { SessionOptions, SignalMode, SignalSession, Snapshot } from '../types/signals';
 
@@ -26,7 +27,7 @@ export function SignalProvider({ children }: { children: ReactNode }) {
     }
   }, []);
   const setMode = async (next: SignalMode) => {
-    if (next === mode) return;
+    if (next === mode || (PUBLIC_DEMO && next !== 'demo')) return;
     setBusy(true); setError(null);
     try {
       if (sessionRef.current && !['ended','error'].includes(sessionRef.current.status)) await stop();

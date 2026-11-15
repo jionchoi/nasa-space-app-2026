@@ -3,6 +3,7 @@ import { useSyncExternalStore } from 'react';
 import type { AlertFeedMessage, SourceChanged, VitalsFrame } from '../types/contracts';
 import mockVitals from '../mock/vitals.json';
 import { setMock, WS_URL } from './mockFlag';
+import { PUBLIC_DEMO } from './publicDemo';
 
 // ---- where live vitals come from right now (shown as the source chip in the header) ----
 
@@ -75,6 +76,7 @@ export function connectVitals(persona: string, onFrame: (frame: VitalsFrame) => 
 
   const open = () => {
     if (closed) return;
+    if (PUBLIC_DEMO) { startMock(); return; } // no backend: mock frames only, never retry
     const query = new URLSearchParams({ persona });
     const sentStart = replayStart;
     if (sentStart !== null) query.set('start', String(sentStart));
@@ -125,7 +127,7 @@ export function connectAlerts(persona: string, onMessage: (message: AlertFeedMes
   let closed = false;
   let retry: ReturnType<typeof setTimeout> | undefined;
   const open = () => {
-    if (closed) return;
+    if (closed || PUBLIC_DEMO) return;
     const socket = new WebSocket(`${WS_URL}/ws/alerts?persona=${encodeURIComponent(persona)}`);
     ws = socket;
     socket.onmessage = (e) => onMessage(JSON.parse(e.data) as AlertFeedMessage);

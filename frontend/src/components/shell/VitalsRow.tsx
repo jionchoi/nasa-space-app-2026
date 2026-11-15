@@ -2,6 +2,7 @@
 // 60 s sparkline, colour from thresholds.json (status words kept for colour-blind readers), greyed on a poor signal.
 import { Lightning } from '@phosphor-icons/react';
 import { useUsingMock, useVitalsSource } from '../../api/client';
+import { PUBLIC_DEMO } from '../../api/publicDemo';
 import { personaBadge } from '../demo/demoSteps';
 import { useDemo } from '../../lib/demo';
 import { USUAL_FIELD, usualValue } from '../../lib/metrics';
@@ -31,7 +32,7 @@ export function VitalsRow() {
     <section aria-label="Live vitals" className="relative flex flex-wrap items-stretch border-b border-line bg-[#06070A] px-6">
       <span className="flex flex-col justify-center gap-0.5 py-2 pr-4 text-[11px] tracking-[0.12em] text-muted">
         <span>LIVE · {source === 'sensor' ? 'LIVE SENSOR' : 'REPLAY'}</span>
-        {usingMock && <span className="rounded-full border border-watch/50 px-1.5 text-center tracking-normal text-watch" title="The backend on this laptop is not answering; showing saved mock data.">Mock data</span>}
+        {usingMock && <span className="rounded-full border border-watch/50 px-1.5 text-center tracking-normal text-watch" title={PUBLIC_DEMO ? 'Public demo with no backend: showing saved mock data.' : 'The backend on this laptop is not answering; showing saved mock data.'}>Mock data</span>}
         {source !== 'sensor' && badge && (
           <span className={`rounded-full border px-1.5 text-center tracking-normal ${badge.kind === 'real' ? 'border-info/40 text-info' : 'border-line-strong text-soft'}`}>
             {badge.text}

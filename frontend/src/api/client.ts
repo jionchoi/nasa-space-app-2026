@@ -32,6 +32,7 @@ import mockStatus from '../mock/status.json';
 import mockThresholds from '../mock/thresholds.json';
 import { offlineSolarEvent, startOfflineSolar, stopOfflineSolar, withOfflineSolar } from '../lib/solarOffline';
 import { API_URL, setMock } from './mockFlag';
+import { PUBLIC_DEMO } from './publicDemo';
 
 export { API_URL, usingMock, useUsingMock } from './mockFlag';
 export { connectAlerts, connectVitals, setReplay, useVitalsSource, type VitalsConnection } from './live';
@@ -47,6 +48,7 @@ const pick = <T,>(table: unknown, key: string): T => {
 class ApiError extends Error {}
 
 async function request<T>(path: string, fallback: () => T, init?: RequestInit): Promise<T> {
+  if (PUBLIC_DEMO) { setMock(true); return fallback(); }
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
@@ -161,6 +163,7 @@ export const getStreak = (persona: string) =>
 export const getAssistStatus = () => request<{ available: boolean }>('/api/assist/status', () => ({ available: false }));
 /** Not through request(): a 503 here only means "no polish", never "backend off" (that would switch the app to mock data). */
 export async function polishText(text: string): Promise<string | null> {
+  if (PUBLIC_DEMO) return null;
   try {
     const res = await fetch(`${API_URL}/api/assist/polish`, { ...post({ text }), signal: AbortSignal.timeout(35_000) });
     if (!res.ok) return null;

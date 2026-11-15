@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { NEEDS_BACKEND, PUBLIC_DEMO } from '../../api/publicDemo';
 import { signalRequest } from '../../api/signals';
 import { sourceLabel } from '../../lib/signalViewModel';
 import { useSignals } from '../../state/SignalContext';
@@ -6,10 +7,14 @@ import type { SessionOptions, SignalMode } from '../../types/signals';
 
 export function ModePicker() {
   const {mode,setMode,busy} = useSignals();
-  return <label className="flex items-center gap-2 text-sm"><span className="text-muted">Mode</span>
-    <select aria-label="Data mode" value={mode} disabled={busy} className="rounded-control border border-line bg-panel px-3 py-2"
+  // Public build: Measurement and Research stay visible but cannot be picked (they need the Python backend).
+  const off = PUBLIC_DEMO ? ` · ${NEEDS_BACKEND}` : '';
+  return <label className="flex items-center gap-2 text-sm" title={PUBLIC_DEMO ? `Measurement and Research mode: ${NEEDS_BACKEND}` : undefined}><span className="text-muted">Mode</span>
+    <select aria-label="Data mode" value={mode} disabled={busy} className={`${PUBLIC_DEMO ? 'max-w-[12rem] ' : ''}rounded-control border border-line bg-panel px-3 py-2`}
       onChange={(e) => { void setMode(e.target.value as SignalMode); }}>
-      <option value="demo">Demo · simulated crew</option><option value="measurement">Measurement</option><option value="research">Research</option>
+      <option value="demo">Demo · simulated crew</option>
+      <option value="measurement" disabled={PUBLIC_DEMO}>Measurement{off}</option>
+      <option value="research" disabled={PUBLIC_DEMO}>Research{off}</option>
     </select></label>;
 }
 

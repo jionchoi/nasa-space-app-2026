@@ -1,11 +1,13 @@
 import { ArrowCounterClockwise, Database, Play, PresentationChart, Radioactive, Siren, Stop, UserSwitch } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
+import { PUBLIC_DEMO } from '../api/publicDemo';
 import { getAdminSummary, getRadiation, replayRadiation, resetDemoData, type AdminSummary } from '../api/client';
 import { AppHeader } from '../components/common/AppHeader';
 import { Card } from '../components/common/Card';
 import { CvDebugPanel } from '../components/cv/CvDebugPanel';
 import { startDemo } from '../lib/demo';
+import { stopOfflineSolar } from '../lib/solarOffline';
 import { SCENARIOS } from '../lib/locations';
 import { useApp } from '../state/AppContext';
 import type { RadiationSummary } from '../types/contracts';
@@ -25,6 +27,17 @@ export default function Admin() {
   const replay = async (action: 'start' | 'stop') => { await replayRadiation(action, minutes); load(); };
   useEffect(load, [load]);
 
+  // Public build: no database. Demo data lives in this browser (ticked items, today's wind-down, the solar replay and
+  // everything in memory), so reset clears those keys and reloads the page.
+  const resetBrowser = () => {
+    if (!window.confirm('Reset demo data in this browser? This clears ticked items, alerts, logs and the solar replay.')) return;
+    stopOfflineSolar();
+    try {
+      for (const key of Object.keys(window.localStorage)) if (/^(selfcare|winddown):/.test(key)) window.localStorage.removeItem(key);
+    } catch { /* storage blocked: the reload still clears what is in memory */ }
+    window.location.reload();
+  };
+
   const reset = async () => {
     if (!window.confirm('Reset demo data? This clears alerts, daily checks, emergency logs, messages, forms and streaks. JSON files are not changed.')) return;
     setState('working');
@@ -41,6 +54,21 @@ export default function Admin() {
       <main className="mx-auto w-full max-w-2xl px-4 py-10">
         <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
         <p className="mt-1 text-sm text-muted">For the team before a demo. Not linked from the app.</p>
+        {PUBLIC_DEMO ? (
+        <Card className="mt-6" inner="p-5">
+          <div className="flex items-center gap-2 text-sm font-medium"><Database className="h-4 w-4 text-info" aria-hidden /> Demo data (this browser)</div>
+          <p className="mt-1 text-sm text-muted">
+            Public demo: there is no backend or database. Everything plays from saved mock data, and what you change stays in
+            this browser only. The local database, Measurement and Research mode need the local backend: see README.
+          </p>
+          <div className="mt-6 flex items-center gap-3 border-t border-white/[0.06] pt-4">
+            <button className="btn btn-danger" onClick={resetBrowser}>
+              <ArrowCounterClockwise className="h-4 w-4" aria-hidden /> Reset demo data
+            </button>
+            <span className="text-sm text-muted">Clears this browser's demo state and reloads.</span>
+          </div>
+        </Card>
+        ) : (
         <Card className="mt-6" inner="p-5">
           <div className="flex items-center gap-2 text-sm font-medium"><Database className="h-4 w-4 text-info" aria-hidden /> Local database</div>
           {summary ? (
@@ -65,6 +93,7 @@ export default function Admin() {
             </span>
           </div>
         </Card>
+        )}
 
         <Card className="mt-4" inner="p-5">
           <div className="flex items-center gap-2 text-sm font-medium"><UserSwitch className="h-4 w-4 text-info" aria-hidden /> Scenario</div>
@@ -109,7 +138,7 @@ export default function Admin() {
                     {[5, 10, 20].map((m) => <option key={m} value={m}>{m} min</option>)}
                   </select>
                 </label>
-                <button className="btn btn-primary" onClick={() => replay('start')} disabled={!summary}>
+                <button className="btn btn-primary" onClick={() => replay('start')} disabled={!summary && !PUBLIC_DEMO}>
                   <Play className="h-4 w-4" weight="fill" aria-hidden /> {radiation.event ? 'Restart' : 'Start'} replay
                 </button>
                 {radiation.event && <button className="btn" onClick={() => replay('stop')}><Stop className="h-4 w-4" aria-hidden /> Stop</button>}

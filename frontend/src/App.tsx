@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { CrewAlarm } from './components/common/CrewAlarm';
 import { SourceToast } from './components/common/SourceToast';
+import { PublicModeNotice } from './components/common/PublicModeNotice';
 import { CameraMonitor } from './components/cv/CameraMonitor';
 import { CheckInOverlay } from './components/cv/CheckInOverlay';
 import { LogDrawer } from './components/routine/LogDrawer';
@@ -43,6 +44,7 @@ export default function App() {
       <InboxDrawer />
       <ActNowAlert />
       <SourceToast />
+      <PublicModeNotice />
       <Reminders />
       <LogDrawer />
       <CameraMonitor />

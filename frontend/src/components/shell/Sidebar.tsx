@@ -2,6 +2,7 @@
 // footer with the vitals source and whether the local backend answers.
 import { useNavigate } from 'react-router-dom';
 import { useUsingMock, useVitalsSource } from '../../api/client';
+import { NEEDS_BACKEND, PUBLIC_DEMO, README_URL } from '../../api/publicDemo';
 import { useRoutineTasks } from '../../hooks/useRoutineTasks';
 import { useDemo } from '../../lib/demo';
 import { currentLocation, locationEntries, SCENARIOS } from '../../lib/locations';
@@ -99,8 +100,11 @@ export function Sidebar() {
           </span>
           <span className="flex items-center gap-1.5" role="status">
             <span className={`h-[7px] w-[7px] rounded-full ${usingMock ? 'bg-watch' : 'bg-ok'}`} aria-hidden />
-            {usingMock ? 'Mock data: the backend on this laptop is not answering' : 'Runs on board · backend answering'}
+            {usingMock ? (PUBLIC_DEMO ? 'Mock data: public demo, no backend' : 'Mock data: the backend on this laptop is not answering') : 'Runs on board · backend answering'}
           </span>
+          {PUBLIC_DEMO && (
+            <span>Measurement and Research mode: <a className="underline underline-offset-2 hover:text-text" href={README_URL} target="_blank" rel="noreferrer">{NEEDS_BACKEND}</a></span>
+          )}
           <span className="font-semibold text-watch">Research prototype · not clinically validated</span>
           <span>Runs on board · works offline · Mock data where labelled</span>
           <span className="text-muted/70">Admin (/admin) is hidden from crew</span>

@@ -1,5 +1,7 @@
 # Astronaut Health Co-Pilot (nasa-space-app-2026)
 
+**Live demo:** _link coming soon_ (public build: mock data only, no backend; see [Public demo build](#public-demo-build-vercel))
+
 NASA Space Apps 2026, challenge "Create Health Monitoring Software for Astronauts on Space Missions".
 A medical co-pilot for astronauts who are not doctors: a 5-minute daily check feeding a color-coded body map
 (prevent), and a full-screen emergency mode with step-by-step protocols (respond).
@@ -45,6 +47,25 @@ pytest                            # tests
 Everything runs on this laptop with no internet. The sidebar footer (menu button) shows **Runs on board · backend
 answering** or **Mock data** when the backend is off, and the live vitals row shows **LIVE SENSOR** / **REPLAY** for
 where the vitals come from (the app switches back to the replay 3 s after the sensor stops).
+
+## Public demo build (Vercel)
+
+The hosted demo is the frontend alone, built with `VITE_PUBLIC_DEMO=true`. In that build every API call returns the
+mock JSON in `frontend/src/mock/` straight away (no request to a backend), the app shows **Mock data**, and only Demo mode
+exists: Measurement and Research mode show "Needs the local backend: see README". All demo steps and Shift+D work; on
+`/admin`, "Reset demo data" clears this browser's demo state and "Start demo mode" runs as usual. "Polish wording" is
+off and the build holds no API key. The MediaPipe models and WebAssembly load from our own `/models`, not a CDN.
+
+```
+cd frontend
+npm install
+npm run build:public       # same as: VITE_PUBLIC_DEMO=true npm run build  ->  frontend/dist
+npx vite preview           # check it locally at http://localhost:4173
+```
+
+Vercel: Root Directory `frontend`, Framework Vite, Build Command `npm run build`, Output Directory `dist`, environment
+variable `VITE_PUBLIC_DEMO` = `true`. `frontend/vercel.json` sends every path to `index.html` (so `/emergency` works
+on refresh) and caches `/models/*` and `/assets/*` for a year.
 
 ## PPG and blood pressure signals (Measurement and Research modes)
 
