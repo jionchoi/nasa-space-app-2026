@@ -7,7 +7,11 @@ All crew data in the demo is simulated. Project brief: `.claude/CLAUDE.md`.
 
 ## Run
 
-Backend (Python 3.11+), from `backend/`:
+**One command** (Python 3.11+ and Node 18+): `./start.sh` on macOS / Linux, or `.\start.ps1` in Windows PowerShell,
+from the repository root. It sets up `backend/.venv` and `frontend/node_modules` on the first run, then starts the
+backend (:8000) and the frontend (:5173). Ctrl+C stops both.
+
+Or by hand, in two terminals. Backend (Python 3.11+), from `backend/`:
 
 ```
 python -m venv .venv
@@ -38,13 +42,15 @@ python scripts/make_cabin.py      # regenerate the simulated cabin fallback (cab
 pytest                            # tests
 ```
 
-Everything runs on this laptop with no internet. The header shows **On-board · offline** when the local backend
-answers, and **Live sensor** / **Replay** for where the vitals come from (the app switches back to the replay 3 s
-after the sensor stops).
+Everything runs on this laptop with no internet. The sidebar footer (menu button) shows **Runs on board · backend
+answering** or **Mock data** when the backend is off, and the live vitals row shows **LIVE SENSOR** / **REPLAY** for
+where the vitals come from (the app switches back to the replay 3 s after the sensor stops).
 
 ## PPG and blood pressure signals (Measurement and Research modes)
 
-From the `ppg-bp-integration` branch (Jian). The header's **Mode** selector separates:
+From the `ppg-bp-integration` branch (Jian). Three modes; the Demo top bar has no mode selector, so open
+`?mode=measurement` or `?mode=research` (the Measurement / Research top bar has the **Mode** selector to switch,
+including back to Demo):
 
 - **Demo:** the simulated crew A, B, C, dashboard, daily check, emergency drills, camera detector and offline mocks.
 - **Measurement:** a subject/device-specific signal session. Needs a connected producer or a registered real recording.
@@ -157,21 +163,58 @@ store but not Python's default bundle; verification stays on. Read the PVT `.sav
 - **Sound**: the speaker button in the header or **M** mutes every app sound (a "Muted" badge shows). In `npm run dev`
   the crew alarm siren stops after 60 s; the red alarm screen stays until answered.
 - `http://localhost:5173/?persona=C&env=mars&start=170&speed=2` : persona C, Mars, replay jumps to
-  just before the event, at double speed. The "Jump to event" button in the header does the same jump.
-- Unresponsive crew member detection: the camera button in the header (off by default). Needs the two model files once,
-  see `docs/cv-explained.md` (Setup). No answer to "Are you OK?" raises the crew alarm and opens
-  `/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no`. A lost pulse on the clip (camera not needed)
-  goes straight to the alarm and CPR: try `?persona=C&start=500` and wait ~25 s. Tune it on `/admin` (debug panel).
+  just before the event, at double speed. In demo mode, the "Jump to event (demo)" button at the end of the live vitals
+  row does the same jump.
+- Unresponsive crew member detection: the "◉ Camera" button in the top bar (off by default). Needs the two model files
+  once, see `docs/cv-explained.md` (Setup). The crew alarm sounds as soon as "Are you OK?" appears (it never waits for
+  the 15 s timer); no answer opens `/emergency?protocol=unresponsive&trigger=cv` at CL00, with nothing pre-answered.
+  A lost pulse on the clip (camera not needed) opens the Act now pop-up; "Open emergency mode" goes to the collapse
+  protocol at CL00 with the pulse-lost red flag shown: try `?persona=C&start=500`. Tune it on `/admin` (debug panel).
 - Frontend unit tests: `npm test` in `frontend/` (body-relative signals, pulse checks, state machine).
-- Red flags move the protocol on by themselves: `?persona=C&protocol=chest_pain&start=495` shows SpO2 critical
-  (-> oxygen step) and then pulse lost (-> CPR), each after a 5 s countdown with Cancel.
+- Red flags are shown, never acted on by themselves: in `?persona=C&protocol=chest_pain&start=495` the red-flag panel
+  lights up (SpO2 critical, then pulse lost), but the protocol only moves on when the crew answers each step (medical
+  lead: human assessment over sensors). No step gives oxygen, drugs or doses.
 - Mission clock (header, GMT): the fast-forward button jumps to the next reminder (07:30 daily check, 12:30 lunch,
   16:00 exercise, 19:00 water; from environments.json). "real time" puts it back.
 - `/reaction`: the reaction test on its own (also from the brain and mood panel), with a 1-minute demo version.
 - `/admin` (not linked): database counts, "Reset demo data", "Test crew alarm", and "Replay solar event" (real NASA DONKI event,
   simulated dose: the radiation area turns Act now for the whole crew, with a shelter alert and a drafted message).
-- Dashboard "Messages" button: the escalation queue. Orange/red areas get a drafted flight-surgeon message to edit and send.
+- **Inbox** (top bar): alerts and the flight-surgeon messages. Warning / Act now areas get a drafted message to edit
+  and send.
 - Daily check: "Skip measurement" uses the last 2 minutes of the live stream.
+
+## Limitations
+
+This is a research prototype, **not clinically validated** (the app says so on every screen).
+
+- **Simulated crew.** Personas A (healthy), B (slow drift) and C (acute event) are generated; persona C's emergency is a
+  simulated recording and is labelled as such. No in-flight astronaut data (raw PPG or vitals) was available to us.
+- **Thresholds are proposed, not validated.** Limits come from the medical lead's sheet (RULE-01 to RULE-17, marked
+  "proposed, not clinically validated") plus team defaults labelled "Team default" and pending medical review.
+- **Real PPG raises no alerts.** Measurement and Research modes compute pulse rate and PPG pulse-rate variability only
+  (BIDMC, all 53 records: median per-record error 0.86 bpm, pooled MAE 2.59 bpm, 91.9% of seconds within ±5 bpm, a
+  value in 97.2% of seconds). SpO₂, breathing, rhythm and lost pulse are not computed from measured signals, so no
+  Act now, crew alarm or emergency hand-off comes from a real sensor.
+- **Blood-pressure model is off.** The research model failed its accuracy gate and stays unavailable; cuff entry works.
+- **Protocols are educational.** Emergency steps are adapted from terrestrial guidance, pending crew medical authority.
+  The app prescribes no drugs, doses, oxygen or IV.
+
+## AI use
+
+Claude and Claude Code (Anthropic) helped write code, tests and documentation; the team reviewed and owns the
+result. The app itself makes no AI decisions: every status, forecast and alert comes from fixed rules in
+`backend/data/thresholds.json` and simple statistics (straight-line trend, Isolation Forest for "unusual for you").
+The one optional AI feature is the Inbox's **Polish wording** button, which asks Claude to reword a drafted message;
+it only appears when `ANTHROPIC_API_KEY` is set and the internet is reachable, and the crew still reviews the text
+before sending.
+
+## Screenshots
+
+| Dashboard | Learn |
+|---|---|
+| ![Dashboard: body map and selected area](docs/screenshots/dashboard.png) | ![Learn pop-up](docs/screenshots/learn.png) |
+| **Act now** | **Emergency mode** |
+| ![Act now pop-up](docs/screenshots/act-now.png) | ![Emergency mode protocol](docs/screenshots/emergency.png) |
 
 ## Folder layout
 
@@ -215,7 +258,7 @@ docs/
 
 - Yenna: every number and text in `backend/data/` (`thresholds.json`, `protocols/`, `regions.json`,
   `escalation.json`, `questionnaire.json`, `cpr.json`) and the physiology dict at the top of
-  `scripts/make_personas.py`. Everything marked PLACEHOLDER or DRAFT needs review.
+  `scripts/make_personas.py`. Everything marked DRAFT or "Team default, pending medical review" needs review.
 - Jian: `backend/app/ppg/compute_vitals()`.
 - Jion: the rest.
 
