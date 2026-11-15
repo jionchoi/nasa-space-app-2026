@@ -166,6 +166,10 @@ export const mmss = (seconds: number) => {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 };
 
+/** A threshold not on the medical lead's sheet: shown as "Team default" (the data keeps "pending medical review").
+ *  An old PLACEHOLDER or a missing source counts too, so "PLACEHOLDER" never reaches the screen (S4, Nov 15). */
+export const isTeamDefault = (source?: string | null) => !source || /^(placeholder|team[ -]default)/i.test(source.trim());
+
 const LIVE_SHORT: Record<string, string> = { hr: 'Heart rate', spo2: 'Blood oxygen', rr: 'Breathing', hrv_rmssd: 'HRV' };
 
 /** Plain reason when live vitals drive a region's status, e.g. "Heart rate 148 bpm + chest pain logged" (S1, Nov 15).

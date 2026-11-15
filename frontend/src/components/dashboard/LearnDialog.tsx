@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { useVitalsSource } from '../../api/client';
 import { isDraft, undraft } from '../../lib/env';
 import { normsLine, usePvtNorms } from '../../lib/pvtNorms';
-import { entryOf } from '../../lib/status';
+import { entryOf, isTeamDefault } from '../../lib/status';
 import { useApp } from '../../state/AppContext';
 import { useHealth } from '../../state/HealthContext';
 import { useShell } from '../../state/ShellContext';
@@ -19,9 +19,9 @@ import { useSignals } from '../../state/SignalContext';
 import { DraftTag } from './GuidanceCard';
 import { WithRefs } from './MetricInfo';
 
-type Tag = 'REAL' | 'EST' | 'PLACEHOLDER' | 'ON DEVICE' | 'SIMULATED' | 'PROPOSED' | 'DEMO ONLY' | 'TEAM DEFAULT';
+type Tag = 'REAL' | 'EST' | 'ON DEVICE' | 'SIMULATED' | 'PROPOSED' | 'DEMO ONLY' | 'TEAM DEFAULT';
 const TAG_CLASS: Record<Tag, string> = {
-  REAL: 'border-ok text-ok', EST: 'border-watch text-watch', PLACEHOLDER: 'border-watch text-watch',
+  REAL: 'border-ok text-ok', EST: 'border-watch text-watch',
   'ON DEVICE': 'border-info text-info', SIMULATED: 'border-line-strong text-soft',
   PROPOSED: 'border-info text-info', 'DEMO ONLY': 'border-warn text-warn', 'TEAM DEFAULT': 'border-watch text-watch',
 };
@@ -62,14 +62,14 @@ export function LearnDialog() {
   const item = guidance?.regions[meta.id]?.[guidance.status_keys[status]] ?? guidance?.regions[meta.id]?.nominal;
   const space = info?.can_do_in_space;
   const spaceNote = meta.space_effect ?? meta.spaceflight_note;
-  const placeholder = (entry?.source ?? 'PLACEHOLDER').toUpperCase().startsWith('PLACEHOLDER');
+  const teamDefault = isTeamDefault(entry?.source);
   const ind = catalog?.indicators[catalog.metric_index[metric] ?? ''];
   const refLink = (id: string) => {
     const ref = references?.references.find((r) => r.id === id);
     if (!ref) return <span key={id} title="TODO: not in Scientific_References.csv">{id} (missing)</span>;
     return ref.url
       ? <a key={id} href={ref.url} target="_blank" rel="noreferrer" title={ref.title} className="text-info hover:underline">{id}</a>
-      : <span key={id} title={`${ref.title} (${ref.url_note ?? 'no URL'})`}>{id} (no URL yet)</span>;
+      : <span key={id} title={`${ref.title} (no link yet · needs verification)`}>{id} (no link yet · needs verification)</span>;
   };
   // Which bands are team defaults (not on the sheet), in plain words.
   const teamLevels = (Object.entries(entry?.band_sources ?? {}) as [keyof typeof LEVEL_WORD, string][])
@@ -101,7 +101,7 @@ export function LearnDialog() {
       sources.push({ tag: 'TEAM DEFAULT', text: <>{teamLevels.length ? <>Not on the sheet: the {teamLevels.join(' and ')} level{teamLevels.length > 1 ? 's' : ''}{teamBaseline.length ? ` and the baseline ${teamBaseline.join('/')} limit` : ''}. </> : teamBaseline.length ? <>Not on the sheet: the baseline {teamBaseline.join('/')} limit. </> : null}{entry.gap_note ?? ''}</> });
     }
   } else {
-    sources.push({ tag: placeholder ? 'PLACEHOLDER' : 'REAL', text: <>Limits for {entry?.label ?? metric}: {placeholder ? 'placeholder (Team default)' : entry?.source}.</> });
+    sources.push({ tag: teamDefault ? 'TEAM DEFAULT' : 'REAL', text: <>Limits for {entry?.label ?? metric}: {teamDefault ? "Team default (not on the medical lead's sheet)" : entry?.source}.</> });
   }
   if (row?.kind === 'daily') sources.push({ tag: 'ON DEVICE', text: <>"Your usual": the median of your first 14 days (pre-flight baseline, frozen).</> });
   const refs = Object.entries(meta.refs ?? {});

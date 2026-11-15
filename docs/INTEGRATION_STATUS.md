@@ -12,8 +12,9 @@ Status of the PPG and blood-pressure integration (branch `ppg-bp-integration`, N
 - **What is computed from PPG:** pulse rate (8 s window) and PPG RMSSD (pulse-rate variability, 60 s window, not ECG
   HRV). SpO₂, breathing rate, rhythm diagnosis, clinical alerts and automatic CPR are **not** computed from measured
   signals. Body areas without measured data show "Not assessed"; no health score or time-to-act is inferred.
-- **Validation:** BIDMC records 01 and 02: pulse-rate MAE 0.94 and 0.62 bpm against the monitor's HR value, with 471 of
-  480 windows giving a valid output. This compares against monitor HR numbers; it does not validate PRV, blood pressure
+- **Validation:** BIDMC, all 53 records (Nov 15, `docs/validation/bidmc_all53_summary.json`): median per-record
+  pulse-rate error 0.86 bpm, pooled MAE 2.59 bpm, 91.9% of seconds within ±5 bpm, a value in 97.2% of seconds, against
+  the monitor's HR value. Records 01 and 02 alone: MAE 0.94 and 0.62 bpm. This compares against monitor HR numbers; it does not validate PRV, blood pressure
   or medical performance.
 - **Blood pressure:** the research model (needs synchronised ECG + PPG) failed its accuracy adoption gate, so its
   estimate stays unavailable even when the optional add-on is installed and switched on. Cuff entry always works.

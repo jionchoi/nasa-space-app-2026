@@ -108,7 +108,7 @@ export default function Sources() {
               </dl>
               {r.url
                 ? <a href={r.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 break-all text-xs text-info hover:underline">{r.url} <ArrowSquareOut className="h-3 w-3 shrink-0" aria-hidden /></a>
-                : <span className="self-start rounded-full border border-watch/40 px-2 py-0.5 text-xs text-watch">No link yet: {r.url_note}</span>}
+                : <span className="self-start rounded-full border border-watch/40 px-2 py-0.5 text-xs text-watch">No link yet · {!r.url_note || /needs verification/i.test(r.url_note) ? 'needs verification' : `needs verification (${r.url_note})`}</span>}
             </Card>
           ))}
         </section>

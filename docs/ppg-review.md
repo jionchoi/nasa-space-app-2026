@@ -18,10 +18,12 @@ metrics,signalViewModel}.test.ts`, `cv/pulse.test.ts`):
 - The last value is held greyed for 10 s.
 - No breathing card outside Demo; readable source labels.
 
-BIDMC after the motion check:
-- 91.9% of windows within ±5 bpm (was 91.7%).
+BIDMC after the motion check (all 53 records, re-run Nov 15; `docs/validation/bidmc_all53_summary.json`). These are
+the numbers to quote everywhere:
+- Median per-record error 0.86 bpm.
 - Pooled MAE 2.59 bpm (was 2.68).
-- A value in 97.2% of windows (was 98.0%).
+- 91.9% of seconds within ±5 bpm (was 91.7%).
+- A value in 97.2% of seconds (was 98.0%).
 
 Still open: bidmc_18 (~150 vs 90 bpm), no pulse_lost in Measurement/Research (by decision), Demo "HR < 38 bpm = pulse lost".
 The findings below are the original review, unchanged.
@@ -31,7 +33,8 @@ The findings below are the original review, unchanged.
 - **Measurement/Research mode outputs only two numbers: pulse rate and PPG pulse-rate variability.** SpO₂, breathing
   rate, rhythm and `pulse_lost` are not computed. So in those modes nothing (Act now, crew alarm, emergency hand-off)
   can be triggered by the sensor.
-- **Pulse rate is accurate on most BIDMC records:** median per-record error 0.87 bpm; 91.7% of windows within ±5 bpm.
+- **Pulse rate is accurate on most BIDMC records:** median per-record error 0.86 bpm, pooled MAE 2.59 bpm, 91.9% of
+  seconds within ±5 bpm, a value in 97.2% of seconds (after the motion check; pre-fix: 0.87 bpm and 91.7%).
   But one record (bidmc_18) reads **~150 bpm when the true rate is 90**, and a 4 s motion burst shows ~103 bpm as a valid
   reading. Neither is flagged.
 - **The quality check cannot tell "pulse stopped" from "sensor problem".** A pulse that stops with the clip on is

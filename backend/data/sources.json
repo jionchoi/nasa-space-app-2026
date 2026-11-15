@@ -249,7 +249,7 @@
       ],
       "validation": {
         "label": "Validation result (Jian)",
-        "value": "TO FILL IN"
+        "value": "All 53 records (re-run Nov 15, docs/validation/bidmc_all53_summary.json): median per-record pulse-rate error 0.86 bpm, pooled MAE 2.59 bpm, 91.9% of seconds within ±5 bpm, a value in 97.2% of seconds. 4 records over 5 bpm MAE (bidmc_18, 40, 41, 45). Pulse rate only; breathing rate is not computed from PPG."
       },
       "urls": [
         "https://physionet.org/content/bidmc/1.0.0/"
@@ -280,7 +280,7 @@
       ],
       "validation": {
         "label": "Validation result (Jian)",
-        "value": "TO FILL IN"
+        "value": "Asystole alarms (122; 17 true and 89 false with a PPG channel, docs/ppg-review.md): no lost-pulse detector to score. At the alarm second the pipeline never reported 'no beats': true asystole showed a pulse rate in 6/17 and poor signal in 10/17. So Measurement mode raises no alerts."
       },
       "urls": [
         "https://physionet.org/content/challenge-2015/1.0.0/"

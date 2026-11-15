@@ -152,4 +152,4 @@ def test_every_source_has_agency_use_locations_and_status(client):
         assert s["use"] and set(s["use"]) <= allowed, s["id"]
         assert s["status"] in ("real", "simulated", "estimated"), s["id"]
     jian = [s for s in data["sources"] if s["id"].startswith("physionet")]
-    assert all(s["validation"]["value"] == "TO FILL IN" for s in jian)  # placeholders until Jian adds his numbers
+    assert all(s["validation"]["value"] and "TO FILL IN" not in s["validation"]["value"] for s in jian)  # filled Nov 15 (S6)

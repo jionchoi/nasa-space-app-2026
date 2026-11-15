@@ -1,5 +1,5 @@
 {
-  "_status": "From the medical lead's workbook (Scientific References sheet). Do not edit by hand: re-run backend/scripts/import_medical.py. A reference without a URL keeps the sheet's note.",
+  "_status": "From the medical lead's workbook (Scientific References sheet). Do not edit by hand: re-run backend/scripts/import_medical.py. A reference without a URL keeps the sheet's note, or \"needs verification\" when the sheet has none.",
   "source_file": "data/medical/NASA_space_project_medical_research(Scientific References).csv",
   "references": [
     {
@@ -73,7 +73,7 @@
       "values": "Post-flight stand test tachycardia (HR > 120 bpm) and orthostatic systolic blood pressure drops > 25 mmHg observed in ~65% of long-duration astronauts.",
       "population": "Space Shuttle & ISS Astronauts",
       "url": null,
-      "url_note": "",
+      "url_note": "needs verification",
       "verification": "Needs citation/claim verification (missing direct source URL)"
     },
     {
@@ -89,7 +89,7 @@
       "values": "Resting core temperature increases by 1.0°C over 2.5 months on ISS, with delayed heat dissipation during physical exercise (>39.5°C).",
       "population": "11 ISS Astronauts",
       "url": null,
-      "url_note": "",
+      "url_note": "needs verification",
       "verification": "Needs citation/claim verification (missing direct source URL)"
     },
     {
@@ -107,7 +107,7 @@
       "values": "In-flight sleep duration averaged < 6.0 hours per night; 75% of crew reported hypnotic medication usage during missions.",
       "population": "85 Astronauts (Shuttle & ISS)",
       "url": null,
-      "url_note": "",
+      "url_note": "needs verification",
       "verification": "Needs citation/claim verification (missing direct source URL)"
     },
     {
@@ -124,7 +124,7 @@
       "values": "PVT lapses increase significantly when sleep duration is <6h or cabin ppCO2 exceeds 2.0 mmHg; executive function shows speed-accuracy tradeoffs.",
       "population": "24 Astronauts on ISS",
       "url": null,
-      "url_note": "",
+      "url_note": "needs verification",
       "verification": "Needs citation/claim verification (missing direct source URL)"
     },
     {
@@ -172,7 +172,7 @@
       "values": "Short-term 30-day limit of 250 mGy-Eq for blood-forming organs; career effective dose limit 600 mSv; alert threshold for SPE flux > 10 mSv/hr.",
       "population": "Astronaut Cohorts & Radiation Models",
       "url": null,
-      "url_note": "",
+      "url_note": "needs verification",
       "verification": "Bibliographic year corrected; exposure limits must be checked against current NASA rules"
     },
     {

@@ -1,6 +1,7 @@
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { isDraft, undraft } from '../../lib/env';
+import { isTeamDefault } from '../../lib/status';
 import type { MeasurementInfo, ThresholdEntry } from '../../types/contracts';
 import { DraftTag } from './GuidanceCard';
 
@@ -46,9 +47,9 @@ function Section({ title, draft, children }: { title: string; draft?: boolean; c
 }
 
 /** "Learn" tab, in this order: what this does, why we check this, how to measure, why this happens in space, source.
- *  A PLACEHOLDER source gets the amber tag so a placeholder is never presented as a reviewed value. */
+ *  A team-default source gets the amber "Team default" tag so it is never presented as a reviewed value. */
 export function MetricInfo({ entry, info, functionText, spaceNote, refs, dataSource }: Props) {
-  const placeholder = (entry?.source ?? 'PLACEHOLDER').toUpperCase().startsWith('PLACEHOLDER');
+  const teamDefault = isTeamDefault(entry?.source);
   const steps = info?.how_to_measure ?? [];
   const metric = entry?.label ? ` ${entry.label.toLowerCase()}` : '';
   const space = info?.can_do_in_space;
@@ -90,9 +91,9 @@ export function MetricInfo({ entry, info, functionText, spaceNote, refs, dataSou
       )}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         Source:
-        {placeholder ? (
+        {teamDefault ? (
           <span className="rounded-full border border-watch/40 px-2 py-0.5 text-watch" title="Not yet reviewed against a medical source">
-            Placeholder · Team default
+            Team default
           </span>
         ) : <span className="text-soft">{entry?.source}</span>}
       </div>

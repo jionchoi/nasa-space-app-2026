@@ -1,7 +1,7 @@
 {
-  "_status": "PLACEHOLDER - Yenna owns this file. Every number below is a placeholder until she reviews it. How to measure, why we check and equipment are in measurements.json.",
+  "_status": "Medical lead's threshold sheet (RULE-01 to RULE-17, proposed, not clinically validated) plus team defaults pending medical review. Yenna owns this file. How to measure, why we check and equipment are in measurements.json.",
   "_how_to_read": "Each band is [low, high]. A value below `low` or above `high` is at least that status; null means no limit on that side. The worst status wins. `label` and `unit` are shown on screen. `keywords` link a live vital to the red-flag text in protocols (a flag lights up when the vital is red and the flag text contains a keyword). This file keeps only ranges and sources.",
-  "source": "PLACEHOLDER",
+  "source": "Medical lead's threshold sheet (data/medical/thresholds_recommended.csv) and team defaults (pending medical review); citations per metric.",
   "hr_rest": {
     "label": "Resting heart rate",
     "unit": "bpm",
@@ -213,7 +213,7 @@
       null,
       40
     ],
-    "source": "PLACEHOLDER"
+    "source": "Team default, pending medical review"
   },
   "bp_sys": {
     "label": "Blood pressure, top number (systolic)",
@@ -475,7 +475,7 @@
       null,
       null
     ],
-    "source": "PLACEHOLDER"
+    "source": "Team default, pending medical review"
   },
   "symptoms_immune": {
     "label": "Infection-type symptoms",
@@ -492,7 +492,7 @@
       null,
       3.5
     ],
-    "source": "PLACEHOLDER"
+    "source": "Team default, pending medical review"
   },
   "hydration_l": {
     "label": "Fluids drunk",
@@ -558,7 +558,7 @@
       -10,
       10
     ],
-    "source": "PLACEHOLDER"
+    "source": "Team default, pending medical review"
   },
   "exercise_min_7d": {
     "label": "Exercise (7-day average)",
@@ -773,7 +773,7 @@
       0.5,
       null
     ],
-    "source": "PLACEHOLDER (sensor, not medical: below yellow = not ready to start, below orange = coach hints, below red = poor signal)"
+    "source": "Team default, pending review (sensor, not medical: below yellow = not ready to start, below orange = coach hints, below red = poor signal)"
   },
   "co2_ppm": {
     "label": "Cabin CO2",
@@ -841,12 +841,12 @@
       14,
       32
     ],
-    "source": "PLACEHOLDER"
+    "source": "Team default, pending medical review"
   },
   "cabin_rh_pct": {
     "label": "Cabin humidity",
     "unit": "%",
-    "source": "PLACEHOLDER: shown for context only, no limits yet. TODO(Yenna)"
+    "source": "Team default: shown for context only, no limits yet (pending medical review)."
   },
   "cabin_noise_dba": {
     "label": "Cabin noise",
@@ -863,7 +863,7 @@
       null,
       75
     ],
-    "source": "PLACEHOLDER"
+    "source": "Team default, pending medical review"
   },
   "temp_c": {
     "label": "Body temperature",
@@ -1091,7 +1091,7 @@
       "below": 45,
       "for_s": 5,
       "min_signal_quality": 0.6,
-      "source": "PLACEHOLDER"
+      "source": "Team default, pending medical review"
     },
     "hr_very_high": {
       "label": "Heart rate very high",
@@ -1099,7 +1099,7 @@
       "above": 150,
       "for_s": 5,
       "min_signal_quality": 0.6,
-      "source": "PLACEHOLDER"
+      "source": "Team default, pending medical review"
     },
     "spo2_critical": {
       "label": "Blood oxygen critical",
@@ -1107,7 +1107,7 @@
       "below": 85,
       "for_s": 5,
       "min_signal_quality": 0.6,
-      "source": "PLACEHOLDER"
+      "source": "Team default, pending medical review"
     }
   },
   "plausible": {

@@ -166,12 +166,12 @@ def import_references() -> dict:
             "title": r["Study / Document Title"], "type": r["Source Type"], "findings": r["Relevant Findings"],
             "values": r["Exact Values / Thresholds Reported"], "population": r["Population Studied"],
             "url": url if url.startswith("http") else None,
-            "url_note": None if url.startswith("http") else url,
+            "url_note": None if url.startswith("http") else (url.strip() or "needs verification"),
             "verification": r["Evidence Verification Status"],
         })
     out = {
         "_status": "From the medical lead's workbook (Scientific References sheet). Do not edit by hand: re-run "
-                   "backend/scripts/import_medical.py. A reference without a URL keeps the sheet's note.",
+                   "backend/scripts/import_medical.py. A reference without a URL keeps the sheet's note, or \"needs verification\" when the sheet has none.",
         "source_file": f"data/medical/{path.name}",
         "references": refs,
         "cited_source_codes": CITED,
