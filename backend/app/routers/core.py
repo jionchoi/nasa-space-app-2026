@@ -24,6 +24,24 @@ def thresholds() -> dict:
     return store.thresholds()
 
 
+@router.get("/pvt-norms")
+def pvt_norms() -> dict:
+    """Reaction-test reference group (CSA PRET v4.0, data/pvt_norms.json, built by scripts/pret_pvt_stats.py)."""
+    return store.load("pvt_norms.json")
+
+
+@router.get("/crew-reference")
+def crew_reference() -> dict:
+    """Real crew blood values (NASA OSDR OSD-575, Inspiration4), reference only (data/crew_reference_osd575.json)."""
+    return store.load("crew_reference_osd575.json")
+
+
+@router.get("/sources")
+def sources() -> dict:
+    """Data sources for the /sources page (data/sources.json)."""
+    return store.load("sources.json")
+
+
 @router.get("/regions")
 def regions() -> dict:
     return store.regions()

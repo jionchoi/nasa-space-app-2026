@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { getQuestionnaire, postCheck } from '../api/client';
 import { BloodPressureStep } from '../components/check/BloodPressureStep';
@@ -39,6 +40,27 @@ export default function DailyCheck() {
   useEffect(() => { getQuestionnaire().then(setConfig); }, []);
   const seatedS = config?.measurement.seated_s ?? 120;
   const { frames, latest, send } = useVitals(persona, seatedS);
+
+  // Demo mode (/check?demo=summary): skip straight to the summary with the persona's own simulated values (the last
+  // stream seconds, its latest reaction-test values, a typed glucose value), clearly marked as a demo shortcut.
+  const [search] = useSearchParams();
+  const demoSummary = search.get('demo') === 'summary';
+  const [demoFilled, setDemoFilled] = useState(false);
+  useEffect(() => {
+    if (!demoSummary || demoFilled || !config || frames.length < 5 || !daily.length) return;
+    const last = daily[daily.length - 1];
+    const median = typeof last.pvt_median_ms === 'number' ? last.pvt_median_ms : 265;
+    const rate = typeof last.pvt_lapse_rate_pct === 'number' ? last.pvt_lapse_rate_pct : 8;
+    const n = 28;
+    seated.current = frames.slice(-seatedS);
+    stand.current = [];
+    setSkipped(true);
+    setExtra({ temp_c: null, glucose_mmol: 5.4 });
+    setPvt({ median_ms: median, lapses: Math.round((rate * n) / 100), lapse_rate_pct: rate, false_starts: 0, n, duration_s: 180,
+      version: 'full', reaction_ms: [] });
+    setDemoFilled(true);
+    setStep(S.summary);
+  }, [demoSummary, demoFilled, config, frames, daily, seatedS]);
 
   // Replay only: tell the simulated stream when the crew member stands (a real sensor needs no hint).
   useEffect(() => {
@@ -110,7 +132,7 @@ export default function DailyCheck() {
         <QuestionsStep questions={config.questions} answers={answers}
           onAnswer={(id, value) => setAnswers((a) => ({ ...a, [id]: value }))} onDone={() => setStep(S.summary)} whyFor={why} />
       )}
-      {step === S.summary && <SummaryStep result={result} skipped={skipped} onBack={() => navigate('/')} />}
+      {step === S.summary && <SummaryStep result={result} skipped={skipped} demo={demoFilled} onBack={() => navigate('/')} />}
     </CheckShell>
   );
 }

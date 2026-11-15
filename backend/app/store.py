@@ -100,8 +100,11 @@ def space_event() -> dict | None:
 
 
 def cabin() -> dict | None:
-    path = DATA_DIR / "cabin.json"
-    return load("cabin.json") if path.exists() else None
+    """Real ISS cabin telemetry (cabin.json, scripts/import_nasa_env.py), else the simulated profile (cabin_simulated.json)."""
+    for name in ("cabin.json", "cabin_simulated.json"):
+        if (DATA_DIR / name).exists():
+            return load(name)
+    return None
 
 
 # Old protocol ids that still work (links saved before a rename).

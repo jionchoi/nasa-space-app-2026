@@ -1,0 +1,212 @@
+{
+  "brain_mood": {
+    "nominal": {
+      "summary": "Your brain and mood are in the healthy zone.",
+      "self_care": ["Maintain normal routines.", "Take time to relax before sleep."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Stick to the sleep schedule.", "Talk to family and friends regularly."]
+    },
+    "watch": {
+      "summary": "You are showing early signs of fatigue or stress.",
+      "self_care": ["Try to get an extra hour of sleep tonight.", "Reduce non-essential tasks."],
+      "tell_crew": "Let your commander know you are tired.",
+      "contact_surgeon": "Mention it during your next private medical conference.",
+      "prevention": ["Use relaxation techniques.", "Avoid caffeine 6 hours before bed."]
+    },
+    "warning": {
+      "summary": "DRAFT: Severe fatigue or stress is impacting your performance.",
+      "self_care": ["Stop complex tasks.", "Take a mandatory rest period.", "If on Surface rover, return to base safely."],
+      "tell_crew": "Tell the crew you need cover for your tasks.",
+      "contact_surgeon": "Contact the flight surgeon within 12 hours.",
+      "prevention": ["Prioritize strictly mandatory tasks.", "Ensure quiet hours are respected."]
+    },
+    "act": {
+      "summary": "Critical mental fatigue or severe mood distress.",
+      "self_care": ["Stand down from all operations immediately.", "Use the approved crew medical kit procedure if advised.", "If on Surface rover, abort mission and return to base immediately."],
+      "tell_crew": "Inform commander you are medically unfit for duty today.",
+      "contact_surgeon": "Contact the flight surgeon immediately.",
+      "prevention": ["Full schedule review required.", "Mandatory daily recovery time."]
+    }
+  },
+  "heart": {
+    "nominal": {
+      "summary": "Your heart metrics are normal.",
+      "self_care": ["Keep up your daily exercise."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Complete all scheduled aerobic workouts.", "Stay hydrated."]
+    },
+    "watch": {
+      "summary": "Your heart rate is slightly elevated.",
+      "self_care": ["Drink 500mL of water.", "Rest for 15 minutes and measure again."],
+      "tell_crew": "No need unless you feel unwell.",
+      "contact_surgeon": "Mention it at your next routine check-in.",
+      "prevention": ["Monitor your hydration.", "Ensure cabin temperature is comfortable."]
+    },
+    "warning": {
+      "summary": "DRAFT: Heart metrics show strain or abnormal rhythms.",
+      "self_care": ["Stop physical labor.", "Sit or lie down.", "If on Surface rover, pause drive and prepare to return to base."],
+      "tell_crew": "Inform the crew you are experiencing heart strain.",
+      "contact_surgeon": "Contact the flight surgeon within 2 hours.",
+      "prevention": ["Avoid heavy exertion.", "Review biometric data daily."]
+    },
+    "act": {
+      "summary": "Critical cardiovascular alert. Possible severe rhythm issue or chest pain.",
+      "self_care": ["Lie down immediately.", "Use the approved crew medical kit procedure.", "If on Surface rover, co-pilot must return to base immediately."],
+      "tell_crew": "Declare a medical emergency to the crew.",
+      "contact_surgeon": "Contact the flight surgeon immediately.",
+      "prevention": ["Strict bed rest until cleared by surgeon."]
+    }
+  },
+  "lungs": {
+    "nominal": {
+      "summary": "Breathing and oxygen levels are normal.",
+      "self_care": ["Breathe normally."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Clean cabin air filters on schedule.", "Vacuum dust regularly."]
+    },
+    "watch": {
+      "summary": "Slight decrease in oxygen or increase in breathing rate.",
+      "self_care": ["Check cabin CO2 levels.", "Take slow, deep breaths."],
+      "tell_crew": "Ask if others feel short of breath.",
+      "contact_surgeon": "Mention it at the next check-in.",
+      "prevention": ["Ensure good ventilation in your sleeping quarters."]
+    },
+    "warning": {
+      "summary": "DRAFT: Oxygen is low or breathing is difficult.",
+      "self_care": ["Move to a well-ventilated module.", "Rest quietly.", "If on Surface rover, check suit scrubbers and return to base."],
+      "tell_crew": "Tell the crew you are having trouble breathing.",
+      "contact_surgeon": "Contact the flight surgeon immediately.",
+      "prevention": ["Check all environmental sensors.", "Avoid dusty areas."]
+    },
+    "act": {
+      "summary": "Critical breathing emergency.",
+      "self_care": ["Use the emergency oxygen mask.", "Use the approved crew medical kit procedure.", "If on Surface rover, initiate emergency return to base."],
+      "tell_crew": "Declare a medical emergency.",
+      "contact_surgeon": "Contact the flight surgeon immediately.",
+      "prevention": ["Requires environmental system overhaul."]
+    }
+  },
+  "immune": {
+    "nominal": {
+      "summary": "No signs of illness or infection.",
+      "self_care": ["Maintain good hygiene."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Wash hands frequently.", "Wipe down shared surfaces."]
+    },
+    "watch": {
+      "summary": "Mild symptoms like a scratchy throat or slight temperature rise.",
+      "self_care": ["Drink hot fluids.", "Get extra sleep."],
+      "tell_crew": "Warn crew you might be catching a cold.",
+      "contact_surgeon": "Mention it at next check-in.",
+      "prevention": ["Wear a mask in shared spaces.", "Sanitize your workstation."]
+    },
+    "warning": {
+      "summary": "DRAFT: Clear signs of infection, such as fever or rash.",
+      "self_care": ["Isolate in your quarters if possible.", "Rest completely.", "If on Surface rover, return to base to avoid spreading illness."],
+      "tell_crew": "Inform crew so they can take precautions.",
+      "contact_surgeon": "Contact flight surgeon within 12 hours.",
+      "prevention": ["Strict isolation protocols.", "Crew must deep-clean the habitat."]
+    },
+    "act": {
+      "summary": "Severe infection with high fever or severe pain.",
+      "self_care": ["Strict isolation.", "Use the approved crew medical kit procedure.", "If on Surface rover, abort and return to base immediately."],
+      "tell_crew": "Inform commander of severe illness.",
+      "contact_surgeon": "Contact flight surgeon immediately.",
+      "prevention": ["Requires medical intervention and quarantine."]
+    }
+  },
+  "metabolism": {
+    "nominal": {
+      "summary": "Energy levels and body mass are stable.",
+      "self_care": ["Eat all your scheduled meals."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Log your food intake.", "Drink plenty of water."]
+    },
+    "watch": {
+      "summary": "Slight weight loss or missing meals.",
+      "self_care": ["Eat a high-calorie snack.", "Force yourself to finish your meals."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "Mention it during routine consult.",
+      "prevention": ["Schedule meals with the crew to encourage eating."]
+    },
+    "warning": {
+      "summary": "DRAFT: Significant weight loss or low blood sugar.",
+      "self_care": ["Consume quick sugars if dizzy.", "Increase daily calorie intake by 20%.", "If on Surface rover, ensure you eat before driving and return to base if dizzy."],
+      "tell_crew": "Inform commander of energy crash.",
+      "contact_surgeon": "Contact flight surgeon within 24 hours.",
+      "prevention": ["Set alarms for meal times.", "Prioritize protein and complex carbs."]
+    },
+    "act": {
+      "summary": "Dangerous weight loss or severe metabolic crash.",
+      "self_care": ["Stop all work.", "Use the approved crew medical kit procedure.", "If on Surface rover, co-pilot must return rover to base."],
+      "tell_crew": "Inform commander you cannot work.",
+      "contact_surgeon": "Contact flight surgeon immediately.",
+      "prevention": ["Requires a supervised recovery diet."]
+    }
+  },
+  "bones_muscles": {
+    "nominal": {
+      "summary": "Muscle strength and mass are maintained.",
+      "self_care": ["Complete today's exercise protocol."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Do not skip resistance training.", "Eat enough protein."]
+    },
+    "watch": {
+      "summary": "Muscle soreness or skipped exercise days.",
+      "self_care": ["Stretch carefully.", "Ensure you complete tomorrow's workout."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "Mention it if soreness lasts more than 2 days.",
+      "prevention": ["Warm up properly before lifting.", "Use foam rollers if available."]
+    },
+    "warning": {
+      "summary": "DRAFT: Noticeable weakness, joint pain, or missed multiple workouts.",
+      "self_care": ["Modify workouts to avoid pain.", "Apply heat or cold to painful joints.", "If on Surface rover, avoid heavy lifting during EVA and return to base."],
+      "tell_crew": "Tell crew you cannot assist with heavy manual tasks.",
+      "contact_surgeon": "Contact flight surgeon within 24 hours.",
+      "prevention": ["Review exercise form with experts on the ground."]
+    },
+    "act": {
+      "summary": "Severe pain, suspected injury, or extreme weakness.",
+      "self_care": ["Immobilize the painful area.", "Use the approved crew medical kit procedure.", "If on Surface rover, abort EVA and return to base immediately."],
+      "tell_crew": "Declare an injury to the commander.",
+      "contact_surgeon": "Contact flight surgeon immediately.",
+      "prevention": ["No physical work until cleared by surgeon."]
+    }
+  },
+  "radiation": {
+    "nominal": {
+      "summary": "Radiation exposure is well within safe limits.",
+      "self_care": ["Keep dosimeter on you."],
+      "tell_crew": "No need.",
+      "contact_surgeon": "No need.",
+      "prevention": ["Stay out of low-shielding areas during solar events."]
+    },
+    "watch": {
+      "summary": "Slightly elevated exposure reading or minor solar event warning.",
+      "self_care": ["Move away from exterior walls when sleeping."],
+      "tell_crew": "Ensure everyone checks their dosimeters.",
+      "contact_surgeon": "Mention at next routine check.",
+      "prevention": ["Maximize time in heavily shielded modules."]
+    },
+    "warning": {
+      "summary": "DRAFT: High radiation exposure detected or major solar storm warning.",
+      "self_care": ["Move to the radiation shelter immediately.", "If on Surface rover, seek terrain shielding or return to base at maximum safe speed."],
+      "tell_crew": "Alert crew to shelter immediately.",
+      "contact_surgeon": "Contact mission control and surgeon ASAP.",
+      "prevention": ["Do not leave the shelter until all-clear is given."]
+    },
+    "act": {
+      "summary": "Dangerous radiation dose received.",
+      "self_care": ["Remain in maximum shielding.", "Use the approved crew medical kit procedure to treat nausea.", "If on Surface rover, this is a life-threatening emergency; return to base immediately if driving is possible."],
+      "tell_crew": "Declare a radiation emergency.",
+      "contact_surgeon": "Contact flight surgeon immediately.",
+      "prevention": ["Strict confinement to shelter."]
+    }
+  }
+}

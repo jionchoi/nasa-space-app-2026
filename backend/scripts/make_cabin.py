@@ -1,4 +1,4 @@
-"""Generate backend/data/cabin.json: a SIMULATED 24 h cabin profile (CO2, temperature, noise). Re-runnable.
+"""Generate backend/data/cabin_simulated.json: the SIMULATED fallback 24 h cabin profile (CO2, temperature, noise). Re-runnable.
 
 Run from backend/:  python scripts/make_cabin.py
 
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "data" / "cabin.json"
+OUT = Path(__file__).resolve().parents[1] / "data" / "cabin_simulated.json"
 STEP_MIN = 15
 SEED = 2026
 

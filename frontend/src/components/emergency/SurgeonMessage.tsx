@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { mockDelivery, postMessage, replyMessage } from '../../api/client';
+import { useDemoCommand } from '../../lib/demo';
 import { undraft } from '../../lib/env';
 import { useApp } from '../../state/AppContext';
 import type { Message } from '../../types/contracts';
@@ -33,6 +34,9 @@ export function SurgeonMessage({ draft, onLog, onSent }: Props) {
     setSent(local);
     onSent?.(local);
   };
+
+  // Demo mode (step 8): send the message as if the crew pressed Send.
+  useDemoCommand(['sendSurgeonMessage'], () => { void send(); });
 
   const simulateReply = async () => {
     if (!sent) return;

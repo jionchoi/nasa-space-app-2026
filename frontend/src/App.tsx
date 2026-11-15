@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Emergency from './pages/Emergency';
 import EmergencyLogView from './pages/EmergencyLogView';
 import ReactionPage from './pages/ReactionPage';
+import Sources from './pages/Sources';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/emergency/log/:id" element={<EmergencyLogView />} />
         <Route path="/reaction" element={<ReactionPage />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/sources" element={<Sources />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <SourceToast />

@@ -39,6 +39,9 @@ class RegionStatus(BaseModel):
     time_to_act_days: Optional[int]
     reason: str
     advice_level: AdviceLevel
+    # Status of each metric of the region that has a value today, as judged here (bands plus the personal reaction-time
+    # rule). The "All metrics" list shows these; the browser does not judge daily metrics itself (Nov 14).
+    metric_status: dict[str, Status] = {}
 
 
 class ProtocolStep(BaseModel):
@@ -117,6 +120,7 @@ class Planet(BaseModel):
     delay_s: list[float] = Field(min_length=2, max_length=2)
     advice_as: str
     advice_note: Optional[str] = None
+    radiation_feed: Optional[dict[str, str]] = None  # {"file", "estimate"}: dose for the rover on this planet
 
 
 class Environment(BaseModel):
@@ -134,6 +138,8 @@ class Environment(BaseModel):
     medical_kit: Optional[Literal["full", "limited"]] = None
     kit_notes: Optional[dict[str, str]] = None  # equipment -> note shown on protocol steps that need it
     estimated_data: list[str] = []  # data shown as "Estimated" here, e.g. ["radiation", "cabin"]
+    # Dose rate at this location (app/radiation_feed.py): {"file": RadLab JSON, "estimate": thresholds dose_estimates key}
+    radiation_feed: Optional[dict[str, str]] = None
     draft: Optional[str] = None
 
 
@@ -218,14 +224,22 @@ class Persona(BaseModel):
 
 
 class PvtResult(BaseModel):
-    """Reaction-time test (psychomotor vigilance style)."""
+    """Reaction-time test (psychomotor vigilance style). median_ms = median of hits; lapses = RT >= lapse_ms
+    (questionnaire.json pvt); lapse_rate_pct = lapses / n x 100. A "demo" result is never compared or judged."""
     median_ms: float = Field(ge=100, le=5000)
     lapses: int = Field(ge=0)
+    lapse_rate_pct: Optional[float] = Field(default=None, ge=0, le=100)
     false_starts: int = Field(ge=0)
     n: int = Field(ge=1)
     duration_s: int = Field(ge=10, le=600)
     version: Literal["full", "demo"] = "full"
     reaction_ms: list[float] = []
+
+    @model_validator(mode="after")
+    def _fill_rate(self):
+        if self.lapse_rate_pct is None:
+            self.lapse_rate_pct = round(100 * self.lapses / self.n, 1)
+        return self
 
 
 class MealForm(BaseModel):

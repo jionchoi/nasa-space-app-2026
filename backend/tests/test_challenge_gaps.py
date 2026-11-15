@@ -3,7 +3,7 @@ from app import db, store
 from app.models import Environment, Guidance, Measurements
 from app.rules.escalation import advice_text
 
-NOT_METRICS = ("red_flags", "daily_targets", "cv")
+NOT_METRICS = ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt")
 
 
 def frames(pid, start, count):
@@ -120,7 +120,9 @@ def test_rover_loads_with_both_planets(client):
     assert list(served) == ["iss", "moon", "mars", "rover"]
     rover = Environment.model_validate(served["rover"])
     assert set(rover.planets) == {"moon", "mars"} and rover.medical_kit == "limited" and rover.distance_to_base
-    assert set(rover.estimated_data) >= {"radiation", "cabin"}
+    # Dose follows the planet (app/radiation_feed.py); cabin is the real ISS replay everywhere (Nov 14).
+    assert rover.planets["moon"].radiation_feed["estimate"] == "moon_surface"
+    assert rover.planets["mars"].radiation_feed["file"].endswith("dose_mars_surface.json")
 
     moon, mars = store.environment("rover:moon"), store.environment("rover:mars")
     assert moon["delay_s"] == store.environment("moon")["delay_s"]

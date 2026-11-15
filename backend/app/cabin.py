@@ -1,6 +1,11 @@
-"""Simulated cabin environment (data/cabin.json): CO2, temperature and noise over 24 h, played by time of day.
+"""Cabin environment, served at GET /api/cabin (VitalsFrame is not changed). High CO2 adds context to headache /
+poor-sleep reasons.
 
-Served at GET /api/cabin (VitalsFrame is not changed). High CO2 adds context to headache / poor-sleep reasons.
+Two file shapes (store.cabin() picks the first that exists):
+- cabin.json: REAL ISS cabin telemetry (NASA OSDR EDA, RR-23 / SpaceX-21) from scripts/import_nasa_env.py.
+  Points carry a real timestamp "t" (CO2, temperature, humidity; no noise). Replayed in a loop by the clock.
+- cabin_simulated.json: the old SIMULATED 24 h profile (points carry "minute"; CO2, temperature, noise). Fallback.
+The same ISS readings are shown at every location (a base, rover or ship keeps its cabin air at similar levels).
 """
 from __future__ import annotations
 
@@ -9,21 +14,38 @@ from datetime import datetime, timedelta, timezone
 from . import store
 from .rules.judge import bounds, judge
 
-METRICS = {"co2_ppm": "co2_ppm", "temp_c": "cabin_temp_c", "noise_dba": "cabin_noise_dba"}  # cabin field -> thresholds key
+# cabin field -> thresholds key (None: shown, not colored)
+METRICS = {"co2_ppm": "co2_ppm", "temp_c": "cabin_temp_c", "noise_dba": "cabin_noise_dba", "rh_pct": None}
+
+
+def _iso(dt: datetime) -> str:
+    return dt.astimezone(timezone.utc).isoformat(timespec="minutes").replace("+00:00", "Z")
+
+
+def _is_real(cfg: dict) -> bool:
+    return bool(cfg.get("points")) and "t" in cfg["points"][0]
 
 
 def _points_until(cfg: dict, at: datetime, hours: int = 24) -> list[dict]:
-    """The profile as a time series ending at `at` (one point per step), oldest first."""
+    """The feed as a time series ending at `at` (one point per step), oldest first, each stamped on today's clock."""
     step = cfg["step_min"]
     points = cfg["points"]
-    per_day = len(points)
-    minute_of_day = at.hour * 60 + at.minute
-    index = minute_of_day // step
-    count = min(per_day, hours * 60 // step)
+    n = len(points)
+    if _is_real(cfg):
+        first = int(datetime.fromisoformat(points[0]["t"].replace("Z", "+00:00")).timestamp()) // (step * 60)
+        index = int(at.timestamp()) // (step * 60) - first
+    else:  # simulated 24 h profile, played by time of day
+        index = (at.hour * 60 + at.minute) // step
+    count = min(n, hours * 60 // step)
     out = []
     for back in range(count - 1, -1, -1):
-        p = dict(points[(index - back) % per_day])
-        p["t"] = (at - timedelta(minutes=back * step)).astimezone(timezone.utc).isoformat(timespec="minutes").replace("+00:00", "Z")
+        src = points[(index - back) % n]
+        p = {k: v for k, v in src.items() if k != "t"}
+        t = at - timedelta(minutes=back * step)
+        p["t"] = _iso(t)
+        p.setdefault("minute", t.astimezone(timezone.utc).hour * 60 + t.astimezone(timezone.utc).minute)
+        if "t" in src:
+            p["measured_at"] = src["t"]
         out.append(p)
     return out
 
@@ -38,13 +60,24 @@ def summary(at: datetime | None = None) -> dict | None:
     now = series[-1]
     status = {}
     for field, key in METRICS.items():
-        entry = thresholds.get(key) if isinstance(thresholds.get(key), dict) else None
+        if field not in now:
+            continue
+        entry = thresholds.get(key) if key and isinstance(thresholds.get(key), dict) else None
         status[field] = judge(float(now[field]), entry) if entry else "green"
     co2_limit = bounds(thresholds.get("co2_ppm"), "yellow")[1]
     high = sum(1 for p in series if co2_limit is not None and p["co2_ppm"] > co2_limit)
+    real = _is_real(cfg)
     return {
-        "simulated": cfg.get("simulated", True),
+        "simulated": not real,
+        "kind": "real" if real else "simulated",
         "source": cfg.get("source", "SIMULATED"),
+        "badge": cfg.get("badge") or ("Simulated" if not real else cfg.get("source")),
+        "mission": cfg.get("mission"),
+        "source_urls": cfg.get("source_urls", []),
+        "units": cfg.get("units"),
+        "replay_note": cfg.get("replay_note"),
+        "location_note": cfg.get("location_note"),
+        "fields": [f for f in METRICS if f in now],
         "now": now,
         "status": status,
         "last_24h": series,

@@ -22,7 +22,14 @@
    ],
    "time_to_act_days": null,
    "reason": "Sleep steady at 6.9 h over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "sleep_h": "green",
+    "mood": "green",
+    "stress": "green",
+    "pvt_median_ms": "green",
+    "pvt_lapse_rate_pct": "green"
+   }
   },
   {
    "region": "heart",
@@ -46,7 +53,14 @@
    ],
    "time_to_act_days": null,
    "reason": "Resting heart rate steady at 61.1 bpm over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hr_rest": "green",
+    "hrv_rmssd": "green",
+    "stand_hr_rise": "green",
+    "bp_sys": "green",
+    "bp_dia": "green"
+   }
   },
   {
    "region": "lungs",
@@ -70,7 +84,11 @@
    ],
    "time_to_act_days": null,
    "reason": "Blood oxygen steady at 98 % over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "spo2": "green",
+    "rr": "green"
+   }
   },
   {
    "region": "immune",
@@ -94,7 +112,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Infection-type symptoms steady at 0 symptoms over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "symptoms_immune": "green"
+   }
   },
   {
    "region": "metabolism",
@@ -118,7 +139,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Fluids drunk steady at 2.5 L/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hydration_l": "green"
+   }
   },
   {
    "region": "bones_muscles",
@@ -142,7 +166,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Exercise (7-day average) steady at 124.9 min/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "exercise_min_7d": "green"
+   }
   },
   {
    "region": "radiation",
@@ -166,7 +193,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Mission radiation dose up 4.3 mSv over 7 days (now 27.4 mSv).",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "radiation_total_msv": "green"
+   }
   }
  ],
  "B": [
@@ -191,8 +221,15 @@
     5.39
    ],
    "time_to_act_days": 0,
-   "reason": "Sleep down 0.4 h over 7 days (now 5.4 h). Unusual for you today. Cabin CO2 has been high; this can cause headaches and poor sleep.",
-   "advice_level": "surgeon_next"
+   "reason": "Sleep down 0.4 h over 7 days (now 5.4 h). Unusual for you today.",
+   "advice_level": "surgeon_next",
+   "metric_status": {
+    "sleep_h": "orange",
+    "mood": "yellow",
+    "stress": "yellow",
+    "pvt_median_ms": "yellow",
+    "pvt_lapse_rate_pct": "green"
+   }
   },
   {
    "region": "heart",
@@ -216,7 +253,14 @@
    ],
    "time_to_act_days": 0,
    "reason": "Resting heart rate up 3.1 bpm over 7 days (now 73.1 bpm). Unusual for you today.",
-   "advice_level": "surgeon_next"
+   "advice_level": "surgeon_next",
+   "metric_status": {
+    "hr_rest": "orange",
+    "hrv_rmssd": "orange",
+    "stand_hr_rise": "orange",
+    "bp_sys": "green",
+    "bp_dia": "green"
+   }
   },
   {
    "region": "lungs",
@@ -240,7 +284,11 @@
    ],
    "time_to_act_days": null,
    "reason": "Blood oxygen steady at 97 % over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "spo2": "green",
+    "rr": "green"
+   }
   },
   {
    "region": "immune",
@@ -264,7 +312,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Infection-type symptoms steady at 0 symptoms over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "symptoms_immune": "green"
+   }
   },
   {
    "region": "metabolism",
@@ -288,7 +339,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Fluids drunk steady at 2.6 L/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hydration_l": "green"
+   }
   },
   {
    "region": "bones_muscles",
@@ -312,7 +366,10 @@
    ],
    "time_to_act_days": 8,
    "reason": "Exercise (7-day average) down 17.7 min/day over 7 days (now 73.7 min/day). Unusual for you today.",
-   "advice_level": "crew"
+   "advice_level": "crew",
+   "metric_status": {
+    "exercise_min_7d": "yellow"
+   }
   },
   {
    "region": "radiation",
@@ -336,7 +393,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Mission radiation dose up 4.3 mSv over 7 days (now 27.3 mSv).",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "radiation_total_msv": "green"
+   }
   }
  ],
  "C": [
@@ -362,7 +422,14 @@
    ],
    "time_to_act_days": null,
    "reason": "Sleep steady at 6.7 h over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "sleep_h": "green",
+    "mood": "green",
+    "stress": "green",
+    "pvt_median_ms": "green",
+    "pvt_lapse_rate_pct": "green"
+   }
   },
   {
    "region": "heart",
@@ -386,7 +453,14 @@
    ],
    "time_to_act_days": null,
    "reason": "Resting heart rate steady at 61.6 bpm over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hr_rest": "green",
+    "hrv_rmssd": "green",
+    "stand_hr_rise": "green",
+    "bp_sys": "green",
+    "bp_dia": "green"
+   }
   },
   {
    "region": "lungs",
@@ -410,7 +484,11 @@
    ],
    "time_to_act_days": null,
    "reason": "Blood oxygen steady at 99 % over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "spo2": "green",
+    "rr": "green"
+   }
   },
   {
    "region": "immune",
@@ -434,7 +512,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Infection-type symptoms steady at 0 symptoms over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "symptoms_immune": "green"
+   }
   },
   {
    "region": "metabolism",
@@ -458,7 +539,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Fluids drunk steady at 2.6 L/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hydration_l": "green"
+   }
   },
   {
    "region": "bones_muscles",
@@ -482,7 +566,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Exercise (7-day average) steady at 121.9 min/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "exercise_min_7d": "green"
+   }
   },
   {
    "region": "radiation",
@@ -506,7 +593,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Mission radiation dose up 4.2 mSv over 7 days (now 26.5 mSv).",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "radiation_total_msv": "green"
+   }
   }
  ]
 }

@@ -71,6 +71,9 @@ export interface UnresponsiveDetection {
   stop(): void;
   /** The crew member answered "Are you OK?" (tap, key, voice or button). */
   respond(): void;
+  /** Demo mode: switch detection on and act as if the score stayed high, WITHOUT the camera if it is off
+   *  ("Are you OK?", then the crew alarm if nobody answers). */
+  demoTrigger(): void;
   /** Debug panel only: pretend the score stayed high long enough. */
   forceSuspected(): void;
 }
@@ -334,5 +337,12 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
     perform(detector.current.forceSuspected(clockNow()).effects, lastSignals.current);
   }, [perform]);
 
-  return { phase, error, live, pulse, checkInDeadline, frameRef, start, stop, respond, forceSuspected, enabled };
+  /** Demo mode: same as the debug trigger, but also with the camera off (the pulse loop then drives the check-in). */
+  const demoTrigger = useCallback(() => {
+    if (!detector.current) return;
+    setEnabled(true);
+    perform(detector.current.forceSuspected(clockNow()).effects, lastSignals.current);
+  }, [perform]);
+
+  return { phase, error, live, pulse, checkInDeadline, frameRef, start, stop, respond, forceSuspected, demoTrigger, enabled };
 }

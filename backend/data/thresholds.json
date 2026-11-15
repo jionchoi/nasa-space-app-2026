@@ -411,34 +411,28 @@
     "unit": "ms",
     "yellow": [
       null,
-      320
+      318.4
     ],
     "orange": [
       null,
-      360
+      345.8
     ],
-    "red": [
-      null,
-      450
-    ],
-    "source": "PLACEHOLDER"
+    "red": null,
+    "source": "DRAFT, from PRET, Yenna reviews: CSA PRET dataset, version 4.0, ground study (n=145), Open Government Licence - Canada. Watch above the 90th percentile, Warning above the 97.5th; no Act now from the reaction test alone. See pvt_norms.json."
   },
-  "pvt_lapses": {
-    "label": "Reaction lapses (over 500 ms)",
-    "unit": "lapses",
+  "pvt_lapse_rate_pct": {
+    "label": "Reaction lapse rate (355 ms or slower)",
+    "unit": "%",
     "yellow": [
       null,
-      2.5
+      30.16
     ],
     "orange": [
       null,
-      5.5
+      47.49
     ],
-    "red": [
-      null,
-      10.5
-    ],
-    "source": "PLACEHOLDER"
+    "red": null,
+    "source": "DRAFT, from PRET, Yenna reviews: CSA PRET dataset, version 4.0, ground study (n=145), Open Government Licence - Canada. Watch above the 90th percentile, Warning above the 97.5th; no Act now from the reaction test alone. See pvt_norms.json."
   },
   "red_flags": {
     "_how_to_read": "Red flags that can move an emergency protocol forward (see red_flag_routes in protocols). A flag is active when `metric` is below `below` or above `above` for at least `for_s` seconds, and the signal quality is at least `min_signal_quality` (so a slipped sensor is not read as a lost pulse). PLACEHOLDER numbers: Yenna reviews.",
@@ -547,5 +541,35 @@
       "still_motion": 0.05
     },
     "source": "PLACEHOLDER"
+  },
+  "dose_estimates": {
+    "_status": "DRAFT - Yenna reviews. Used only where there is no real RadLab file for a location (see environments.json radiation_feed). Absorbed dose rate in µGy/h, constant (no orbit spikes). Not a medical threshold.",
+    "unit": "µGy/h",
+    "moon_surface": {
+      "label": "Moon surface",
+      "dose_rate": 13.2,
+      "source": "DRAFT: Chang'e-4 Lunar Lander Neutrons and Dosimetry (LND), absorbed dose rate in silicon 13.2 µGy/h (Zhang et al. 2020, Science Advances 6:eaaz1334)"
+    },
+    "mars_transit": {
+      "label": "Deep space, Earth to Mars",
+      "dose_rate": 20.0,
+      "source": "DRAFT: Curiosity RAD during the cruise to Mars, 0.481 mGy/day = about 20 µGy/h (Zeitlin et al. 2013, Science 340:1080). Yenna to confirm."
+    },
+    "mars_surface": {
+      "label": "Mars surface",
+      "dose_rate": 8.75,
+      "source": "DRAFT: Curiosity RAD on the surface, 0.21 mGy/day = about 8.75 µGy/h (Hassler et al. 2014, Science 343:1244797). Only used if dose_mars_surface.json is missing."
+    }
+  },
+  "pvt": {
+    "_status": "DRAFT, from PRET, Yenna reviews",
+    "_how_to_read": "Reaction test rules. Bands on pvt_median_ms / pvt_lapse_rate_pct are the population percentiles (pvt_norms.json). On top, with at least min_baseline_days of personal results, a median reaction time more than baseline_slower_pct slower than the personal baseline (median of the previous days, up to 30) is at least Watch. With fewer days, the population percentiles only.",
+    "norms_file": "pvt_norms.json",
+    "baseline_slower_pct": 15,
+    "min_baseline_days": 7,
+    "watch_above_percentile": 90,
+    "warning_above_percentile": 97.5,
+    "act_now": null,
+    "act_now_note": "None from the reaction test alone (Yenna's rule 12: pause safety-critical tasks, request crew assessment)."
   }
 }

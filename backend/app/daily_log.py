@@ -29,7 +29,7 @@ def targets() -> dict:
 def today_summary(persona: str) -> dict:
     meals = _forms(persona, "meal")
     exercise = _forms(persona, "exercise")
-    pvt = _forms(persona, "pvt")
+    pvt = [f for f in _forms(persona, "pvt") if f["data"].get("version", "full") != "demo"]
     biomarkers = _forms(persona, "biomarkers", today_only=False)
     checks = [r for r in db.query("SELECT id, t FROM daily_checks WHERE persona = ? ORDER BY id DESC", (persona,))
               if _local_date(r["t"]) == date.today()]
@@ -53,9 +53,10 @@ def overlay(data: dict) -> dict:
         today_values["hydration_l"] = s["water_l"]
     if s["exercise_min"] > 0:
         today_values["exercise_min"] = s["exercise_min"]
-    if s["pvt"]:
+    if s["pvt"] and s["pvt"].get("version", "full") != "demo":  # the 1-minute demo is not compared
         today_values["pvt_median_ms"] = s["pvt"]["median_ms"]
-        today_values["pvt_lapses"] = s["pvt"]["lapses"]
+        today_values["pvt_lapse_rate_pct"] = s["pvt"].get("lapse_rate_pct",
+                                                           round(100 * s["pvt"]["lapses"] / max(1, s["pvt"]["n"]), 1))
     mass_change = None
     start = data.get("body_mass_start_kg")
     if s["biomarkers"] and start:

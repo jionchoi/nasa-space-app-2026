@@ -24,7 +24,7 @@ def test_labels_endpoint_reads_the_file(client, temp_data):
 def test_every_metric_has_unit_and_only_ranges():
     """thresholds.json keeps ranges and sources; how to measure lives in measurements.json (Nov 14)."""
     for key, entry in store.thresholds().items():
-        if isinstance(entry, dict) and key not in ("red_flags", "daily_targets", "cv"):
+        if isinstance(entry, dict) and key not in ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt"):
             parsed = ThresholdEntry.model_validate(entry)
             assert parsed.unit, key
             assert "how_to_measure" not in entry, key

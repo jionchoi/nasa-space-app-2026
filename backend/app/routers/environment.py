@@ -1,4 +1,4 @@
-"""Radiation (with the DONKI solar-event replay) and the simulated cabin environment."""
+"""Radiation (location dose feed plus the DONKI solar-event replay) and the cabin environment."""
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
@@ -30,8 +30,8 @@ def replay(body: ReplayRequest) -> dict:
 
 @router.get("/cabin")
 def get_cabin() -> dict:
-    """Current cabin CO2, temperature and noise (SIMULATED profile), with the last 24 h."""
+    """Current cabin CO2, temperature, humidity (real ISS telemetry replay; simulated profile as fallback), last 24 h."""
     data = cabin.summary()
     if data is None:
-        raise HTTPException(404, "No data/cabin.json. Run scripts/make_cabin.py.")
+        raise HTTPException(404, "No data/cabin.json or cabin_simulated.json. Run scripts/import_nasa_env.py or scripts/make_cabin.py.")
     return data

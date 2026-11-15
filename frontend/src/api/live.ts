@@ -28,6 +28,12 @@ export function setReplay(opts: { start?: number | null; speed?: number | null }
   if (opts.speed !== undefined) replaySpeed = opts.speed;
 }
 
+// Presenter "Pause" (demo mode): while paused, incoming vitals are dropped, so every screen holds still.
+let vitalsPaused = false;
+export function setVitalsPaused(paused: boolean) {
+  vitalsPaused = paused;
+}
+
 export interface VitalsConnection {
   close(): void;
   /** Hint for the replay only (e.g. {posture: "stand"}); ignored in mock mode. */
@@ -52,7 +58,13 @@ export function connectVitals(persona: string, onFrame: (frame: VitalsFrame) => 
     setMock(true);
     setSource('replay');
     const frames = pickMock(persona);
+    // A demo jump (?start= or the presenter bar) also works offline: start the mock recording at that second.
+    if (replayStart !== null) {
+      mockIndex = Math.max(0, Math.floor(replayStart));
+      replayStart = null;
+    }
     mockTimer = setInterval(() => {
+      if (vitalsPaused) return;
       onFrame({ ...frames[mockIndex++ % frames.length], t: new Date().toISOString(), source: 'replay' });
     }, 1000);
   };
@@ -83,7 +95,7 @@ export function connectVitals(persona: string, onFrame: (frame: VitalsFrame) => 
         return;
       }
       setSource(data.source);
-      onFrame(data);
+      if (!vitalsPaused) onFrame(data);
     };
     socket.onclose = () => {
       if (closed) return;

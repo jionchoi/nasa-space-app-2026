@@ -56,7 +56,8 @@ export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }:
         <LocationSwitch />
         <div className="flex flex-col gap-0.5">
           <LinkStatus />
-          <span className="flex items-center gap-2"><MissionClock /><SourceChip /></span>
+          <span className="flex items-center gap-2"><MissionClock /><SourceChip />
+            <Link to="/sources" className="text-[11px] text-muted underline-offset-2 hover:text-text hover:underline">Sources</Link></span>
         </div>
 
         <div className="flex-1" />

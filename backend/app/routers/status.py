@@ -16,20 +16,20 @@ router = APIRouter(prefix="/api")
 PERSONA_META = ["id", "name", "description", "simulated", "mission_day", "event_start_s", "unresponsive_s"]
 
 
-def _statuses(persona: dict) -> list[dict]:
-    """Region statuses from the daily data, plus the live radiation event and the cabin CO2 context."""
+def _statuses(persona: dict, env: str | None = None) -> list[dict]:
+    """Region statuses from the daily data, plus the live radiation event (dose for `env`) and the cabin CO2 context."""
     data = daily_log.overlay(persona)  # today's logs (water, exercise, body mass, reaction test)
     rows = region_statuses(data, store.thresholds(), store.regions(), store.escalation())
-    radiation.apply_to_status(rows)
+    radiation.apply_to_status(rows, env)
     cabin.add_co2_context(rows, data)
     return rows
 
 
 @router.get("/status", response_model=list[RegionStatus])
 def status(persona: str = "A", env: str = "iss") -> list:
-    # `env` changes the advice text (GET /api/escalation), never the level, so it is not used here.
+    # `env` changes the advice text (GET /api/escalation) and the solar-event dose in the radiation reason, never the level.
     data = store.persona(persona)
-    rows = _statuses(data)
+    rows = _statuses(data, env)
     alerts.check_regions(data["id"], rows, env)
     return rows
 
@@ -62,16 +62,16 @@ def run_check(req: CheckRequest, env: str = "iss") -> dict:
     thresholds, questionnaire = store.thresholds(), store.questionnaire()
 
     persona["daily"] = [d for d in persona["daily"] if not d.get("today")]  # redo replaces today's entry
-    before = _statuses(persona)
+    before = _statuses(persona, env)
     vitals = check_rules.summarize(
         [f.model_dump() for f in req.seated_frames], [f.model_dump() for f in req.stand_frames],
         questionnaire["measurement"], check_rules.min_quality(thresholds))
     extra = {"temp_c": req.temp_c, "glucose_mmol": req.glucose_mmol, "bp_sys": req.bp_sys, "bp_dia": req.bp_dia}
-    if req.pvt:
-        extra.update(pvt_median_ms=req.pvt.median_ms, pvt_lapses=req.pvt.lapses)
+    if req.pvt and req.pvt.version != "demo":  # the 1-minute demo is not compared
+        extra.update(pvt_median_ms=req.pvt.median_ms, pvt_lapse_rate_pct=req.pvt.lapse_rate_pct)
     entry, carried = check_rules.build_today(persona, vitals, req.answers, questionnaire, extra)
     persona["daily"].append(entry)
-    after = _statuses(persona)
+    after = _statuses(persona, env)
 
     level = overall_level(after)
     alerts.check_regions(persona["id"], after, env)

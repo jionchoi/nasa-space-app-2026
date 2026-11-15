@@ -13,6 +13,7 @@ import { EventLog } from '../components/emergency/EventLog';
 import { RedFlags } from '../components/emergency/RedFlags';
 import { StepView } from '../components/emergency/StepView';
 import { SurgeonMessage } from '../components/emergency/SurgeonMessage';
+import { useDemoCommand } from '../lib/demo';
 import { useEmergency } from '../components/emergency/useEmergency';
 import { useRedFlagRoutes } from '../components/emergency/useRedFlagRoutes';
 import { useVitals } from '../hooks/useVitals';
@@ -72,6 +73,10 @@ export default function Emergency() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [redKey, protocol, thresholds]);
 
+  // Demo mode: end without the confirm box (step 8). Above the early returns (hooks order)
+  const endRef = useRef<(skip?: boolean) => void>(() => {});
+  useDemoCommand(['endEmergency'], () => endRef.current(true));
+
   const withHeader = (content: ReactNode) => (
     <div className="flex min-h-[100dvh] flex-col p-2"><AppHeader compact /><div className="min-h-0 flex-1">{content}</div></div>
   );
@@ -82,11 +87,12 @@ export default function Emergency() {
     return withHeader(<div className="grid h-full min-h-[60vh] place-items-center text-4xl text-muted">Loading protocol…</div>);
   }
   if (ended !== null) {
-    return withHeader(<EndSummary title={protocol.title} durationS={(ended - em.startedAt) / 1000} log={em.log} onBack={() => navigate('/')} />);
+    return withHeader(<EndSummary title={protocol.title} durationS={(ended - em.startedAt) / 1000} log={em.log}
+      messages={Object.values(sentMessages)} onBack={() => navigate('/')} />);
   }
 
-  const end = () => {
-    if (!window.confirm('End the emergency? You will see a summary of what was done.')) return;
+  const end = (skipConfirm = false) => {
+    if (!skipConfirm && !window.confirm('End the emergency? You will see a summary of what was done.')) return;
     const at = Date.now();
     em.addLog('end', 'Emergency ended by the crew');
     const endedAt = new Date(at).toISOString();
@@ -103,6 +109,7 @@ export default function Emergency() {
     });
     setEnded(at);
   };
+  endRef.current = end;
   const draft = buildDraft({
     protocol, persona: personaInfo, startedAt: em.startedAt, latest, thresholds, log: em.log, answers: em.answers,
     litFlags: lit.map((i) => protocol.red_flags[i]),
@@ -116,7 +123,7 @@ export default function Emergency() {
         <span className="truncate text-2xl font-semibold">{protocol.title}</span>
         {protocol.draft && <span className="rounded bg-bg/20 px-2 py-0.5 text-sm font-semibold">{protocol.draft}</span>}
         <span className="ml-auto text-lg">Time since start <span className="font-mono text-3xl font-bold">{mmss((now - em.startedAt) / 1000)}</span></span>
-        <button className="rounded-md bg-bg px-4 py-2 text-lg font-bold text-text hover:brightness-150" onClick={end}>End emergency</button>
+        <button className="rounded-md bg-bg px-4 py-2 text-lg font-bold text-text hover:brightness-150" onClick={() => end()}>End emergency</button>
       </header>
 
       {flags.pending && (

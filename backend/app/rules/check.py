@@ -7,7 +7,7 @@ from .judge import bounds, judge
 from .status import fmt
 
 MEASURED = ["hr_rest", "hrv_rmssd", "spo2", "rr", "stand_hr_rise", "bp_sys", "bp_dia", "temp_c", "glucose_mmol",
-            "pvt_median_ms", "pvt_lapses", "sleep_h", "mood", "stress"]
+            "pvt_median_ms", "pvt_lapse_rate_pct", "sleep_h", "mood", "stress"]
 
 
 def summarize(seated: list[dict], stand: list[dict], cfg: dict, min_quality: float | None) -> dict:

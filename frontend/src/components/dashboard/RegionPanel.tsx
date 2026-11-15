@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isDraft, undraft } from '../../lib/env';
 import { metricRows } from '../../lib/metrics';
+import { normsLine, usePvtNorms } from '../../lib/pvtNorms';
 import { entryOf, STATUS_CLASS, worse } from '../../lib/status';
 import { useApp, useStatusLabel } from '../../state/AppContext';
 import type { CabinSummary, DailyEntry, RadiationSummary, RegionMeta, RegionStatus, Status, VitalsFrame } from '../../types/contracts';
+import { CrewPanelTable } from '../common/CrewReference';
 import { DraftTag } from './GuidanceCard';
 import { MetricInfo } from './MetricInfo';
 import { MetricsList } from './MetricsList';
@@ -34,12 +36,14 @@ const SHELL = 'flex min-w-0 flex-[1_1_340px] flex-col gap-4 rounded-panel border
 export function RegionPanel({ status, meta, daily, liveNow, latest, cabin, radiation }: Props) {
   const statusLabel = useStatusLabel();
   const { thresholds, measurements } = useApp();
+  const pvtNorms = usePvtNorms();
   const [tab, setTab] = useState<Tab>('overview');
   const [metric, setMetric] = useState(meta?.key_metric ?? '');
   const [range, setRange] = useState<Range>(30);
   // A new area starts on its key metric (the tab stays where the crew member left it).
   useEffect(() => { setMetric(meta?.key_metric ?? ''); }, [meta?.id, meta?.key_metric]);
-  const rows = useMemo(() => (meta ? metricRows(meta, daily, thresholds, latest, cabin) : []), [meta, daily, thresholds, latest, cabin]);
+  const rows = useMemo(() => (meta ? metricRows(meta, daily, thresholds, latest, cabin, status?.metric_status) : []),
+    [meta, daily, thresholds, latest, cabin, status?.metric_status]);
 
   if (!status || !meta) {
     return <section aria-label="Region details" className={SHELL}>{[60, 44, 180, 130].map((h, i) => <div key={i} className="animate-pulse rounded-card bg-raised/50" style={{ height: h }} />)}</section>;
@@ -48,6 +52,15 @@ export function RegionPanel({ status, meta, daily, liveNow, latest, cabin, radia
   const cls = STATUS_CLASS[shown];
   const row = rows.find((r) => r.metric === metric) ?? rows[0];
   const entry = entryOf(thresholds, row?.metric ?? meta.key_metric);
+  // Learn tab: say where cabin values and the location's dose rate come from.
+  const feed = radiation?.feed;
+  const dataSource = row?.metric.startsWith('pvt_') && pvtNorms
+    ? { badge: normsLine(pvtNorms), note: `${pvtNorms.source}, ${pvtNorms.licence}`, url: pvtNorms.url }
+    : row?.kind === 'cabin' && cabin
+    ? { badge: cabin.badge ?? 'Simulated', note: cabin.kind === 'real' ? cabin.location_note : 'Simulated cabin profile (no real file).', url: cabin.source_urls?.[0] }
+    : meta.id === 'radiation' && feed
+      ? { badge: feed.badge, note: [feed.note, feed.kind === 'real' ? feed.quantity : feed.source].filter(Boolean).join('. '), url: feed.source_url }
+      : undefined;
 
   return (
     <section aria-label="Region details" className={SHELL}>
@@ -86,8 +99,9 @@ export function RegionPanel({ status, meta, daily, liveNow, latest, cabin, radia
         {tab === 'metrics' && <MetricsList rows={rows} selected={row?.metric ?? ''} onSelect={(m) => { setMetric(m); setTab('overview'); }} />}
         {tab === 'learn' && (
           <MetricInfo entry={entry} info={measurements?.metrics[row?.metric ?? meta.key_metric]} functionText={meta.function}
-            spaceNote={meta.spaceflight_note} />
+            spaceNote={meta.space_effect ?? meta.spaceflight_note} refs={meta.refs} dataSource={dataSource} />
         )}
+        {tab === 'learn' && meta.id === 'metabolism' && <div className="mt-5"><CrewPanelTable /></div>}
       </div>
     </section>
   );

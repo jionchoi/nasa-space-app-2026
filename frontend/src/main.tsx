@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { AlertsProvider } from './state/AlertsContext';
 import { AppProvider } from './state/AppContext';
+import { DemoBar } from './components/demo/DemoBar';
 import { CvProvider } from './state/CvContext';
 import { RoutineProvider } from './state/RoutineContext';
 import { installMuteShortcut } from './lib/sound';
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <RoutineProvider>
             <CvProvider>
               <App />
+              <DemoBar />
             </CvProvider>
           </RoutineProvider>
         </AlertsProvider>

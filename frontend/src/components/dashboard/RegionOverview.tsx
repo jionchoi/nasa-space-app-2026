@@ -5,6 +5,7 @@ import { raiseLevel, STATUS_CLASS, worse } from '../../lib/status';
 import { adviceFor, useApp, useStatusLabel } from '../../state/AppContext';
 import { useRoutine } from '../../state/RoutineContext';
 import type { RadiationSummary, RegionMeta, RegionStatus, Status, ThresholdEntry } from '../../types/contracts';
+import { CrewGlucoseLine } from '../common/CrewReference';
 import { EscalationLadder } from './EscalationLadder';
 import { GuidanceCard, PreventionList } from './GuidanceCard';
 import { RadiationCard } from './RadiationCard';
@@ -64,18 +65,19 @@ export function RegionOverview({ status, meta, liveNow, row, entry, range, onRan
         </div>
       </div>
 
-      {meta.id === 'radiation' && radiation && <RadiationCard data={radiation} estimated={!!envInfo?.estimated_data?.includes('radiation')} />}
+      {meta.id === 'radiation' && radiation && <RadiationCard data={radiation} />}
 
       {row && row.points.length > 1 && (
         <TrendChart points={row.points} title={row.label} entry={entry}
           timeToActDays={row.metric === meta.key_metric ? status.time_to_act_days : null}
           range={row.kind === 'daily' ? range : undefined} onRange={row.kind === 'daily' ? onRange : undefined}
-          windowLabel={row.kind === 'cabin' ? 'last 24 h (simulated)' : undefined} />
+          windowLabel={row.kind === 'cabin' ? `last 24 h (${row.source ?? 'simulated'})` : undefined} />
       )}
 
       {meta.id === 'brain_mood' && (
         <button type="button" className="btn self-start" onClick={() => navigate('/reaction')}><Lightning className="h-4 w-4 text-warn" aria-hidden /> Take reaction test</button>
       )}
+      {meta.id === 'metabolism' && <CrewGlucoseLine />}
       {meta.id === 'metabolism' && (
         <div className="flex flex-wrap gap-2">
           <button type="button" className="btn" onClick={() => openLog('meal')}><ForkKnife className="h-4 w-4" aria-hidden /> Log meal and water</button>

@@ -41,7 +41,10 @@
       "start": "22:00",
       "end": "06:00"
     },
-    "clock": "GMT"
+    "clock": "GMT",
+    "radiation_feed": {
+      "file": "space_weather/dose_iss.json"
+    }
   },
   {
     "id": "moon",
@@ -85,7 +88,11 @@
       "start": "22:00",
       "end": "06:00"
     },
-    "clock": "GMT"
+    "clock": "GMT",
+    "radiation_feed": {
+      "file": "space_weather/dose_moon.json",
+      "estimate": "moon_surface"
+    }
   },
   {
     "id": "mars",
@@ -129,7 +136,11 @@
       "start": "22:00",
       "end": "06:00"
     },
-    "clock": "GMT"
+    "clock": "GMT",
+    "radiation_feed": {
+      "file": "space_weather/dose_mars_transit.json",
+      "estimate": "mars_transit"
+    }
   },
   {
     "id": "rover",
@@ -149,7 +160,11 @@
           3
         ],
         "advice_as": "moon",
-        "advice_note": "DRAFT: Messages to Earth take about 1.3 seconds each way. You can talk to the flight surgeon with short pauses."
+        "advice_note": "DRAFT: Messages to Earth take about 1.3 seconds each way. You can talk to the flight surgeon with short pauses.",
+        "radiation_feed": {
+          "file": "space_weather/dose_moon.json",
+          "estimate": "moon_surface"
+        }
       },
       "mars": {
         "label": "Mars",
@@ -158,7 +173,11 @@
           1320
         ],
         "advice_as": "mars",
-        "advice_note": "DRAFT: Messages to Earth take several minutes each way. Act with your crew and head back to base; the flight surgeon's answer comes later."
+        "advice_note": "DRAFT: Messages to Earth take several minutes each way. Act with your crew and head back to base; the flight surgeon's answer comes later.",
+        "radiation_feed": {
+          "file": "space_weather/dose_mars_surface.json",
+          "estimate": "mars_surface"
+        }
       }
     },
     "distance_to_base": {
@@ -175,10 +194,6 @@
       "restraint": "DRAFT: Limited kit on the rover: no medical restraint area. Strap them to a seat or lay them flat on the floor.",
       "sensor": "DRAFT: Limited kit on the rover: if there is no finger sensor, check the pulse at the neck by hand."
     },
-    "estimated_data": [
-      "radiation",
-      "cabin"
-    ],
     "schedule": [
       {
         "id": "daily_check",

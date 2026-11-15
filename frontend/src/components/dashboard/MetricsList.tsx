@@ -1,6 +1,6 @@
 import type { MetricRow } from '../../lib/metrics';
 import { fmt, STATUS_CLASS } from '../../lib/status';
-import { useApp, useStatusLabel } from '../../state/AppContext';
+import { useStatusLabel } from '../../state/AppContext';
 
 interface Props {
   rows: MetricRow[];
@@ -19,8 +19,6 @@ function changeText(row: MetricRow, statusWord: string): string {
 /** Every metric of the region: status dot, value with unit, and change vs the personal usual. */
 export function MetricsList({ rows, selected, onSelect }: Props) {
   const statusLabel = useStatusLabel();
-  const { envInfo } = useApp();
-  const cabinWord = envInfo?.estimated_data?.includes('cabin') ? 'estimated' : 'simulated';
   if (!rows.length) return <p className="py-6 text-center text-sm text-muted">No data for this area yet.</p>;
   return (
     <div className="flex flex-col gap-2">
@@ -32,7 +30,7 @@ export function MetricsList({ rows, selected, onSelect }: Props) {
               row.metric === selected ? 'border-line-strong' : 'border-line'}`}>
             <span className={`h-2 w-2 shrink-0 rounded-full ${cls.bg}`} aria-hidden />
             <span className="flex min-w-0 flex-1 flex-col">
-              <span className="font-semibold">{row.label}{row.kind === 'cabin' && <span className="font-normal text-muted"> · cabin, {cabinWord}</span>}</span>
+              <span className="font-semibold">{row.label}{row.kind === 'cabin' && <span className="font-normal text-muted"> · cabin, {row.source ?? 'simulated'}</span>}</span>
               <span className="truncate text-xs text-muted">{changeText(row, statusLabel(row.status))}</span>
             </span>
             <span className="whitespace-nowrap text-right">

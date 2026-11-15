@@ -109,7 +109,7 @@ def draft_for_alert(alert_id: str, body: DraftRequest) -> dict:
     row = None
     if alert.get("region"):
         from .status import _statuses  # local: status imports this module
-        row = next((r for r in _statuses(store.persona(alert["persona"])) if r["region"] == alert["region"]), None)
+        row = next((r for r in _statuses(store.persona(alert["persona"]), body.env) if r["region"] == alert["region"]), None)
     return alerts.draft_for_alert(alert, row, body.env)
 
 

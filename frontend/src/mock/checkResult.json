@@ -7,7 +7,19 @@
   "rr": 15.0,
   "stand_hr_rise": null,
   "irregular": false,
-  "symptoms": []
+  "glucose_mmol": 5.4,
+  "pvt_median_ms": 281.0,
+  "pvt_lapse_rate_pct": 11.1,
+  "symptoms": [],
+  "pvt": {
+   "median_ms": 281.0,
+   "lapses": 3,
+   "lapse_rate_pct": 11.1,
+   "false_starts": 0,
+   "n": 27,
+   "duration_s": 180,
+   "version": "full"
+  }
  },
  "comparison": [
   {
@@ -81,24 +93,34 @@
    "text": "Blood pressure, bottom number (diastolic) 80 mmHg, 2 above your usual"
   },
   {
+   "metric": "glucose_mmol",
+   "label": "Blood glucose",
+   "unit": "mmol/L",
+   "value": 5.4,
+   "baseline": null,
+   "delta": null,
+   "status": "green",
+   "text": "Blood glucose 5.4 mmol/L (no baseline yet)"
+  },
+  {
    "metric": "pvt_median_ms",
    "label": "Reaction time (median)",
    "unit": "ms",
-   "value": 338.0,
-   "baseline": 300.0,
-   "delta": 38.0,
-   "status": "yellow",
-   "text": "Reaction time (median) 338 ms, 38 above your usual"
+   "value": 281.0,
+   "baseline": 293.0,
+   "delta": -12.0,
+   "status": "green",
+   "text": "Reaction time (median) 281 ms, 12 below your usual"
   },
   {
-   "metric": "pvt_lapses",
-   "label": "Reaction lapses (over 500 ms)",
-   "unit": "lapses",
-   "value": 5.0,
-   "baseline": 3.0,
-   "delta": 2.0,
-   "status": "yellow",
-   "text": "Reaction lapses (over 500 ms) 5 lapses, 2 above your usual"
+   "metric": "pvt_lapse_rate_pct",
+   "label": "Reaction lapse rate (355 ms or slower)",
+   "unit": "%",
+   "value": 11.1,
+   "baseline": 18.6,
+   "delta": -7.5,
+   "status": "green",
+   "text": "Reaction lapse rate (355 ms or slower) 11.1 %, 7.5 below your usual"
   },
   {
    "metric": "sleep_h",
@@ -153,8 +175,15 @@
     5.39
    ],
    "time_to_act_days": 0,
-   "reason": "Sleep down 0.4 h over 7 days (now 5.4 h). Unusual for you today. Cabin CO2 has been high; this can cause headaches and poor sleep.",
-   "advice_level": "surgeon_next"
+   "reason": "Sleep down 0.4 h over 7 days (now 5.4 h). Unusual for you today.",
+   "advice_level": "surgeon_next",
+   "metric_status": {
+    "sleep_h": "orange",
+    "mood": "yellow",
+    "stress": "yellow",
+    "pvt_median_ms": "yellow",
+    "pvt_lapse_rate_pct": "green"
+   }
   },
   {
    "region": "heart",
@@ -178,7 +207,14 @@
    ],
    "time_to_act_days": 0,
    "reason": "Resting heart rate up 3.1 bpm over 7 days (now 73.1 bpm). Unusual for you today.",
-   "advice_level": "surgeon_next"
+   "advice_level": "surgeon_next",
+   "metric_status": {
+    "hr_rest": "orange",
+    "hrv_rmssd": "orange",
+    "stand_hr_rise": "orange",
+    "bp_sys": "green",
+    "bp_dia": "green"
+   }
   },
   {
    "region": "lungs",
@@ -202,7 +238,11 @@
    ],
    "time_to_act_days": null,
    "reason": "Blood oxygen steady at 97 % over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "spo2": "green",
+    "rr": "green"
+   }
   },
   {
    "region": "immune",
@@ -226,7 +266,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Infection-type symptoms steady at 0 symptoms over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "symptoms_immune": "green"
+   }
   },
   {
    "region": "metabolism",
@@ -250,7 +293,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Fluids drunk steady at 2.6 L/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hydration_l": "green"
+   }
   },
   {
    "region": "bones_muscles",
@@ -274,7 +320,10 @@
    ],
    "time_to_act_days": 8,
    "reason": "Exercise (7-day average) down 17.7 min/day over 7 days (now 73.7 min/day). Unusual for you today.",
-   "advice_level": "crew"
+   "advice_level": "crew",
+   "metric_status": {
+    "exercise_min_7d": "yellow"
+   }
   },
   {
    "region": "radiation",
@@ -298,7 +347,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Mission radiation dose up 4.3 mSv over 7 days (now 27.3 mSv).",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "radiation_total_msv": "green"
+   }
   }
  ],
  "after": [
@@ -323,8 +375,15 @@
     5.5
    ],
    "time_to_act_days": 0,
-   "reason": "Sleep down 0.4 h over 7 days (now 5.5 h). Cabin CO2 has been high; this can cause headaches and poor sleep.",
-   "advice_level": "surgeon_next"
+   "reason": "Sleep down 0.4 h over 7 days (now 5.5 h). Unusual for you today.",
+   "advice_level": "surgeon_next",
+   "metric_status": {
+    "sleep_h": "orange",
+    "mood": "yellow",
+    "stress": "yellow",
+    "pvt_median_ms": "green",
+    "pvt_lapse_rate_pct": "green"
+   }
   },
   {
    "region": "heart",
@@ -347,8 +406,16 @@
     73.0
    ],
    "time_to_act_days": 0,
-   "reason": "Resting heart rate up 3.1 bpm over 7 days (now 73 bpm).",
-   "advice_level": "surgeon_next"
+   "reason": "Resting heart rate up 3.1 bpm over 7 days (now 73 bpm). Unusual for you today.",
+   "advice_level": "surgeon_next",
+   "metric_status": {
+    "hr_rest": "orange",
+    "hrv_rmssd": "orange",
+    "stand_hr_rise": "orange",
+    "bp_sys": "green",
+    "bp_dia": "green",
+    "irregular": "green"
+   }
   },
   {
    "region": "lungs",
@@ -372,7 +439,11 @@
    ],
    "time_to_act_days": null,
    "reason": "Blood oxygen steady at 97 % over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "spo2": "green",
+    "rr": "green"
+   }
   },
   {
    "region": "immune",
@@ -396,7 +467,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Infection-type symptoms steady at 0 symptoms over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "symptoms_immune": "green"
+   }
   },
   {
    "region": "metabolism",
@@ -420,7 +494,11 @@
    ],
    "time_to_act_days": null,
    "reason": "Fluids drunk steady at 2.5 L/day over the last 7 days.",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "hydration_l": "green",
+    "glucose_mmol": "green"
+   }
   },
   {
    "region": "bones_muscles",
@@ -444,7 +522,10 @@
    ],
    "time_to_act_days": 6,
    "reason": "Exercise (7-day average) down 17.5 min/day over 7 days (now 73 min/day).",
-   "advice_level": "crew"
+   "advice_level": "crew",
+   "metric_status": {
+    "exercise_min_7d": "yellow"
+   }
   },
   {
    "region": "radiation",
@@ -468,7 +549,10 @@
    ],
    "time_to_act_days": null,
    "reason": "Mission radiation dose up 4.4 mSv over 7 days (now 28 mSv).",
-   "advice_level": "self"
+   "advice_level": "self",
+   "metric_status": {
+    "radiation_total_msv": "green"
+   }
   }
  ],
  "changed": [],
@@ -477,6 +561,6 @@
   "text": "Report this at your next planned contact with the flight surgeon. The link is live, so you can also call sooner."
  },
  "notes": [
-  "Not measured today, carried forward from the last 7 days: stand_hr_rise, hydration_l, exercise_min, radiation_msv, pvt_median_ms, pvt_lapses, bp_sys, bp_dia"
+  "Not measured today, carried forward from the last 7 days: stand_hr_rise, hydration_l, exercise_min, radiation_msv, bp_sys, bp_dia"
  ]
 }

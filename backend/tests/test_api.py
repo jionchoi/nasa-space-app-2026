@@ -10,7 +10,8 @@ def test_status_endpoint(client):
     rows = client.get("/api/status?persona=B&env=mars").json()
     assert [r["region"] for r in rows] == [
         "brain_mood", "heart", "lungs", "immune", "metabolism", "bones_muscles", "radiation"]
-    assert set(rows[0]) == {"region", "status", "score", "trend", "time_to_act_days", "reason", "advice_level"}
+    assert set(rows[0]) == {"region", "status", "score", "trend", "time_to_act_days", "reason", "advice_level",
+                            "metric_status"}  # metric_status added Nov 14 (additive)
 
 
 def test_unknown_persona_falls_back_to_a(client):

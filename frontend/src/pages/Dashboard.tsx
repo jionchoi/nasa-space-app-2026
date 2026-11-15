@@ -16,13 +16,14 @@ import { useMessages } from '../hooks/useMessages';
 import { useDaily, useStatus } from '../hooks/useStatus';
 import { useVitals } from '../hooks/useVitals';
 import { byUrgency, liveRegionStatus, liveStatus, raiseLevel, worse } from '../lib/status';
+import { useDemoCommand } from '../lib/demo';
 import { useAlerts } from '../state/AlertsContext';
 import { useApp, useStatusLabel } from '../state/AppContext';
 import type { Alert } from '../types/contracts';
 
 /** Dashboard "/" (design v1): live vitals row, then Today | body map | selected area. */
 export default function Dashboard() {
-  const { persona, env, envInfo, regions, thresholds, checkDoneAt, picked, setPicked } = useApp();
+  const { persona, env, regions, thresholds, checkDoneAt, picked, setPicked } = useApp();
   const statusLabel = useStatusLabel();
   const statuses = useStatus(persona, env);
   const daily = useDaily(persona, checkDoneAt);
@@ -58,6 +59,24 @@ export default function Dashboard() {
     setDrawer({ open: true, focus: id });
   }, [messages]);
   // "Open draft message" on the status card: the open alert for the most urgent area, if it has (or gets) a draft.
+  // Demo mode: open the drafted flight-surgeon message for a region (as soon as its alert has arrived), send it, close.
+  const [demoDraftRegion, setDemoDraftRegion] = useState<string | null>(null);
+  useDemoCommand(['openDraft', 'sendDraft', 'closeDrawer'], (command) => {
+    if (command.kind === 'openDraft') setDemoDraftRegion(command.region);
+    if (command.kind === 'closeDrawer') setDrawer({ open: false, focus: null });
+    if (command.kind === 'sendDraft') {
+      const message = messages.messages.find((m) => m.id === drawer.focus) ?? messages.drafts[0];
+      if (message) void messages.send(message.id, message.text);
+    }
+  });
+  useEffect(() => {
+    if (!demoDraftRegion) return;
+    const alert = alerts.find((a) => a.region === demoDraftRegion && !a.acknowledged && (a.level === 'orange' || a.level === 'red'));
+    if (!alert) return;
+    setDemoDraftRegion(null);
+    void openDraft(alert);
+  }, [demoDraftRegion, alerts, openDraft]);
+
   const worstAlert = worst && worst.status !== 'green'
     ? alerts.find((a) => a.region === worst.region && !a.acknowledged && (a.level === 'orange' || a.level === 'red'))
     : undefined;
@@ -75,7 +94,7 @@ export default function Dashboard() {
         <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-4 lg:max-w-[340px]">
           <TodayCard statuses={shown} regions={regions} onSelect={setPicked} onOpenDraft={worstAlert ? () => openDraft(worstAlert) : undefined} />
           <MissionsCard />
-          <CabinPanel cabin={cabin} estimated={!!envInfo?.estimated_data?.includes('cabin')} />
+          <CabinPanel cabin={cabin} />
           <RegionList statuses={shown} regions={regions} selected={selected} onSelect={setPicked} />
         </div>
         <BodyMap statuses={shown} regions={regions} selected={selected} onSelect={setPicked} />
