@@ -1,0 +1,461 @@
+{
+ "_status": "DRAFT - Yenna writes the real content. Every text below is a short generic placeholder.",
+ "_how_to_read": "For each region and status: summary (title of the 'What to do' card), self_care (checklist the astronaut can tick, saved for today), tell_crew and contact_surgeon (who to tell), prevention ('How to stay healthy'). status_keys maps the app status (green/yellow/orange/red) to the keys used here. The escalation ladder and its advice per environment stay in escalation.json.",
+ "status_keys": {
+  "green": "nominal",
+  "yellow": "watch",
+  "orange": "warning",
+  "red": "act"
+ },
+ "regions": {
+  "brain_mood": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Sleep and mood look fine.",
+    "self_care": [
+     "DRAFT: Keep your usual sleep time tonight.",
+     "DRAFT: Take a short break away from the screen today."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Keep the same sleep and wake times every day.",
+     "DRAFT: Dim the lights an hour before sleep.",
+     "DRAFT: Plan private time and calls home every week."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Sleep or mood is slipping a little.",
+    "self_care": [
+     "DRAFT: Aim for 8 hours in your sleep station tonight.",
+     "DRAFT: Use the eye mask and ear plugs.",
+     "DRAFT: Avoid caffeine after midday."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Keep the same sleep and wake times every day.",
+     "DRAFT: Dim the lights an hour before sleep.",
+     "DRAFT: Plan private time and calls home every week."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Sleep, mood or alertness is clearly off.",
+    "self_care": [
+     "DRAFT: Take a 20-minute rest break today.",
+     "DRAFT: Swap tasks that need full attention to later if you can.",
+     "DRAFT: Talk to someone at home or on the crew."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Keep the same sleep and wake times every day.",
+     "DRAFT: Dim the lights an hour before sleep.",
+     "DRAFT: Plan private time and calls home every week."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Sleep, mood or alertness needs help now.",
+    "self_care": [
+     "DRAFT: Stop tasks that need full attention.",
+     "DRAFT: Rest in your sleep station.",
+     "DRAFT: Stay with a crewmate."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Keep the same sleep and wake times every day.",
+     "DRAFT: Dim the lights an hour before sleep.",
+     "DRAFT: Plan private time and calls home every week."
+    ]
+   }
+  },
+  "heart": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Heart values look fine.",
+    "self_care": [
+     "DRAFT: Do your planned exercise today.",
+     "DRAFT: Drink your usual amount of water."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Do your aerobic exercise every day.",
+     "DRAFT: Drink enough water.",
+     "DRAFT: Keep caffeine low, especially in the afternoon.",
+     "DRAFT: Sleep at least 7 hours."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: A heart value is drifting from your usual.",
+    "self_care": [
+     "DRAFT: Drink an extra 500 mL of water today.",
+     "DRAFT: Avoid caffeine for the rest of the day.",
+     "DRAFT: Repeat the check tomorrow at the same time."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Do your aerobic exercise every day.",
+     "DRAFT: Drink enough water.",
+     "DRAFT: Keep caffeine low, especially in the afternoon.",
+     "DRAFT: Sleep at least 7 hours."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: A heart value is clearly outside your usual range.",
+    "self_care": [
+     "DRAFT: Rest and avoid hard exercise today.",
+     "DRAFT: Drink an extra 500 mL of water.",
+     "DRAFT: Repeat the seated measurement in 1 hour."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Do your aerobic exercise every day.",
+     "DRAFT: Drink enough water.",
+     "DRAFT: Keep caffeine low, especially in the afternoon.",
+     "DRAFT: Sleep at least 7 hours."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: A heart value is in the danger range.",
+    "self_care": [
+     "DRAFT: Stop what you are doing and rest.",
+     "DRAFT: Keep the finger sensor on.",
+     "DRAFT: Open emergency mode if you feel chest pain, faint or short of breath."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Do your aerobic exercise every day.",
+     "DRAFT: Drink enough water.",
+     "DRAFT: Keep caffeine low, especially in the afternoon.",
+     "DRAFT: Sleep at least 7 hours."
+    ]
+   }
+  },
+  "lungs": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Breathing values look fine.",
+    "self_care": [
+     "DRAFT: Nothing extra needed today."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Keep vents and air flow clear.",
+     "DRAFT: Report high CO2 so the scrubber can be checked.",
+     "DRAFT: Wash your hands to avoid chest infections."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Breathing or oxygen is a little off.",
+    "self_care": [
+     "DRAFT: Move to a module with good air flow.",
+     "DRAFT: Check the cabin CO2 in the Cabin panel.",
+     "DRAFT: Repeat the check later today."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Keep vents and air flow clear.",
+     "DRAFT: Report high CO2 so the scrubber can be checked.",
+     "DRAFT: Wash your hands to avoid chest infections."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Breathing or oxygen is clearly off.",
+    "self_care": [
+     "DRAFT: Rest and breathe slowly.",
+     "DRAFT: Move to a module with good air flow.",
+     "DRAFT: Repeat the oxygen measurement in 30 minutes."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Keep vents and air flow clear.",
+     "DRAFT: Report high CO2 so the scrubber can be checked.",
+     "DRAFT: Wash your hands to avoid chest infections."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Breathing or oxygen is in the danger range.",
+    "self_care": [
+     "DRAFT: Stop and rest.",
+     "DRAFT: Keep the finger sensor on.",
+     "DRAFT: Ask a crewmate to get the oxygen mask ready."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Keep vents and air flow clear.",
+     "DRAFT: Report high CO2 so the scrubber can be checked.",
+     "DRAFT: Wash your hands to avoid chest infections."
+    ]
+   }
+  },
+  "immune": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: No signs of infection.",
+    "self_care": [
+     "DRAFT: Keep washing your hands before meals."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Wash your hands before eating.",
+     "DRAFT: Sleep enough; poor sleep weakens defences.",
+     "DRAFT: Clean shared surfaces every day."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: A possible sign of infection.",
+    "self_care": [
+     "DRAFT: Drink an extra 500 mL of water today.",
+     "DRAFT: Rest more today.",
+     "DRAFT: Measure your temperature again this evening."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Wash your hands before eating.",
+     "DRAFT: Sleep enough; poor sleep weakens defences.",
+     "DRAFT: Clean shared surfaces every day."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Clear signs of infection.",
+    "self_care": [
+     "DRAFT: Rest and drink often.",
+     "DRAFT: Keep your distance from the crew and clean shared surfaces.",
+     "DRAFT: Measure your temperature every 4 hours."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Wash your hands before eating.",
+     "DRAFT: Sleep enough; poor sleep weakens defences.",
+     "DRAFT: Clean shared surfaces every day."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Signs of a serious infection.",
+    "self_care": [
+     "DRAFT: Stop work and rest.",
+     "DRAFT: Keep your distance from the crew.",
+     "DRAFT: Measure your temperature now and write it down."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Wash your hands before eating.",
+     "DRAFT: Sleep enough; poor sleep weakens defences.",
+     "DRAFT: Clean shared surfaces every day."
+    ]
+   }
+  },
+  "metabolism": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Food, water and body mass look fine.",
+    "self_care": [
+     "DRAFT: Log your meals and water today."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Drink regularly, even when not thirsty.",
+     "DRAFT: Eat all planned meals.",
+     "DRAFT: Weigh yourself every week on the body mass device."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Food, water or body mass is a little off.",
+    "self_care": [
+     "DRAFT: Drink an extra 500 mL of water today.",
+     "DRAFT: Eat all three planned meals.",
+     "DRAFT: Log what you eat and drink."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Drink regularly, even when not thirsty.",
+     "DRAFT: Eat all planned meals.",
+     "DRAFT: Weigh yourself every week on the body mass device."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Food, water or body mass is clearly off.",
+    "self_care": [
+     "DRAFT: Drink a pouch of water every 2 hours while awake.",
+     "DRAFT: Add a snack between meals.",
+     "DRAFT: Measure again tomorrow."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Drink regularly, even when not thirsty.",
+     "DRAFT: Eat all planned meals.",
+     "DRAFT: Weigh yourself every week on the body mass device."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Food, water or blood sugar needs attention now.",
+    "self_care": [
+     "DRAFT: If you feel shaky or confused, eat or drink something sweet now.",
+     "DRAFT: Measure your blood sugar again in 15 minutes.",
+     "DRAFT: Stay with a crewmate."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Drink regularly, even when not thirsty.",
+     "DRAFT: Eat all planned meals.",
+     "DRAFT: Weigh yourself every week on the body mass device."
+    ]
+   }
+  },
+  "bones_muscles": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Exercise is on track.",
+    "self_care": [
+     "DRAFT: Do your planned exercise today."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Exercise every day: treadmill or bike plus resistance.",
+     "DRAFT: Eat enough protein.",
+     "DRAFT: Keep your harness adjusted so the legs carry load."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Exercise is below plan.",
+    "self_care": [
+     "DRAFT: Add 15 minutes to today's session.",
+     "DRAFT: Do your resistance exercises today."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Exercise every day: treadmill or bike plus resistance.",
+     "DRAFT: Eat enough protein.",
+     "DRAFT: Keep your harness adjusted so the legs carry load."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Exercise is well below plan.",
+    "self_care": [
+     "DRAFT: Plan two sessions today, morning and afternoon.",
+     "DRAFT: Ask the crew to protect your exercise time."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Exercise every day: treadmill or bike plus resistance.",
+     "DRAFT: Eat enough protein.",
+     "DRAFT: Keep your harness adjusted so the legs carry load."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Exercise has almost stopped.",
+    "self_care": [
+     "DRAFT: Tell the crew what is stopping you from exercising.",
+     "DRAFT: Start with a short, easy session today."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Exercise every day: treadmill or bike plus resistance.",
+     "DRAFT: Eat enough protein.",
+     "DRAFT: Keep your harness adjusted so the legs carry load."
+    ]
+   }
+  },
+  "radiation": {
+   "nominal": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Radiation dose is within plan.",
+    "self_care": [
+     "DRAFT: Wear your personal dosimeter."
+    ],
+    "tell_crew": "DRAFT: No need to tell anyone. Mention it at the weekly crew health chat if you like.",
+    "contact_surgeon": "DRAFT: No contact needed. It is part of your routine report.",
+    "prevention": [
+     "DRAFT: Wear your dosimeter at all times.",
+     "DRAFT: Know the way to the shielded area.",
+     "DRAFT: Watch for solar storm alerts."
+    ]
+   },
+   "watch": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Radiation dose is higher than planned.",
+    "self_care": [
+     "DRAFT: Check your dosimeter reading tonight.",
+     "DRAFT: Spend free time in the more shielded modules."
+    ],
+    "tell_crew": "DRAFT: Tell a crewmate today, so someone else is watching this with you.",
+    "contact_surgeon": "DRAFT: Mention it at your next planned contact with the flight surgeon if it does not improve in 2 to 3 days.",
+    "prevention": [
+     "DRAFT: Wear your dosimeter at all times.",
+     "DRAFT: Know the way to the shielded area.",
+     "DRAFT: Watch for solar storm alerts."
+    ]
+   },
+   "warning": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Radiation dose is close to the mission limit.",
+    "self_care": [
+     "DRAFT: Sleep in the most shielded area.",
+     "DRAFT: Keep time in less shielded modules short."
+    ],
+    "tell_crew": "DRAFT: Tell your crew today and ask someone to check on you later.",
+    "contact_surgeon": "DRAFT: Report it to the flight surgeon at the next planned contact. The app has a message draft ready.",
+    "prevention": [
+     "DRAFT: Wear your dosimeter at all times.",
+     "DRAFT: Know the way to the shielded area.",
+     "DRAFT: Watch for solar storm alerts."
+    ]
+   },
+   "act": {
+    "draft": "DRAFT - Yenna reviews",
+    "summary": "DRAFT: Radiation is high now.",
+    "self_care": [
+     "DRAFT: Go to the shielded area now.",
+     "DRAFT: Take your dosimeter with you.",
+     "DRAFT: Stay there until the alert ends."
+    ],
+    "tell_crew": "DRAFT: Tell your crew now. Do not stay alone.",
+    "contact_surgeon": "DRAFT: Contact the flight surgeon now. Follow the protocol while you wait for the answer.",
+    "prevention": [
+     "DRAFT: Wear your dosimeter at all times.",
+     "DRAFT: Know the way to the shielded area.",
+     "DRAFT: Watch for solar storm alerts."
+    ]
+   }
+  }
+ }
+}

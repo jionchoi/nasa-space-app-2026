@@ -1,0 +1,401 @@
+{
+ "A": {
+  "persona": "A",
+  "daily": [
+   {
+    "day": 1,
+    "msv": 0.64
+   },
+   {
+    "day": 2,
+    "msv": 0.63
+   },
+   {
+    "day": 3,
+    "msv": 0.64
+   },
+   {
+    "day": 4,
+    "msv": 0.67
+   },
+   {
+    "day": 5,
+    "msv": 0.58
+   },
+   {
+    "day": 6,
+    "msv": 0.66
+   },
+   {
+    "day": 7,
+    "msv": 0.59
+   },
+   {
+    "day": 8,
+    "msv": 0.59
+   },
+   {
+    "day": 9,
+    "msv": 0.55
+   },
+   {
+    "day": 10,
+    "msv": 0.66
+   },
+   {
+    "day": 11,
+    "msv": 0.66
+   },
+   {
+    "day": 12,
+    "msv": 0.54
+   },
+   {
+    "day": 13,
+    "msv": 0.6
+   },
+   {
+    "day": 14,
+    "msv": 0.56
+   },
+   {
+    "day": 15,
+    "msv": 0.73
+   },
+   {
+    "day": 16,
+    "msv": 0.51
+   },
+   {
+    "day": 17,
+    "msv": 0.64
+   },
+   {
+    "day": 18,
+    "msv": 0.62
+   },
+   {
+    "day": 19,
+    "msv": 0.63
+   },
+   {
+    "day": 20,
+    "msv": 0.54
+   },
+   {
+    "day": 21,
+    "msv": 0.59
+   },
+   {
+    "day": 22,
+    "msv": 0.65
+   },
+   {
+    "day": 23,
+    "msv": 0.59
+   },
+   {
+    "day": 24,
+    "msv": 0.63
+   },
+   {
+    "day": 25,
+    "msv": 0.59
+   },
+   {
+    "day": 26,
+    "msv": 0.65
+   },
+   {
+    "day": 27,
+    "msv": 0.61
+   },
+   {
+    "day": 28,
+    "msv": 0.51
+   },
+   {
+    "day": 29,
+    "msv": 0.64
+   },
+   {
+    "day": 30,
+    "msv": 0.68
+   }
+  ],
+  "today_msv": 0.68,
+  "mission_total_msv": 27.38,
+  "limit_msv": 150,
+  "status": "green",
+  "unit": "mSv",
+  "event": null,
+  "event_available": true,
+  "fallback_spike_used": false
+ },
+ "B": {
+  "persona": "B",
+  "daily": [
+   {
+    "day": 1,
+    "msv": 0.57
+   },
+   {
+    "day": 2,
+    "msv": 0.58
+   },
+   {
+    "day": 3,
+    "msv": 0.59
+   },
+   {
+    "day": 4,
+    "msv": 0.58
+   },
+   {
+    "day": 5,
+    "msv": 0.68
+   },
+   {
+    "day": 6,
+    "msv": 0.57
+   },
+   {
+    "day": 7,
+    "msv": 0.61
+   },
+   {
+    "day": 8,
+    "msv": 0.57
+   },
+   {
+    "day": 9,
+    "msv": 0.61
+   },
+   {
+    "day": 10,
+    "msv": 0.68
+   },
+   {
+    "day": 11,
+    "msv": 0.53
+   },
+   {
+    "day": 12,
+    "msv": 0.59
+   },
+   {
+    "day": 13,
+    "msv": 0.66
+   },
+   {
+    "day": 14,
+    "msv": 0.6
+   },
+   {
+    "day": 15,
+    "msv": 0.65
+   },
+   {
+    "day": 16,
+    "msv": 0.6
+   },
+   {
+    "day": 17,
+    "msv": 0.62
+   },
+   {
+    "day": 18,
+    "msv": 0.62
+   },
+   {
+    "day": 19,
+    "msv": 0.63
+   },
+   {
+    "day": 20,
+    "msv": 0.52
+   },
+   {
+    "day": 21,
+    "msv": 0.6
+   },
+   {
+    "day": 22,
+    "msv": 0.61
+   },
+   {
+    "day": 23,
+    "msv": 0.71
+   },
+   {
+    "day": 24,
+    "msv": 0.61
+   },
+   {
+    "day": 25,
+    "msv": 0.54
+   },
+   {
+    "day": 26,
+    "msv": 0.64
+   },
+   {
+    "day": 27,
+    "msv": 0.64
+   },
+   {
+    "day": 28,
+    "msv": 0.55
+   },
+   {
+    "day": 29,
+    "msv": 0.7
+   },
+   {
+    "day": 30,
+    "msv": 0.67
+   }
+  ],
+  "today_msv": 0.67,
+  "mission_total_msv": 27.33,
+  "limit_msv": 150,
+  "status": "green",
+  "unit": "mSv",
+  "event": null,
+  "event_available": true,
+  "fallback_spike_used": false
+ },
+ "C": {
+  "persona": "C",
+  "daily": [
+   {
+    "day": 1,
+    "msv": 0.61
+   },
+   {
+    "day": 2,
+    "msv": 0.49
+   },
+   {
+    "day": 3,
+    "msv": 0.53
+   },
+   {
+    "day": 4,
+    "msv": 0.62
+   },
+   {
+    "day": 5,
+    "msv": 0.7
+   },
+   {
+    "day": 6,
+    "msv": 0.62
+   },
+   {
+    "day": 7,
+    "msv": 0.66
+   },
+   {
+    "day": 8,
+    "msv": 0.57
+   },
+   {
+    "day": 9,
+    "msv": 0.51
+   },
+   {
+    "day": 10,
+    "msv": 0.62
+   },
+   {
+    "day": 11,
+    "msv": 0.57
+   },
+   {
+    "day": 12,
+    "msv": 0.56
+   },
+   {
+    "day": 13,
+    "msv": 0.56
+   },
+   {
+    "day": 14,
+    "msv": 0.67
+   },
+   {
+    "day": 15,
+    "msv": 0.59
+   },
+   {
+    "day": 16,
+    "msv": 0.54
+   },
+   {
+    "day": 17,
+    "msv": 0.45
+   },
+   {
+    "day": 18,
+    "msv": 0.6
+   },
+   {
+    "day": 19,
+    "msv": 0.57
+   },
+   {
+    "day": 20,
+    "msv": 0.56
+   },
+   {
+    "day": 21,
+    "msv": 0.59
+   },
+   {
+    "day": 22,
+    "msv": 0.62
+   },
+   {
+    "day": 23,
+    "msv": 0.57
+   },
+   {
+    "day": 24,
+    "msv": 0.47
+   },
+   {
+    "day": 25,
+    "msv": 0.58
+   },
+   {
+    "day": 26,
+    "msv": 0.61
+   },
+   {
+    "day": 27,
+    "msv": 0.68
+   },
+   {
+    "day": 28,
+    "msv": 0.61
+   },
+   {
+    "day": 29,
+    "msv": 0.66
+   },
+   {
+    "day": 30,
+    "msv": 0.55
+   }
+  ],
+  "today_msv": 0.55,
+  "mission_total_msv": 26.54,
+  "limit_msv": 150,
+  "status": "green",
+  "unit": "mSv",
+  "event": null,
+  "event_available": true,
+  "fallback_spike_used": false
+ }
+}

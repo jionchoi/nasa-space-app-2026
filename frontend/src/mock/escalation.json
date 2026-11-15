@@ -1,0 +1,73 @@
+{
+ "_status": "DRAFT - Yenna reviews the advice text.",
+ "_how_to_read": "status_to_level maps a region status to an advice level. A yellow region becomes 'crew' when at least crew_if_regions_yellow regions are yellow or worse. The environment changes the advice text, never the level. extra_steps adds a ladder step for one location (shown only, never an advice level): it sits after the level in `after`.",
+ "status_to_level": {
+  "green": "self",
+  "yellow": "self",
+  "orange": "surgeon_next",
+  "red": "surgeon_now"
+ },
+ "crew_if_regions_yellow": 2,
+ "levels": [
+  {
+   "id": "self",
+   "label": "Self-care",
+   "advice": {
+    "default": "Look after it yourself: rest, drink, exercise as planned, and repeat the check tomorrow."
+   }
+  },
+  {
+   "id": "crew",
+   "label": "Tell your crew",
+   "advice": {
+    "default": "Tell a crewmate today so someone else is watching this with you."
+   }
+  },
+  {
+   "id": "surgeon_next",
+   "label": "Flight surgeon next contact",
+   "advice": {
+    "default": "Report this at your next planned contact with the flight surgeon.",
+    "iss": "Report this at your next planned contact with the flight surgeon. The link is live, so you can also call sooner.",
+    "moon": "Report this at your next planned contact with the flight surgeon. Expect a short delay in the conversation.",
+    "mars": "Send a message to the flight surgeon today. It takes several minutes to arrive, and the reply takes as long to come back."
+   }
+  },
+  {
+   "id": "surgeon_now",
+   "label": "Flight surgeon now",
+   "advice": {
+    "default": "Contact the flight surgeon now.",
+    "iss": "Call the flight surgeon now. The link is live.",
+    "moon": "Call the flight surgeon now. Expect a delay of about a second each way.",
+    "mars": "Act now with your crew using the protocol; your message to the flight surgeon is sent and arrives in several minutes."
+   }
+  }
+ ],
+ "link": {
+  "iss": {
+   "pill": "Flight surgeon link: live",
+   "sent": "Delivered"
+  },
+  "moon": {
+   "pill": "Flight surgeon link: ~1.3 s delay",
+   "sent": "Delivered after ~1.3 s"
+  },
+  "mars": {
+   "pill": "Flight surgeon link: several minutes delay",
+   "sent": "Sent. Arrives in several minutes. Reply in roughly double that. Keep following the protocol."
+  },
+  "reply_placeholder": "PLACEHOLDER REPLY (simulated): Flight surgeon here. Message received. Keep following the protocol and send the vitals again in 5 minutes."
+ },
+ "extra_steps": {
+  "rover": [
+   {
+    "id": "return_base",
+    "label": "Return to base",
+    "after": "crew",
+    "advice": "DRAFT: Stop the drive plan and head back to base now. Tell the base crew when you expect to arrive.",
+    "draft": "DRAFT - Yenna reviews"
+   }
+  ]
+ }
+}

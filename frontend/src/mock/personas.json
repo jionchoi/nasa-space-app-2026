@@ -1,0 +1,25 @@
+[
+ {
+  "id": "A",
+  "name": "Alex Moreno",
+  "description": "Healthy baseline. All values stay in the usual range.",
+  "simulated": true,
+  "mission_day": 45
+ },
+ {
+  "id": "B",
+  "name": "Sam Idowu",
+  "description": "Slow drift over 30 days: resting heart rate rises, heart rate variability and sleep fall.",
+  "simulated": true,
+  "mission_day": 45
+ },
+ {
+  "id": "C",
+  "name": "Jordan Lee",
+  "description": "Acute event in the live recording (simulated): fast heart rate, low oxygen, then unresponsive with the pulse lost.",
+  "simulated": true,
+  "mission_day": 45,
+  "event_start_s": 180,
+  "unresponsive_s": 480
+ }
+]

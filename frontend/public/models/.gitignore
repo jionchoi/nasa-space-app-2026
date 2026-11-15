@@ -1,0 +1,2 @@
+# Copied from node_modules by the postinstall script (scripts/copy-mediapipe-wasm.mjs)
+wasm/

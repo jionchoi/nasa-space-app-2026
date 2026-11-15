@@ -1,0 +1,6 @@
+{
+  "green": "Nominal",
+  "yellow": "Watch",
+  "orange": "Warning",
+  "red": "Act now"
+}

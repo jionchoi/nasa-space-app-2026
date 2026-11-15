@@ -1,0 +1,221 @@
+[
+ {
+  "id": "iss",
+  "label": "ISS",
+  "delay_s": [
+   0.0,
+   2.0
+  ],
+  "advice_note": "Contact with the ground is near real-time. You can talk to the flight surgeon directly.",
+  "schedule": [
+   {
+    "id": "daily_check",
+    "time": "07:30",
+    "text": "Time for your 5-minute daily check.",
+    "action": "/check",
+    "mission": "daily_check"
+   },
+   {
+    "id": "lunch",
+    "time": "12:30",
+    "text": "Lunch: log your meal and the water you drank.",
+    "action": "log:meal",
+    "mission": "meals"
+   },
+   {
+    "id": "exercise",
+    "time": "16:00",
+    "text": "Exercise block. Log your session when you are done.",
+    "action": "log:exercise",
+    "mission": "exercise"
+   },
+   {
+    "id": "water",
+    "time": "19:00",
+    "text": "Check your water for today.",
+    "action": "log:meal",
+    "mission": "water"
+   }
+  ],
+  "sleep": {
+   "start": "22:00",
+   "end": "06:00"
+  },
+  "clock": "GMT",
+  "estimated_data": []
+ },
+ {
+  "id": "moon",
+  "label": "Moon base",
+  "delay_s": [
+   1.0,
+   3.0
+  ],
+  "advice_note": "Messages take about 1.3 seconds each way. A conversation works, with short pauses.",
+  "schedule": [
+   {
+    "id": "daily_check",
+    "time": "07:30",
+    "text": "Time for your 5-minute daily check.",
+    "action": "/check",
+    "mission": "daily_check"
+   },
+   {
+    "id": "lunch",
+    "time": "12:30",
+    "text": "Lunch: log your meal and the water you drank.",
+    "action": "log:meal",
+    "mission": "meals"
+   },
+   {
+    "id": "exercise",
+    "time": "16:00",
+    "text": "Exercise block. Log your session when you are done.",
+    "action": "log:exercise",
+    "mission": "exercise"
+   },
+   {
+    "id": "water",
+    "time": "19:00",
+    "text": "Check your water for today.",
+    "action": "log:meal",
+    "mission": "water"
+   }
+  ],
+  "sleep": {
+   "start": "22:00",
+   "end": "06:00"
+  },
+  "clock": "GMT",
+  "estimated_data": []
+ },
+ {
+  "id": "mars",
+  "label": "Mars transit",
+  "delay_s": [
+   180.0,
+   1320.0
+  ],
+  "advice_note": "Messages take several minutes each way. Act with your crew first; the flight surgeon's answer comes later.",
+  "schedule": [
+   {
+    "id": "daily_check",
+    "time": "07:30",
+    "text": "Time for your 5-minute daily check.",
+    "action": "/check",
+    "mission": "daily_check"
+   },
+   {
+    "id": "lunch",
+    "time": "12:30",
+    "text": "Lunch: log your meal and the water you drank.",
+    "action": "log:meal",
+    "mission": "meals"
+   },
+   {
+    "id": "exercise",
+    "time": "16:00",
+    "text": "Exercise block. Log your session when you are done.",
+    "action": "log:exercise",
+    "mission": "exercise"
+   },
+   {
+    "id": "water",
+    "time": "19:00",
+    "text": "Check your water for today.",
+    "action": "log:meal",
+    "mission": "water"
+   }
+  ],
+  "sleep": {
+   "start": "22:00",
+   "end": "06:00"
+  },
+  "clock": "GMT",
+  "estimated_data": []
+ },
+ {
+  "id": "rover",
+  "label": "Surface rover",
+  "delay_s": [
+   1.0,
+   3.0
+  ],
+  "advice_note": "DRAFT: You are away from the base with a small medical kit. Tell your crew early and plan the drive back before you need the flight surgeon.",
+  "schedule": [
+   {
+    "id": "daily_check",
+    "time": "07:30",
+    "text": "Time for your 5-minute daily check.",
+    "action": "/check",
+    "mission": "daily_check"
+   },
+   {
+    "id": "lunch",
+    "time": "12:30",
+    "text": "Lunch: log your meal and the water you drank.",
+    "action": "log:meal",
+    "mission": "meals"
+   },
+   {
+    "id": "exercise",
+    "time": "16:00",
+    "text": "Exercise block. Log your session when you are done.",
+    "action": "log:exercise",
+    "mission": "exercise"
+   },
+   {
+    "id": "water",
+    "time": "19:00",
+    "text": "Check your water for today.",
+    "action": "log:meal",
+    "mission": "water"
+   }
+  ],
+  "sleep": {
+   "start": "22:00",
+   "end": "06:00"
+  },
+  "clock": "GMT",
+  "planet": "moon",
+  "planets": {
+   "moon": {
+    "label": "Moon",
+    "delay_s": [
+     1.0,
+     3.0
+    ],
+    "advice_as": "moon",
+    "advice_note": "DRAFT: Messages to Earth take about 1.3 seconds each way. You can talk to the flight surgeon with short pauses."
+   },
+   "mars": {
+    "label": "Mars",
+    "delay_s": [
+     180.0,
+     1320.0
+    ],
+    "advice_as": "mars",
+    "advice_note": "DRAFT: Messages to Earth take several minutes each way. Act with your crew and head back to base; the flight surgeon's answer comes later."
+   }
+  },
+  "distance_to_base": {
+   "km": 12,
+   "drive_min": 60,
+   "note": "DRAFT: Placeholder distance for the demo."
+  },
+  "medical_kit": "limited",
+  "kit_notes": {
+   "_how_to_read": "Shown on an emergency protocol step that lists this equipment (step 'equipment'), when the location's medical_kit is 'limited'.",
+   "default": "DRAFT: Limited kit on the rover. If this item is not on board, do what you can and start driving back to base.",
+   "oxygen": "DRAFT: Limited kit on the rover: there may be only a small oxygen bottle. Use it and start driving back to base.",
+   "medical_kit": "DRAFT: Limited kit on the rover: some medicines may not be on board. Ask the flight surgeon what to use from the rover kit.",
+   "restraint": "DRAFT: Limited kit on the rover: no medical restraint area. Strap them to a seat or lay them flat on the floor.",
+   "sensor": "DRAFT: Limited kit on the rover: if there is no finger sensor, check the pulse at the neck by hand."
+  },
+  "estimated_data": [
+   "radiation",
+   "cabin"
+  ],
+  "draft": "DRAFT - Yenna reviews"
+ }
+]

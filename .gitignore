@@ -1,0 +1,30 @@
+# node
+node_modules/
+dist/
+*.log
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# env
+.env
+.env.*
+!.env.example
+
+# large raw data (keep converters and the JSON they produce)
+data/raw/
+backend/data/raw/
+
+# local runtime database (recreated on start; reset via POST /api/admin/reset)
+backend/data/app.db
+backend/data/app.db-*
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

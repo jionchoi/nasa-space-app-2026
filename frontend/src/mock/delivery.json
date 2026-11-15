@@ -1,0 +1,27 @@
+{
+ "iss": {
+  "env": "iss",
+  "delay_s": 1.0,
+  "status_text": "Delivered"
+ },
+ "moon": {
+  "env": "moon",
+  "delay_s": 2.0,
+  "status_text": "Delivered after ~1.3 s"
+ },
+ "mars": {
+  "env": "mars",
+  "delay_s": 750.0,
+  "status_text": "Sent. Arrives in several minutes. Reply in roughly double that. Keep following the protocol."
+ },
+ "rover:moon": {
+  "env": "rover:moon",
+  "delay_s": 2.0,
+  "status_text": "Delivered after ~1.3 s"
+ },
+ "rover:mars": {
+  "env": "rover:mars",
+  "delay_s": 750.0,
+  "status_text": "Sent. Arrives in several minutes. Reply in roughly double that. Keep following the protocol."
+ }
+}

@@ -1,0 +1,265 @@
+{
+ "chest_pain": {
+  "id": "chest_pain",
+  "title": "Chest pain or pressure",
+  "steps": [
+   {
+    "n": 1,
+    "key": null,
+    "text": "Stay calm. Stop all activity. Help the crew member rest in a secure, comfortable position and loosen tight clothing.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": null,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": []
+   },
+   {
+    "n": 2,
+    "key": "awake",
+    "text": "Check if they are awake.",
+    "check": "Are they awake and answering you?",
+    "red_flag": true,
+    "timer_s": null,
+    "on_yes": "next",
+    "on_no": 8,
+    "equipment": []
+   },
+   {
+    "n": 3,
+    "key": null,
+    "text": "Clip the sensor on their finger. Keep the hand still for 30 seconds so the readings at the top settle.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": 30,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": [
+     "sensor"
+    ]
+   },
+   {
+    "n": 4,
+    "key": null,
+    "text": "Ask about the pain.",
+    "check": "Is the pain strong, crushing, or spreading to the arm, jaw or back?",
+    "red_flag": true,
+    "timer_s": null,
+    "on_yes": "next",
+    "on_no": "next",
+    "equipment": []
+   },
+   {
+    "n": 5,
+    "key": null,
+    "text": "Look at them closely.",
+    "check": "Are they short of breath, sweaty, or feeling faint?",
+    "red_flag": true,
+    "timer_s": null,
+    "on_yes": "next",
+    "on_no": "next",
+    "equipment": []
+   },
+   {
+    "n": 6,
+    "key": "oxygen",
+    "text": "Give oxygen: put the oxygen mask from the medical kit on them and set the flow the kit card shows. Watch the blood oxygen at the top.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": 60,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": [
+     "oxygen"
+    ]
+   },
+   {
+    "n": 7,
+    "key": null,
+    "text": "Send the message to the flight surgeon now (panel below). Use the medical kit only as its card or the flight surgeon tells you. Keep them resting for 5 minutes.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": 300,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": [
+     "medical_kit"
+    ]
+   },
+   {
+    "n": 8,
+    "key": "breathing",
+    "text": "Check their breathing: look, listen and feel for 10 seconds.",
+    "check": "Are they breathing normally?",
+    "red_flag": true,
+    "timer_s": 10,
+    "on_yes": "next",
+    "on_no": "cpr",
+    "equipment": []
+   },
+   {
+    "n": 9,
+    "key": null,
+    "text": "Stay with them and keep watching the vitals. Do not leave them alone.",
+    "check": "Have they stopped responding or stopped breathing?",
+    "red_flag": true,
+    "timer_s": null,
+    "on_yes": "cpr",
+    "on_no": "next",
+    "equipment": []
+   }
+  ],
+  "red_flags": [
+   "Not awake or not answering",
+   "Not breathing normally",
+   "Blood oxygen (SpO2) in the danger range",
+   "Heart rate in the danger range (very fast or very slow)",
+   "Irregular heart rhythm"
+  ],
+  "red_flag_routes": [
+   {
+    "flag": "pulse_lost",
+    "goto": "cpr",
+    "message": "Pulse lost",
+    "countdown_s": 5,
+    "_draft": "DRAFT - Yenna reviews"
+   },
+   {
+    "flag": "spo2_critical",
+    "goto": 6,
+    "message": "Blood oxygen critical",
+    "countdown_s": 5,
+    "_draft": "DRAFT - Yenna reviews"
+   }
+  ],
+  "draft": "DRAFT - Yenna reviews"
+ },
+ "unresponsive": {
+  "id": "unresponsive",
+  "title": "Crew member not responding",
+  "steps": [
+   {
+    "n": 1,
+    "key": "responsive",
+    "text": "Call their name loudly and squeeze their shoulder. Watch their face and hands.",
+    "check": "Does the crew member respond?",
+    "red_flag": true,
+    "timer_s": null,
+    "on_yes": 8,
+    "on_no": "next",
+    "equipment": []
+   },
+   {
+    "n": 2,
+    "key": null,
+    "text": "Stop the drift: hold them by the torso (not the arms) and guide them to the nearest wall or the medical restraint area. Call your crew for help now.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": null,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": [
+     "restraint"
+    ]
+   },
+   {
+    "n": 3,
+    "key": null,
+    "text": "Restrain them face up against a firm surface: straps across the chest and hips. Put your own feet in foot loops so you stay in place.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": null,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": [
+     "restraint"
+    ]
+   },
+   {
+    "n": 4,
+    "key": "breathing",
+    "text": "Open the airway: tilt the head back gently, chin up. Look, listen and feel for breathing for 10 seconds.",
+    "check": "Are they breathing normally?",
+    "red_flag": true,
+    "timer_s": 10,
+    "on_yes": "next",
+    "on_no": "cpr",
+    "equipment": []
+   },
+   {
+    "n": 5,
+    "key": "pulse",
+    "text": "Feel for a pulse at the side of the neck for up to 10 seconds, or read it on the finger sensor.",
+    "check": "Can you feel a pulse?",
+    "red_flag": true,
+    "timer_s": 10,
+    "on_yes": "next",
+    "on_no": "cpr",
+    "equipment": [
+     "sensor"
+    ]
+   },
+   {
+    "n": 6,
+    "key": "oxygen",
+    "text": "Give oxygen: put the oxygen mask from the medical kit on them and set the flow the kit card shows.",
+    "check": null,
+    "red_flag": false,
+    "timer_s": 60,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": [
+     "oxygen"
+    ]
+   },
+   {
+    "n": 7,
+    "key": null,
+    "text": "Keep them restrained with the airway open and the sensor on their finger. Watch the vitals at the top.",
+    "check": "Has breathing stopped or turned into gasping?",
+    "red_flag": true,
+    "timer_s": null,
+    "on_yes": "cpr",
+    "on_no": "next",
+    "equipment": []
+   },
+   {
+    "n": 8,
+    "key": null,
+    "text": "Stay with them, keep them restrained and warm, and send the message to the flight surgeon (panel below).",
+    "check": null,
+    "red_flag": false,
+    "timer_s": null,
+    "on_yes": null,
+    "on_no": null,
+    "equipment": []
+   }
+  ],
+  "red_flags": [
+   "Not responding",
+   "Not breathing normally or gasping",
+   "No pulse",
+   "Blood oxygen (SpO2) in the danger range",
+   "Heart rate in the danger range (very fast or very slow)",
+   "Irregular heart rhythm"
+  ],
+  "red_flag_routes": [
+   {
+    "flag": "pulse_lost",
+    "goto": "cpr",
+    "message": "Pulse lost",
+    "countdown_s": 5,
+    "_draft": "DRAFT - Yenna reviews"
+   },
+   {
+    "flag": "spo2_critical",
+    "goto": 6,
+    "message": "Blood oxygen critical",
+    "countdown_s": 5,
+    "_draft": "DRAFT - Yenna reviews"
+   }
+  ],
+  "draft": "DRAFT - Yenna reviews",
+  "_note": "Microgravity order: stop the drift and restrain the crew member against a surface first; only then airway, breathing, pulse and CPR. PLACEHOLDER text, based on general first-aid order; Yenna checks against NASA guidance."
+ }
+}

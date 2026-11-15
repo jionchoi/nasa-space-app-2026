@@ -1,0 +1,297 @@
+{
+ "_status": "DRAFT - Yenna reviews every text in this file.",
+ "_how_to_read": "One entry per metric in thresholds.json (same key). how_to_measure = steps shown in the Learn tab and the daily check; why_check = why this matters in space (one line under the step title in the daily check); can_do_in_space = whether it can be measured on board, with a note on the equipment.",
+ "metrics": {
+  "hr_rest": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Sit still for 2 minutes with the sensor on a fingertip.",
+    "DRAFT: The app takes the middle value of the last minute."
+   ],
+   "why_check": "DRAFT: Your resting heart rate shows how hard your heart works at rest. In space it can creep up with poor sleep, stress or lost fitness.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Finger clip sensor (PPG), already on board."
+   }
+  },
+  "hrv_rmssd": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Measured during the 2-minute seated rest.",
+    "DRAFT: Breathe slowly with the circle and keep your hand still."
+   ],
+   "why_check": "DRAFT: Heart rate variability shows how well your body recovers. It often falls with stress, poor sleep or illness before you feel it.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Same finger clip sensor during the seated rest."
+   }
+  },
+  "spo2": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Sensor on a warm fingertip, nail facing up.",
+    "DRAFT: Keep the hand at heart level and still for 30 seconds."
+   ],
+   "why_check": "DRAFT: Blood oxygen tells you if your lungs pass enough oxygen into the blood. Low values need attention quickly.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Finger clip sensor (PPG)."
+   }
+  },
+  "rr": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Estimated from the sensor during seated rest.",
+    "DRAFT: Breathe normally; do not follow the breathing circle for this one."
+   ],
+   "why_check": "DRAFT: Breathing rate rises with illness, high cabin CO2 or anxiety, and is one of the first signs that something is wrong.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Estimated from the finger clip sensor; no extra equipment."
+   }
+  },
+  "stand_hr_rise": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: After seated rest, stand up (in weightlessness: brace in the foot loops and tense your legs).",
+    "DRAFT: Hold for 1 minute; the app compares the highest heart rate with your resting rate."
+   ],
+   "why_check": "DRAFT: In weightlessness the heart and blood vessels get used to not fighting gravity. A big rise on standing warns of dizziness or fainting when gravity returns.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Finger clip sensor plus foot loops or a bungee harness to load the legs."
+   }
+  },
+  "bp_sys": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Sit still for 1 minute before you start, back supported, feet flat (in weightlessness: feet in the foot loops).",
+    "DRAFT: Put the cuff on your bare upper arm, at the level of your heart.",
+    "DRAFT: Do not talk or move during the measurement.",
+    "DRAFT: In weightlessness, let the arm rest relaxed and still against your body or a strap; do not hold it up.",
+    "DRAFT: Type the top number (systolic) and the bottom number (diastolic) the cuff shows."
+   ],
+   "why_check": "DRAFT: Blood pressure shows the load on your heart and blood vessels. Fluids shift toward the head in space, and pressure can change in either direction.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Automatic arm cuff from the medical kit."
+   }
+  },
+  "bp_dia": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Measured together with the top number; follow the same cuff steps."
+   ],
+   "why_check": "DRAFT: The bottom number shows the pressure while the heart relaxes between beats. It is read together with the top number.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Same arm cuff as the top number."
+   }
+  },
+  "sleep_h": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Enter the hours you slept in the daily check questions."
+   ],
+   "why_check": "DRAFT: Sleep is often short and broken in space because of noise, light and workload. Too little sleep slows thinking and raises the risk of mistakes.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Your own answer in the daily check; a sleep watch can add detail."
+   }
+  },
+  "mood": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Answer the mood question in the daily check (1 = very low, 5 = very good)."
+   ],
+   "why_check": "DRAFT: Isolation and a small crew can wear down mood over months. Catching a low mood early makes it easier to fix.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Your own answer in the daily check."
+   }
+  },
+  "stress": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Answer the stress question in the daily check (1 = calm, 5 = overwhelmed)."
+   ],
+   "why_check": "DRAFT: High stress over many days affects sleep, the heart and the immune system.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Your own answer in the daily check."
+   }
+  },
+  "symptoms_immune": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Answer the cough, sore throat and fever question in the daily check.",
+    "DRAFT: Scores of 3 or more count as a symptom."
+   ],
+   "why_check": "DRAFT: Cough, sore throat or fever can spread to the whole crew in a closed cabin, and dormant viruses can wake up in flight.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Your own answers in the daily check; thermometer for fever."
+   }
+  },
+  "hydration_l": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Count the drink pouches you finished today and enter the total."
+   ],
+   "why_check": "DRAFT: Thirst is weaker in space, so it is easy to drink too little. Low fluids raise the risk of kidney stones and headaches.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Count the drink pouches; logged in the app."
+   }
+  },
+  "body_mass_change_pct": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Weekly body mass measurement with the on-board mass device, compared with the start of the mission."
+   ],
+   "why_check": "DRAFT: Losing body mass often means eating too little, which weakens muscles and bones.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: On-board body mass device (scales do not work without gravity)."
+   }
+  },
+  "exercise_min_7d": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Log each exercise session (treadmill, bike, resistance device) with its minutes.",
+    "DRAFT: The app averages the last 7 days."
+   ],
+   "why_check": "DRAFT: Without weight on the body, bones and muscles get weaker every week. Daily exercise is the main protection.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Treadmill with harness, bike and resistance device; logged in the app."
+   }
+  },
+  "radiation_total_msv": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Read your personal dosimeter once a day and enter the value.",
+    "DRAFT: The app adds the daily doses for the mission total."
+   ],
+   "why_check": "DRAFT: Radiation adds up over the mission and raises long-term health risks. Solar storms can add a large dose in hours.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Personal dosimeter and cabin radiation monitor."
+   }
+  },
+  "hr": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Live from the clip-on sensor, updated every second."
+   ],
+   "why_check": "DRAFT: The live heart rate can warn of an emergency, like a very fast or very slow heart, as it happens.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Finger clip sensor, updated every second."
+   }
+  },
+  "irregular": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Detected by the sensor from the beat-to-beat timing; keep the hand still."
+   ],
+   "why_check": "DRAFT: An irregular rhythm can be harmless or a sign of a heart problem that needs the flight surgeon.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Finger clip sensor; an ECG patch can confirm it if one is on board."
+   }
+  },
+  "signal_quality": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Shown by the sensor. If it is low: hold still, relax the hand, re-seat the clip."
+   ],
+   "why_check": "DRAFT: A poor signal gives wrong numbers. This tells you when to hold still or re-seat the clip.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Finger clip sensor."
+   }
+  },
+  "co2_ppm": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Read from the cabin air monitor (shown in the Cabin panel); no action needed from the crew.",
+    "DRAFT: If it stays high, check the CO2 scrubber and spread the crew across modules."
+   ],
+   "why_check": "DRAFT: Cabin CO2 builds up because air is recycled. High CO2 causes headaches, poor sleep and slower thinking.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Cabin air monitor; no action needed from the crew."
+   }
+  },
+  "cabin_temp_c": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Read from the cabin air monitor (Cabin panel)."
+   ],
+   "why_check": "DRAFT: A cabin that is too warm or too cold disturbs sleep and comfort.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Cabin air monitor."
+   }
+  },
+  "cabin_noise_dba": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Read from the cabin sound meter (Cabin panel). Use ear protection above the watch level."
+   ],
+   "why_check": "DRAFT: Fans and pumps run all the time. Constant noise disturbs sleep and can harm hearing over months.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Cabin sound meter or personal noise dosimeter."
+   }
+  },
+  "temp_c": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Use the medical kit thermometer under the tongue, mouth closed, until it beeps.",
+    "DRAFT: Do not eat or drink for 10 minutes before."
+   ],
+   "why_check": "DRAFT: Body temperature is the simplest sign of an infection. The immune system works less well in space, so a fever matters.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Medical kit thermometer."
+   }
+  },
+  "glucose_mmol": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Wash and dry your hands. Use the glucometer on the side of a fingertip.",
+    "DRAFT: Enter the number shown; you can switch between mmol/L and mg/dL."
+   ],
+   "why_check": "DRAFT: Blood sugar shows how your body handles food for energy. Long missions can change how the body uses sugar.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: Glucometer and test strips from the medical kit."
+   }
+  },
+  "pvt_median_ms": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Reaction test in the daily check (3 minutes): press space or tap as soon as the target appears.",
+    "DRAFT: Take it at about the same time each day, before caffeine."
+   ],
+   "why_check": "DRAFT: Reaction time shows how alert you are. It slows with poor sleep and fatigue before you notice it yourself.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: The tablet or laptop running this app."
+   }
+  },
+  "pvt_lapses": {
+   "draft": "DRAFT - Yenna reviews",
+   "how_to_measure": [
+    "DRAFT: Counted by the reaction test: reactions slower than 500 ms or missed targets."
+   ],
+   "why_check": "DRAFT: Lapses are moments when your attention drops out. More lapses mean a higher risk of mistakes during tasks.",
+   "can_do_in_space": {
+    "possible": true,
+    "note": "DRAFT: The tablet or laptop running this app."
+   }
+  }
+ }
+}

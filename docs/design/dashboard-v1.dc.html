@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Health Co-Pilot dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0F14}
+a{color:#7DB2FF}a:hover{color:#A9CBFF}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #0B0F14; color: #E6EBF2; font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.45">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #1C2430; background: #0E131A">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <div style="width: 32px; height: 32px; border-radius: 8px; background: #16243A; display: flex; align-items: center; justify-content: center">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7DB2FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"></path></svg>
+    </div>
+    <span style="font-weight: 700; font-size: 16px">Health Co-Pilot</span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding-left: 16px; border-left: 1px solid #1C2430">
+    <div style="width: 32px; height: 32px; border-radius: 50%; background: #1C2633; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">AM</div>
+    <div style="display: flex; flex-direction: column">
+      <span style="font-weight: 600">Alex Moreno</span>
+      <span style="font-size: 12px; color: #9AA6B5">Mission day 45 · <span style="color: #F5C451">Simulated data</span></span>
+    </div>
+  </div>
+
+  <div role="group" aria-label="Location" style="display: flex; gap: 4px; padding: 4px; border-radius: 10px; background: #141B24; border: 1px solid #1C2430">
+    <sc-for list="{{ envs }}" as="e" hint-placeholder-count="3">
+      <button type="button" onClick="{{ e.pick }}" aria-pressed="{{ e.pressed }}" style="{{ e.style }}">{{ e.label }}</button>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #C3CCD8">
+    <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ envNow.dot }}"></span>
+    <span>{{ envNow.link }}</span>
+  </div>
+
+  <div style="flex: 1 1 0px"></div>
+
+  <span style="font-size: 12px; color: #9AA6B5; display: flex; align-items: center; gap: 6px">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+    Runs on board, no internet needed
+  </span>
+  <button type="button" aria-label="Messages to flight surgeon" style="height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #1C2430; background: #141B24; color: #E6EBF2; display: flex; align-items: center; gap: 8px; cursor: pointer">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H5.2L4 17.2z"></path></svg>
+    Messages
+    <span style="min-width: 18px; height: 18px; border-radius: 9px; background: {{ msgBadgeBg }}; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 5px">{{ msgCount }}</span>
+  </button>
+  <button type="button" style="height: 40px; padding: 0 18px; border-radius: 10px; border: none; background: #E5484D; color: #FFFFFF; font-weight: 700; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px; cursor: pointer">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v5"></path><path d="M12 16.5v.5"></path><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+    EMERGENCY
+  </button>
+</header>
+
+<section aria-label="Live vitals" style="max-width: 1440px; margin: 0 auto; padding: 20px 24px 0; box-sizing: border-box">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px">
+    <span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700"><span style="width: 10px; height: 10px; border-radius: 50%; background: #3DD68C; box-shadow: 0 0 0 4px rgba(61,214,140,0.18)"></span>Live vitals</span>
+    <span style="font-size: 13px; color: #9AA6B5">Updating every second · replayed recording</span>
+    <span style="flex: 1 1 0px"></span>
+    <span style="font-size: 13px; color: #9AA6B5">Finger sensor · signal {{ signal }}%</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+    <sc-for list="{{ vitals }}" as="v" hint-placeholder-count="4">
+      <div style="{{ v.tileStyle }}">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-size: 14px; font-weight: 600; color: #C3CCD8">{{ v.name }}</span>
+          <span style="font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: {{ v.bg }}; color: {{ v.color }}">{{ v.label }}</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 6px">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 48px; line-height: 1; font-weight: 600; color: #F4F7FB">{{ v.value }}</span>
+          <span style="font-size: 16px; color: #9AA6B5">{{ v.unit }}</span>
+        </div>
+        <svg viewBox="0 0 120 28" width="100%" height="40" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="{{ v.spark }}" fill="none" stroke="{{ v.color }}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+        </svg>
+        <span style="font-size: 12px; color: #9AA6B5">{{ v.range }}</span>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<main style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px 24px 24px; max-width: 1440px; margin: 0 auto; box-sizing: border-box; align-items: flex-start">
+
+  <section aria-label="Today" style="flex: 1 1 300px; max-width: 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+    <div style="border-radius: 16px; padding: 20px; background: {{ hero.bg }}; border: 1px solid {{ hero.border }}; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: {{ hero.color }}"></span>
+        <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: {{ hero.color }}">{{ hero.kicker }}</span>
+      </div>
+      <h1 style="margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700">{{ hero.title }}</h1>
+      <p style="margin: 0; color: #C3CCD8">{{ hero.text }}</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px">
+        <button type="button" onClick="{{ hero.primaryAction }}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: none; background: #5B9DFF; color: #0B0F14; font-weight: 700; cursor: pointer">{{ hero.primary }}</button>
+        <sc-if value="{{ hero.hasSecondary }}" hint-placeholder-val="{{ false }}">
+          <button type="button" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #2A3644; background: transparent; color: #E6EBF2; font-weight: 600; cursor: pointer">{{ hero.secondary }}</button>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="border-radius: 16px; padding: 16px 20px; background: #121821; border: 1px solid #1C2430; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-weight: 600">Today's routine</span>
+        <span style="font-size: 12px; color: #9AA6B5">{{ missionsDone }} of 4 done</span>
+      </div>
+      <div style="height: 6px; border-radius: 3px; background: #1C2430; overflow: hidden">
+        <div style="height: 6px; width: {{ missionsPct }}; background: #5B9DFF"></div>
+      </div>
+      <sc-for list="{{ missions }}" as="m" hint-placeholder-count="4">
+        <button type="button" onClick="{{ m.toggle }}" aria-pressed="{{ m.done }}" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 4px; border: none; background: transparent; color: #E6EBF2; text-align: left; cursor: pointer">
+          <span style="{{ m.boxStyle }}">
+            <sc-if value="{{ m.done }}" hint-placeholder-val="{{ false }}">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0B0F14" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+            </sc-if>
+          </span>
+          <span style="display: flex; flex-direction: column; flex: 1 1 0px">
+            <span style="font-weight: 500">{{ m.label }}</span>
+            <span style="font-size: 12px; color: #9AA6B5">{{ m.detail }}</span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="border-radius: 16px; padding: 16px 20px; background: #121821; border: 1px solid #1C2430; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-weight: 600">Cabin air</span>
+        <span style="font-size: 12px; color: #9AA6B5">Simulated</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{ cabin }}" as="c" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 12px; color: #9AA6B5">{{ c.name }}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; color: {{ c.color }}">{{ c.value }}<span style="font-family: Inter, sans-serif; font-size: 11px; color: #9AA6B5; font-weight: 400"> {{ c.unit }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border-radius: 16px; padding: 16px 12px 8px; background: #121821; border: 1px solid #1C2430">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 8px 8px">
+        <span style="font-weight: 600">Body areas</span>
+        <span style="font-size: 12px; color: #9AA6B5">Most urgent first</span>
+      </div>
+      <sc-for list="{{ regionList }}" as="r" hint-placeholder-count="7">
+        <button type="button" onClick="{{ r.pick }}" aria-pressed="{{ r.selected }}" style="{{ r.rowStyle }}">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: {{ r.color }}; flex: 0 0 auto"></span>
+          <span style="display: flex; flex-direction: column; flex: 1 1 0px; min-width: 0">
+            <span style="font-weight: 600">{{ r.name }}</span>
+            <span style="font-size: 12px; color: #9AA6B5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ r.summary }}</span>
+          </span>
+          <span style="font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: {{ r.bg }}; color: {{ r.color }}; flex: 0 0 auto">{{ r.label }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-label="Body map" style="flex: 2 1 380px; min-width: 0; border-radius: 16px; background: #0F141B; border: 1px solid #1C2430; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px">
+    <div style="align-self: stretch; display: flex; justify-content: space-between; align-items: baseline">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 600">Body map</h2>
+      <span style="font-size: 12px; color: #9AA6B5">Tap a point to see details</span>
+    </div>
+
+    <div style="position: relative; width: 200px; height: 638px; margin: 16px 0 8px">
+      <div aria-hidden="true" style="position: absolute; left: -70px; right: -70px; top: -14px; bottom: -14px; border-radius: 50%; border: 1.5px dashed {{ radiation.color }}; opacity: 0.55"></div>
+      <img src="/_blob/b29a1ec0fe2f5155c320c30bff6c00ec" alt="Human body figure showing organs" style="position: absolute; inset: 0px; width: 200px; height: 638px">
+      <sc-for list="{{ hotspots }}" as="h" hint-placeholder-count="6">
+        <button type="button" onClick="{{ h.pick }}" aria-label="{{ h.aria }}" style="{{ h.style }}">
+          <span style="{{ h.dotStyle }}"></span>
+          <sc-if value="{{ h.showLabel }}" hint-placeholder-val="{{ false }}">
+            <span style="{{ h.labelStyle }}">{{ h.name }} · {{ h.label }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+      <button type="button" onClick="{{ radiation.pick }}" aria-label="Radiation, whole body" style="position: absolute; left: 50%; bottom: -36px; transform: translateX(-50%); min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #2A3644; background: #121821; color: #E6EBF2; font-size: 12px; display: flex; align-items: center; gap: 8px; white-space: nowrap; cursor: pointer">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ radiation.color }}"></span>
+        Radiation · whole body · {{ radiation.label }}
+      </button>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 32px; font-size: 12px; color: #C3CCD8">
+      <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #3DD68C"></span>Nominal</span>
+      <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #F5C451"></span>Watch</span>
+      <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF8A3D"></span>Warning</span>
+      <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF4D5E"></span>Act now</span>
+    </div>
+    <span style="font-size: 11px; color: #7D8896">Figure: M. Häggström, public domain</span>
+  </section>
+
+  <section aria-label="Region details" style="flex: 1 1 340px; max-width: 420px; min-width: 0; border-radius: 16px; background: #121821; border: 1px solid #1C2430; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <h2 style="margin: 0; font-size: 22px; font-weight: 700">{{ sel.name }}</h2>
+        <span style="align-self: flex-start; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: {{ sel.bg }}; color: {{ sel.color }}">{{ sel.label }}</span>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: {{ sel.color }}">{{ sel.score }}</span>
+        <span style="font-size: 12px; color: #9AA6B5">health score / 100</span>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Region detail sections" style="display: flex; gap: 4px; padding: 4px; border-radius: 10px; background: #0E131A">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+        <button type="button" role="tab" aria-selected="{{ t.selected }}" onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ tabOverview }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div style="border-radius: 12px; padding: 16px; background: {{ sel.bg }}; border: 1px solid {{ sel.border }}; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: {{ sel.color }}">What to do</span>
+          <span style="font-size: 17px; font-weight: 700">{{ sel.doTitle }}</span>
+          <span style="color: #C3CCD8">{{ sel.doText }}</span>
+          <ol aria-label="Who to tell" style="list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+            <sc-for list="{{ ladder }}" as="l" hint-placeholder-count="4">
+              <li style="display: flex; flex-direction: column; gap: 6px">
+                <span style="{{ l.barStyle }}"></span>
+                <span style="{{ l.textStyle }}">{{ l.label }}</span>
+              </li>
+            </sc-for>
+          </ol>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; color: #9AA6B5">What's happening</span>
+            <span style="font-weight: 500">{{ sel.happening }}</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; color: #9AA6B5">Time to act</span>
+            <span style="font-weight: 700; font-size: 16px; color: {{ sel.ttaColor }}">{{ sel.timeToAct }}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; justify-content: space-between; align-items: center">
+            <span style="font-size: 13px; color: #C3CCD8">{{ sel.chartTitle }}, last 30 days</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600">{{ sel.keyValue }}</span>
+          </div>
+          <svg viewBox="0 0 360 130" width="100%" height="130" role="img" aria-label="{{ sel.chartAria }}">
+            <line x1="0" x2="360" y1="{{ chart.warnY }}" y2="{{ chart.warnY }}" stroke="#FF8A3D" stroke-width="1" stroke-dasharray="4 4"></line>
+            <line x1="0" x2="360" y1="{{ chart.watchY }}" y2="{{ chart.watchY }}" stroke="#F5C451" stroke-width="1" stroke-dasharray="4 4"></line>
+            <text x="356" y="{{ chart.warnLabelY }}" text-anchor="end" fill="#FF8A3D" font-size="10" font-family="Inter, sans-serif">Warning</text>
+            <text x="356" y="{{ chart.watchLabelY }}" text-anchor="end" fill="#F5C451" font-size="10" font-family="Inter, sans-serif">Watch</text>
+            <polyline points="{{ chart.points }}" fill="none" stroke="#7DB2FF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
+            <polyline points="{{ chart.forecast }}" fill="none" stroke="#7DB2FF" stroke-width="2" stroke-dasharray="3 4" opacity="0.6"></polyline>
+            <circle cx="{{ chart.lastX }}" cy="{{ chart.lastY }}" r="4" fill="#7DB2FF"></circle>
+            <text x="0" y="128" fill="#7D8896" font-size="10" font-family="Inter, sans-serif">Day 1</text>
+            <text x="300" y="128" text-anchor="end" fill="#7D8896" font-size="10" font-family="Inter, sans-serif">Today</text>
+          </svg>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ tabMetrics }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{ sel.metrics }}" as="mt" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; background: #0E131A; border: 1px solid #1C2430">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ mt.color }}; flex: 0 0 auto"></span>
+            <span style="display: flex; flex-direction: column; flex: 1 1 0px; min-width: 0">
+              <span style="font-weight: 600">{{ mt.name }}</span>
+              <span style="font-size: 12px; color: #9AA6B5">{{ mt.delta }}</span>
+            </span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 16px">{{ mt.value }}<span style="font-family: Inter, sans-serif; font-size: 12px; color: #9AA6B5; font-weight: 400"> {{ mt.unit }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ tabLearn }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA6B5">How to measure</span>
+          <span style="color: #C3CCD8">{{ sel.howTo }}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA6B5">Why this happens in space</span>
+          <span style="color: #C3CCD8">{{ sel.why }}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9AA6B5">
+          Source:
+          <span style="padding: 2px 8px; border-radius: 999px; border: 1px solid #6B5A2A; color: #F5C451">Placeholder, medical review pending</span>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+</main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["Normal day","Heart drifting"],"default":"Normal day"},"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: null, tab: 'overview', env: 'iss', done: {} };
+  }
+
+  renderVals() {
+    var self = this;
+    var drifting = (this.props.scenario ?? 'Normal day') === 'Heart drifting';
+    var ST = {
+      nominal: { label: 'Nominal', color: '#3DD68C', bg: 'rgba(61,214,140,0.10)', border: 'rgba(61,214,140,0.30)', rank: 0 },
+      watch: { label: 'Watch', color: '#F5C451', bg: 'rgba(245,196,81,0.10)', border: 'rgba(245,196,81,0.35)', rank: 1 },
+      warning: { label: 'Warning', color: '#FF8A3D', bg: 'rgba(255,138,61,0.10)', border: 'rgba(255,138,61,0.40)', rank: 2 },
+      act: { label: 'Act now', color: '#FF4D5E', bg: 'rgba(255,77,94,0.12)', border: 'rgba(255,77,94,0.45)', rank: 3 }
+    };
+
+    var regions = [
+      { id: 'brain', name: 'Brain and mood', x: 48.4, y: 5.7, status: drifting ? 'watch' : 'nominal', score: drifting ? 74 : 92,
+        summary: drifting ? 'Sleep down to 5.6 h over 7 days' : 'Sleep steady at 6.9 h, mood steady',
+        key: 'Sleep', unit: 'h', start: drifting ? 7.0 : 6.9, end: drifting ? 5.6 : 6.9, watch: 6.0, warn: 5.0, invert: true,
+        metrics: [['Sleep', drifting ? '5.6' : '6.9', 'h'], ['Mood (1-5)', drifting ? '3' : '4', ''], ['Reaction time', drifting ? '312' : '284', 'ms']],
+        howTo: 'Answer the morning questions and do the 1-minute reaction test before breakfast.',
+        why: 'Noise, light and shifting schedules on board disturb sleep, and confinement affects mood over long missions.' },
+      { id: 'immune', name: 'Immune system', x: 59, y: 15.1, status: 'nominal', score: 95,
+        summary: 'No infection symptoms reported', key: 'Body temperature', unit: '°C', start: 36.7, end: 36.7, watch: 37.5, warn: 38.0,
+        metrics: [['Body temperature', '36.7', '°C'], ['Symptoms reported', '0', '']],
+        howTo: 'Take your temperature during the daily check and answer the symptom questions.',
+        why: 'Spaceflight changes how the immune system responds, and dormant viruses can reactivate.' },
+      { id: 'lungs', name: 'Lungs', x: 38.4, y: 21.1, status: 'nominal', score: 96,
+        summary: 'Blood oxygen steady at 98%', key: 'Blood oxygen', unit: '%', start: 98, end: 98, watch: 95, warn: 92, invert: true,
+        metrics: [['Blood oxygen', '98', '%'], ['Breathing rate', '14', '/min'], ['Cabin CO2', '4180', 'ppm']],
+        howTo: 'Keep the finger sensor on during the seated part of the daily check.',
+        why: 'Cabin air quality, especially carbon dioxide, affects breathing, headaches and sleep.' },
+      { id: 'heart', name: 'Heart', x: 50, y: 24.8, status: drifting ? 'warning' : 'nominal', score: drifting ? 58 : 100,
+        summary: drifting ? 'Resting heart rate up 9 bpm in 7 days' : 'Resting heart rate steady at 61 bpm',
+        key: 'Resting heart rate', unit: 'bpm', start: 61, end: drifting ? 72 : 61, watch: 68, warn: 71,
+        metrics: [['Resting heart rate', drifting ? '72' : '61', 'bpm'], ['Heart rate variability', drifting ? '34' : '50', 'ms'], ['Rise on standing', drifting ? '24' : '13', 'bpm'], ['Irregular rhythm', 'None', '']],
+        howTo: 'Sit still for 2 minutes with the sensor on your finger, then stand for 1 minute. The app measures both.',
+        why: 'Without gravity, body fluids shift toward the head and the heart and blood vessels adapt, so heart rate and its response to standing change.' },
+      { id: 'metabolism', name: 'Metabolism', x: 48.8, y: 33.7, status: 'nominal', score: 90,
+        summary: 'Drinking 2.5 L a day', key: 'Water', unit: 'L/day', start: 2.5, end: 2.5, watch: 2.0, warn: 1.5, invert: true,
+        metrics: [['Water', '2.5', 'L/day'], ['Body mass change', '-0.4', 'kg'], ['Glucose', '5.2', 'mmol/L']],
+        howTo: 'Log water and meals during the day, and body mass once a week.',
+        why: 'Appetite, fluid balance and how the body handles sugar all change in microgravity.' },
+      { id: 'bones', name: 'Bones and muscles', x: 63.4, y: 67.8, status: 'nominal', score: 88,
+        summary: 'Exercise on target, 7-day average', key: 'Exercise', unit: 'min/day', start: 120, end: 118, watch: 90, warn: 60, invert: true,
+        metrics: [['Exercise', '118', 'min/day'], ['Grip strength', '41', 'kg']],
+        howTo: 'Your exercise sessions are logged automatically. Do the strength test once a week.',
+        why: 'Without weight on them, bones lose density and muscles shrink unless you exercise every day.' },
+      { id: 'radiation', name: 'Radiation', x: 50, y: 100, status: 'nominal', score: 93,
+        summary: 'Mission dose 4.3 mSv, within limit', key: 'Mission dose', unit: 'mSv', start: 0.2, end: 4.3, watch: 30, warn: 40,
+        metrics: [['Mission dose', '4.3', 'mSv'], ['Today', '0.14', 'mSv'], ['Solar events', 'None active', '']],
+        howTo: 'Wear your personal dosimeter. Cabin detectors report automatically.',
+        why: 'Outside Earth’s protection, solar particles and cosmic rays raise the long-term risk of cancer.' }
+    ];
+
+    var worst = regions.slice().sort(function (a, b) { return ST[b.status].rank - ST[a.status].rank; })[0];
+    var selId = this.state.selected || (ST[worst.status].rank > 0 ? worst.id : 'heart');
+    var pick = function (id) { return function () { self.setState({ selected: id }); }; };
+
+    var regionList = regions.slice().sort(function (a, b) { return ST[b.status].rank - ST[a.status].rank; }).map(function (r) {
+      var s = ST[r.status];
+      var sel = r.id === selId;
+      return { name: r.name, summary: r.summary, label: s.label, color: s.color, bg: s.bg, selected: sel, pick: pick(r.id),
+        rowStyle: 'display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 6px 8px; border-radius: 10px; border: 1px solid ' + (sel ? '#2A3644' : 'transparent') + '; background: ' + (sel ? '#18202B' : 'transparent') + '; color: #E6EBF2; text-align: left; cursor: pointer' };
+    });
+
+    var hotspots = regions.filter(function (r) { return r.id !== 'radiation'; }).map(function (r) {
+      var s = ST[r.status];
+      var sel = r.id === selId;
+      var show = sel || s.rank > 0;
+      var size = s.rank > 0 ? 18 : 14;
+      return { name: r.name, label: s.label, pick: pick(r.id), showLabel: show, aria: r.name + ', ' + s.label,
+        style: 'position: absolute; left: ' + r.x + '%; top: ' + r.y + '%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: none; background: transparent; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center',
+        dotStyle: 'width: ' + size + 'px; height: ' + size + 'px; border-radius: 50%; background: ' + s.color + '; box-shadow: 0 0 0 ' + (sel ? 6 : 4) + 'px ' + s.bg + ', 0 0 0 ' + (sel ? 8 : 5) + 'px ' + (sel ? '#E6EBF2' : s.border),
+        labelStyle: 'position: absolute; left: 40px; top: 50%; transform: translateY(-50%); white-space: nowrap; padding: 4px 10px; border-radius: 999px; background: #121821; border: 1px solid ' + s.border + '; color: #E6EBF2; font-size: 12px; font-weight: 600' };
+    });
+
+    var rad = regions[6];
+    var radiation = { color: ST[rad.status].color, label: ST[rad.status].label, pick: pick('radiation') };
+
+    var r = regions.filter(function (x) { return x.id === selId; })[0];
+    var s = ST[r.status];
+    var doMap = {
+      nominal: ['Self-care', 'Nothing to change. Keep resting, drinking and exercising as planned, and repeat the check tomorrow.', 0],
+      watch: ['Keep an eye on it', 'Try to fix it yourself first, and mention it to your crew if it keeps going for 2 more days.', 1],
+      warning: ['Tell your flight surgeon at the next contact', 'A draft message with your trend is ready. Until then, rest, drink more water and repeat the check tomorrow.', 2],
+      act: ['Act now', 'Open emergency mode and follow the steps with your crew.', 3]
+    };
+    var d = doMap[r.status];
+    var ladderNames = ['Self-care', 'Tell your crew', 'Surgeon, next contact', 'Surgeon, now'];
+    var ladder = ladderNames.map(function (n, i) {
+      var on = i === d[2];
+      return { label: n,
+        barStyle: 'height: 4px; border-radius: 2px; background: ' + (i <= d[2] ? s.color : '#2A3644'),
+        textStyle: 'font-size: 11px; line-height: 1.3; color: ' + (on ? '#E6EBF2' : '#8B97A6') + '; font-weight: ' + (on ? '700' : '400') };
+    });
+
+    var days = 30, W = 360, H = 112;
+    var vals = [];
+    for (var i = 0; i < days; i++) {
+      var t = i / (days - 1);
+      var wobble = Math.sin(i * 1.7) * 0.6 + Math.cos(i * 0.9) * 0.4;
+      var span = Math.abs(r.end - r.start) || Math.abs(r.end) * 0.04 || 1;
+      var base = r.id === 'radiation' ? r.start + (r.end - r.start) * t : (t < 0.7 ? r.start : r.start + (r.end - r.start) * ((t - 0.7) / 0.3));
+      vals.push(base + wobble * span * 0.12);
+    }
+    var lo = Math.min(r.watch, r.warn, Math.min.apply(null, vals));
+    var hi = Math.max(r.watch, r.warn, Math.max.apply(null, vals));
+    var pad = (hi - lo) * 0.15 || 1;
+    lo -= pad; hi += pad;
+    var yOf = function (v) { return (8 + (1 - (v - lo) / (hi - lo)) * (H - 8)).toFixed(1); };
+    var xOf = function (k) { return (k / (days - 1) * 300).toFixed(1); };
+    var pts = vals.map(function (v, k) { return xOf(k) + ',' + yOf(v); }).join(' ');
+    var last = vals[days - 1];
+    var slope = vals[days - 1] - vals[days - 4];
+    var fc = xOf(days - 1) + ',' + yOf(last) + ' 340,' + yOf(last + slope * 2);
+    var chart = { points: pts, forecast: fc, lastX: xOf(days - 1), lastY: yOf(last),
+      warnY: yOf(r.warn), watchY: yOf(r.watch),
+      warnLabelY: (parseFloat(yOf(r.warn)) - 4).toFixed(1), watchLabelY: (parseFloat(yOf(r.watch)) - 4).toFixed(1) };
+
+    var tta = r.status === 'warning' ? 'About 4 days' : (r.status === 'watch' ? 'About 9 days' : 'Nothing to do');
+    var sel = { name: r.name, label: s.label, color: s.color, bg: s.bg, border: s.border, score: r.score,
+      doTitle: d[0], doText: d[1], happening: r.summary, timeToAct: tta, ttaColor: r.status === 'nominal' ? '#E6EBF2' : s.color,
+      chartTitle: r.key, keyValue: r.metrics[0][1] + ' ' + r.metrics[0][2], chartAria: r.key + ' trend over 30 days, now ' + r.metrics[0][1] + ' ' + r.metrics[0][2],
+      howTo: r.howTo, why: r.why,
+      metrics: r.metrics.map(function (m, k) {
+        var mc = (k === 0 || (r.id === 'heart' && drifting && k < 3)) ? s.color : '#3DD68C';
+        return { name: m[0], value: m[1], unit: m[2], color: mc, delta: k === 0 ? r.summary : 'Within your usual range' };
+      }) };
+
+    var tab = this.state.tab;
+    var tabs = [['overview', 'Overview'], ['metrics', 'All metrics'], ['learn', 'Learn']].map(function (tb) {
+      var on = tb[0] === tab;
+      return { label: tb[1], selected: on, pick: function () { self.setState({ tab: tb[0] }); },
+        style: 'flex: 1 1 0px; height: 36px; border-radius: 8px; border: none; background: ' + (on ? '#1F2A38' : 'transparent') + '; color: ' + (on ? '#E6EBF2' : '#9AA6B5') + '; font-weight: ' + (on ? '600' : '500') + '; cursor: pointer' };
+    });
+
+    var envDefs = [['iss', 'ISS', 'Flight surgeon link: live', '#3DD68C'], ['moon', 'Moon base', 'Flight surgeon: ~1.3 s delay', '#F5C451'], ['mars', 'Mars transit', 'Flight surgeon: several minutes delay', '#FF8A3D']];
+    var envNow = envDefs.filter(function (e) { return e[0] === self.state.env; })[0];
+    var envs = envDefs.map(function (e) {
+      var on = e[0] === self.state.env;
+      return { label: e[1], pressed: on, pick: function () { self.setState({ env: e[0] }); },
+        style: 'height: 32px; padding: 0 12px; border-radius: 7px; border: none; background: ' + (on ? '#24324A' : 'transparent') + '; color: ' + (on ? '#E6EBF2' : '#9AA6B5') + '; font-weight: ' + (on ? '600' : '500') + '; cursor: pointer' };
+    });
+
+    var mdefs = [['check', 'Daily 5-minute check', 'Not done yet', 'Done at 07:42'], ['meals', 'Log meals', '0 of 3 logged', '3 of 3 logged'], ['water', 'Drink water', '0.8 of 2.5 L', '2.5 of 2.5 L'], ['exercise', 'Exercise', '0 of 120 min', '120 of 120 min']];
+    var done = this.state.done;
+    var missionsDone = 0;
+    var missions = mdefs.map(function (m) {
+      var isDone = !!done[m[0]];
+      if (isDone) { missionsDone++; }
+      return { label: m[1], detail: isDone ? m[3] : m[2], done: isDone,
+        toggle: function () { var nd = Object.assign({}, self.state.done); nd[m[0]] = !nd[m[0]]; self.setState({ done: nd }); },
+        boxStyle: 'width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border: 2px solid ' + (isDone ? '#5B9DFF' : '#3A4757') + '; background: ' + (isDone ? '#5B9DFF' : 'transparent') };
+    });
+
+    var hero = drifting ? {
+      kicker: '1 area needs attention', color: ST.warning.color, bg: 'rgba(255,138,61,0.08)', border: ST.warning.border,
+      title: 'Your heart rate has been climbing',
+      text: 'Resting heart rate is up 9 bpm in 7 days. Tell your flight surgeon at the next contact. A draft message is ready.',
+      primary: 'Review heart', primaryAction: pick('heart'), hasSecondary: true, secondary: 'Open draft message'
+    } : {
+      kicker: 'All systems nominal', color: ST.nominal.color, bg: '#121821', border: '#1C2430',
+      title: 'Good afternoon, Alex. Everything looks normal.',
+      text: 'Nothing needs your attention. Next: your 5-minute daily check.',
+      primary: 'Start the 5-minute check', primaryAction: function () {}, hasSecondary: false, secondary: ''
+    };
+
+    var spark = function (seed, amp) {
+      var p = [];
+      for (var k = 0; k < 30; k++) { p.push((k * 4).toFixed(0) + ',' + (14 + Math.sin(k * seed) * amp + Math.cos(k * seed * 2.3) * amp * 0.5).toFixed(1)); }
+      return p.join(' ');
+    };
+    var vdefs = [
+      ['Heart rate', drifting ? '74' : '60', 'bpm', drifting ? 'watch' : 'nominal', 0.9, 6, drifting ? 'Your usual: 61 bpm' : 'Your usual: 61 bpm'],
+      ['Heart rate variability', drifting ? '34' : '52', 'ms', drifting ? 'warning' : 'nominal', 1.3, 7, 'Your usual: 50 ms'],
+      ['Blood oxygen', '98', '%', 'nominal', 0.5, 3, 'Your usual: 98 %'],
+      ['Breathing rate', '14', '/min', 'nominal', 0.7, 5, 'Your usual: 14 /min']
+    ];
+    var vitals = vdefs.map(function (v) {
+      var st = ST[v[3]];
+      return { name: v[0], value: v[1], unit: v[2], label: st.label, color: st.color, bg: st.bg, range: v[6], spark: spark(v[4], v[5]),
+        tileStyle: 'min-width: 0; display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; border-radius: 14px; background: #121821; border: 1px solid ' + (v[3] === 'nominal' ? '#1C2430' : st.border) + '; border-top: 3px solid ' + st.color };
+    });
+    var cabin = [['CO2', '4180', 'ppm', ST.watch.color], ['Temp', '23.7', '°C', '#E6EBF2'], ['Noise', '61', 'dBA', '#E6EBF2']].map(function (c) {
+      return { name: c[0], value: c[1], unit: c[2], color: c[3] };
+    });
+
+    return {
+      envs: envs, envNow: { link: envNow[2], dot: envNow[3] },
+      msgCount: drifting ? '1' : '0', msgBadgeBg: drifting ? '#FF8A3D' : '#2A3644',
+      hero: hero, missions: missions, missionsDone: missionsDone, missionsPct: (missionsDone * 25) + '%',
+      regionList: regionList, hotspots: hotspots, radiation: radiation,
+      sel: sel, ladder: ladder, chart: chart, tabs: tabs,
+      tabOverview: tab === 'overview', tabMetrics: tab === 'metrics', tabLearn: tab === 'learn',
+      vitals: vitals, cabin: cabin, signal: '89'
+    };
+  }
+}
+</script>
+</body>
+</html>

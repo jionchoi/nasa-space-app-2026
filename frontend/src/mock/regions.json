@@ -1,0 +1,164 @@
+{
+ "_status": "DRAFT - Yenna writes the real 'spaceflight_note' and 'function' texts and reviews which metrics drive each region.",
+ "_how_to_read": "metrics = daily values judged against thresholds.json (worst wins). key_metric = the one charted and forecast. daily_fields = raw daily fields used for the 'unusual for you' check. live_metrics = VitalsFrame fields judged live. context_metrics = cabin values shown with the region (not used for its status). function = one plain sentence on what this body part or system does (shown under the region name).",
+ "forecast": {
+  "window_days": 14,
+  "horizon_days": 30,
+  "min_signal_to_noise": 2
+ },
+ "anomaly": {
+  "min_days": 10,
+  "z_score": 1.5
+ },
+ "regions": [
+  {
+   "id": "brain_mood",
+   "label": "Brain and mood",
+   "function": "DRAFT: The brain runs your thinking, memory, sleep and feelings.",
+   "metrics": [
+    "sleep_h",
+    "mood",
+    "stress",
+    "pvt_median_ms",
+    "pvt_lapses"
+   ],
+   "key_metric": "sleep_h",
+   "daily_fields": [
+    "sleep_h",
+    "mood",
+    "stress",
+    "pvt_median_ms"
+   ],
+   "live_metrics": [],
+   "spaceflight_note": "PLACEHOLDER: Isolation, noise and shifted light cycles can disturb sleep and mood on long missions.",
+   "context_metrics": [
+    "co2_ppm"
+   ]
+  },
+  {
+   "id": "heart",
+   "label": "Heart",
+   "function": "DRAFT: The heart pumps blood and oxygen to every organ.",
+   "metrics": [
+    "hr_rest",
+    "hrv_rmssd",
+    "stand_hr_rise",
+    "bp_sys",
+    "bp_dia",
+    "irregular"
+   ],
+   "key_metric": "hr_rest",
+   "daily_fields": [
+    "hr_rest",
+    "hrv_rmssd",
+    "stand_hr_rise"
+   ],
+   "live_metrics": [
+    "hr",
+    "hrv_rmssd",
+    "irregular"
+   ],
+   "spaceflight_note": "PLACEHOLDER: Without gravity, body fluids shift toward the head and the heart and blood vessels adapt, so heart rate and its response to standing can change."
+  },
+  {
+   "id": "lungs",
+   "label": "Lungs",
+   "function": "DRAFT: The lungs bring oxygen into the blood and remove carbon dioxide.",
+   "metrics": [
+    "spo2",
+    "rr"
+   ],
+   "key_metric": "spo2",
+   "daily_fields": [
+    "spo2",
+    "rr"
+   ],
+   "live_metrics": [
+    "spo2",
+    "rr"
+   ],
+   "spaceflight_note": "PLACEHOLDER: Cabin air is recycled, so carbon dioxide and dust can build up and affect breathing.",
+   "context_metrics": [
+    "co2_ppm"
+   ]
+  },
+  {
+   "id": "immune",
+   "label": "Immune system",
+   "function": "DRAFT: The immune system finds and fights germs and infections.",
+   "metrics": [
+    "symptoms_immune",
+    "temp_c"
+   ],
+   "key_metric": "symptoms_immune",
+   "daily_fields": [],
+   "live_metrics": [],
+   "immune_symptoms": [
+    "cough_sore_throat_fever",
+    "cough",
+    "sore_throat",
+    "fever",
+    "rash"
+   ],
+   "spaceflight_note": "PLACEHOLDER: Spaceflight stress can weaken the body's defences and let dormant viruses become active again."
+  },
+  {
+   "id": "metabolism",
+   "label": "Metabolism",
+   "function": "DRAFT: Metabolism turns food and water into the energy your body runs on.",
+   "metrics": [
+    "hydration_l",
+    "body_mass_change_pct",
+    "glucose_mmol"
+   ],
+   "key_metric": "hydration_l",
+   "daily_fields": [
+    "hydration_l"
+   ],
+   "live_metrics": [],
+   "spaceflight_note": "PLACEHOLDER: Appetite, fluid balance and body mass often change in flight, so eating and drinking enough takes effort."
+  },
+  {
+   "id": "bones_muscles",
+   "label": "Bones and muscles",
+   "function": "DRAFT: Bones hold you up and muscles move you; both stay strong only when they are used.",
+   "metrics": [
+    "exercise_min_7d"
+   ],
+   "key_metric": "exercise_min_7d",
+   "context": [
+    "mission_day"
+   ],
+   "daily_fields": [
+    "exercise_min"
+   ],
+   "live_metrics": [],
+   "spaceflight_note": "PLACEHOLDER: Without weight on the body, bones and muscles get weaker unless the crew exercises every day."
+  },
+  {
+   "id": "radiation",
+   "label": "Radiation",
+   "function": "DRAFT: Radiation is energy from the Sun and deep space that can damage body cells; this tracks the dose you receive.",
+   "metrics": [
+    "radiation_total_msv"
+   ],
+   "key_metric": "radiation_total_msv",
+   "daily_fields": [
+    "radiation_msv"
+   ],
+   "live_metrics": [],
+   "spaceflight_note": "PLACEHOLDER: Outside Earth's protective magnetic field the crew receives more radiation, with spikes during solar storms."
+  }
+ ],
+ "co2_context": {
+  "metric": "co2_ppm",
+  "min_hours_high": 2,
+  "regions": [
+   "brain_mood"
+  ],
+  "symptoms": [
+   "headache"
+  ],
+  "text": "Cabin CO2 has been high; this can cause headaches and poor sleep."
+ }
+}

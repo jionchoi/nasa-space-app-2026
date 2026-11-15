@@ -1,0 +1,216 @@
+{
+  "_status": "DRAFT - Yenna reviews the questions, labels and the measurement procedure.",
+  "measurement": {
+    "seated_s": 120,
+    "stand_s": 60,
+    "rest_window_s": 60,
+    "breaths_per_min": 6,
+    "signal_hold_s": 5,
+    "pause_after_bad_s": 5,
+    "irregular_min_fraction": 0.1,
+    "hints": [
+      {
+        "after_s": 0,
+        "text": "Hold still"
+      },
+      {
+        "after_s": 3,
+        "text": "Relax your hand"
+      },
+      {
+        "after_s": 6,
+        "text": "Adjust the sensor"
+      }
+    ]
+  },
+  "prepare": {
+    "instruction": "Sit down, rest your arm, put the sensor on your finger.",
+    "checklist": [
+      "I am sitting down",
+      "My arm is resting and relaxed",
+      "The sensor is on my finger"
+    ]
+  },
+  "stand_text": {
+    "gravity": "Stand up now",
+    "microgravity": "Brace in the foot loops and tense your legs",
+    "microgravity_envs": [
+      "iss",
+      "mars"
+    ]
+  },
+  "symptom_from": 3,
+  "questions": [
+    {
+      "id": "sleep_h",
+      "type": "number",
+      "region": "brain_mood",
+      "field": "sleep_h",
+      "text": "How many hours did you sleep?",
+      "unit": "hours",
+      "min": 0,
+      "max": 14,
+      "step": 0.5,
+      "default": 7
+    },
+    {
+      "id": "sleep_quality",
+      "type": "scale",
+      "region": "brain_mood",
+      "field": "sleep_quality",
+      "text": "How well did you sleep?",
+      "labels": [
+        "Very badly",
+        "Badly",
+        "OK",
+        "Well",
+        "Very well"
+      ]
+    },
+    {
+      "id": "mood",
+      "type": "scale",
+      "region": "brain_mood",
+      "field": "mood",
+      "text": "How is your mood today?",
+      "labels": [
+        "Very low",
+        "Low",
+        "OK",
+        "Good",
+        "Very good"
+      ]
+    },
+    {
+      "id": "stress",
+      "type": "scale",
+      "region": "brain_mood",
+      "field": "stress",
+      "text": "How stressed do you feel?",
+      "labels": [
+        "Calm",
+        "A little",
+        "Some",
+        "A lot",
+        "Overwhelmed"
+      ]
+    },
+    {
+      "id": "headache",
+      "type": "scale",
+      "region": "brain_mood",
+      "symptom": "headache",
+      "text": "Do you have a headache?",
+      "labels": [
+        "None",
+        "Slight",
+        "Moderate",
+        "Strong",
+        "Severe"
+      ]
+    },
+    {
+      "id": "nausea_appetite",
+      "type": "scale",
+      "region": "metabolism",
+      "symptom": "nausea_appetite",
+      "text": "Any nausea or loss of appetite?",
+      "labels": [
+        "None",
+        "Slight",
+        "Moderate",
+        "Strong",
+        "Severe"
+      ]
+    },
+    {
+      "id": "cough_sore_throat_fever",
+      "type": "scale",
+      "region": "immune",
+      "symptom": "cough_sore_throat_fever",
+      "text": "Any cough, sore throat or fever?",
+      "labels": [
+        "None",
+        "Slight",
+        "Moderate",
+        "Strong",
+        "Severe"
+      ]
+    },
+    {
+      "id": "muscle_back_pain",
+      "type": "scale",
+      "region": "bones_muscles",
+      "symptom": "muscle_back_pain",
+      "text": "Any muscle or back pain?",
+      "labels": [
+        "None",
+        "Slight",
+        "Moderate",
+        "Strong",
+        "Severe"
+      ]
+    },
+    {
+      "id": "vision",
+      "type": "scale",
+      "region": "brain_mood",
+      "symptom": "vision_change",
+      "optional": true,
+      "draft": "DRAFT - Yenna reviews (SANS: spaceflight-associated neuro-ocular syndrome)",
+      "text": "Any blurry vision or change in your eyesight?",
+      "labels": [
+        "None",
+        "Slight",
+        "Moderate",
+        "Strong",
+        "Severe"
+      ]
+    }
+  ],
+  "entry_limits": {
+    "_how_to_read": "Input checks for manual entry (typing mistakes), not medical ranges.",
+    "temp_c": {
+      "min": 30,
+      "max": 43,
+      "step": 0.1,
+      "unit": "°C"
+    },
+    "glucose_mmol": {
+      "min": 1.0,
+      "max": 33.3,
+      "step": 0.1,
+      "unit": "mmol/L"
+    },
+    "glucose_mgdl": {
+      "min": 18,
+      "max": 600,
+      "step": 1,
+      "unit": "mg/dL"
+    },
+    "bp_sys": {
+      "min": 60,
+      "max": 250,
+      "step": 1,
+      "unit": "mmHg"
+    },
+    "bp_dia": {
+      "min": 30,
+      "max": 150,
+      "step": 1,
+      "unit": "mmHg"
+    },
+    "mgdl_per_mmol": 18.016
+  },
+  "pvt": {
+    "_status": "DRAFT - Yenna reviews",
+    "duration_s": 180,
+    "demo_duration_s": 60,
+    "gap_s": [
+      2,
+      10
+    ],
+    "lapse_ms": 500,
+    "no_response_ms": 3000
+  }
+}

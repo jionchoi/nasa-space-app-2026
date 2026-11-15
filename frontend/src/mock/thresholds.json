@@ -1,0 +1,551 @@
+{
+ "_status": "PLACEHOLDER - Yenna owns this file. Every number below is a placeholder until she reviews it. How to measure, why we check and equipment are in measurements.json.",
+ "_how_to_read": "Each band is [low, high]. A value below `low` or above `high` is at least that status; null means no limit on that side. The worst status wins. `label` and `unit` are shown on screen. `keywords` link a live vital to the red-flag text in protocols (a flag lights up when the vital is red and the flag text contains a keyword). This file keeps only ranges and sources.",
+ "source": "PLACEHOLDER",
+ "hr_rest": {
+  "label": "Resting heart rate",
+  "unit": "bpm",
+  "yellow": [
+   50,
+   68
+  ],
+  "orange": [
+   45,
+   71
+  ],
+  "red": [
+   40,
+   90
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "hrv_rmssd": {
+  "label": "Heart rate variability",
+  "unit": "ms",
+  "yellow": [
+   37,
+   null
+  ],
+  "orange": [
+   32,
+   null
+  ],
+  "red": [
+   20,
+   null
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "spo2": {
+  "label": "Blood oxygen",
+  "unit": "%",
+  "yellow": [
+   95,
+   null
+  ],
+  "orange": [
+   92,
+   null
+  ],
+  "red": [
+   90,
+   null
+  ],
+  "keywords": [
+   "oxygen",
+   "spo2"
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "rr": {
+  "label": "Breathing rate",
+  "unit": "breaths/min",
+  "yellow": [
+   10,
+   20
+  ],
+  "orange": [
+   8,
+   24
+  ],
+  "red": [
+   6,
+   30
+  ],
+  "keywords": [
+   "breathing rate"
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "stand_hr_rise": {
+  "label": "Heart rate rise on standing",
+  "unit": "bpm",
+  "yellow": [
+   null,
+   25
+  ],
+  "orange": [
+   null,
+   30
+  ],
+  "red": [
+   null,
+   40
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "bp_sys": {
+  "label": "Blood pressure, top number (systolic)",
+  "unit": "mmHg",
+  "yellow": [
+   90,
+   130
+  ],
+  "orange": [
+   85,
+   140
+  ],
+  "red": [
+   80,
+   180
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "bp_dia": {
+  "label": "Blood pressure, bottom number (diastolic)",
+  "unit": "mmHg",
+  "yellow": [
+   60,
+   85
+  ],
+  "orange": [
+   55,
+   90
+  ],
+  "red": [
+   50,
+   120
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "sleep_h": {
+  "label": "Sleep",
+  "unit": "h",
+  "yellow": [
+   6.0,
+   null
+  ],
+  "orange": [
+   5.6,
+   null
+  ],
+  "red": [
+   4.5,
+   null
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "mood": {
+  "label": "Mood",
+  "unit": "of 5",
+  "yellow": [
+   3,
+   null
+  ],
+  "orange": [
+   2,
+   null
+  ],
+  "red": [
+   null,
+   null
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "stress": {
+  "label": "Stress",
+  "unit": "of 5",
+  "yellow": [
+   null,
+   3
+  ],
+  "orange": [
+   null,
+   4
+  ],
+  "red": [
+   null,
+   null
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "symptoms_immune": {
+  "label": "Infection-type symptoms",
+  "unit": "symptoms",
+  "yellow": [
+   null,
+   0.5
+  ],
+  "orange": [
+   null,
+   1.5
+  ],
+  "red": [
+   null,
+   3.5
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "hydration_l": {
+  "label": "Fluids drunk",
+  "unit": "L/day",
+  "yellow": [
+   1.8,
+   null
+  ],
+  "orange": [
+   1.4,
+   null
+  ],
+  "red": [
+   1.0,
+   null
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "body_mass_change_pct": {
+  "label": "Body mass change",
+  "unit": "%",
+  "yellow": [
+   -3,
+   3
+  ],
+  "orange": [
+   -5,
+   5
+  ],
+  "red": [
+   -10,
+   10
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "exercise_min_7d": {
+  "label": "Exercise (7-day average)",
+  "unit": "min/day",
+  "yellow": [
+   90,
+   null
+  ],
+  "orange": [
+   60,
+   null
+  ],
+  "red": [
+   30,
+   null
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "radiation_total_msv": {
+  "label": "Mission radiation dose",
+  "unit": "mSv",
+  "yellow": [
+   null,
+   50
+  ],
+  "orange": [
+   null,
+   100
+  ],
+  "red": [
+   null,
+   150
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "hr": {
+  "label": "Heart rate",
+  "unit": "bpm",
+  "yellow": [
+   50,
+   100
+  ],
+  "orange": [
+   45,
+   110
+  ],
+  "red": [
+   40,
+   120
+  ],
+  "keywords": [
+   "heart rate"
+  ],
+  "source": "PLACEHOLDER (live vitals strip)"
+ },
+ "irregular": {
+  "label": "Irregular rhythm",
+  "unit": "flag (0 = regular, 1 = irregular)",
+  "yellow": [
+   null,
+   0.5
+  ],
+  "orange": [
+   null,
+   0.5
+  ],
+  "red": [
+   null,
+   0.5
+  ],
+  "keywords": [
+   "irregular"
+  ],
+  "source": "PLACEHOLDER (0 = regular, 1 = irregular)"
+ },
+ "signal_quality": {
+  "label": "Signal quality",
+  "unit": "0-1",
+  "yellow": [
+   0.7,
+   null
+  ],
+  "orange": [
+   0.6,
+   null
+  ],
+  "red": [
+   0.5,
+   null
+  ],
+  "source": "PLACEHOLDER (sensor, not medical: below yellow = not ready to start, below orange = coach hints, below red = poor signal)"
+ },
+ "co2_ppm": {
+  "label": "Cabin CO2",
+  "unit": "ppm",
+  "yellow": [
+   null,
+   3000
+  ],
+  "orange": [
+   null,
+   4000
+  ],
+  "red": [
+   null,
+   6000
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "cabin_temp_c": {
+  "label": "Cabin temperature",
+  "unit": "\u00b0C",
+  "yellow": [
+   18,
+   27
+  ],
+  "orange": [
+   16,
+   29
+  ],
+  "red": [
+   14,
+   32
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "cabin_noise_dba": {
+  "label": "Cabin noise",
+  "unit": "dBA",
+  "yellow": [
+   null,
+   62
+  ],
+  "orange": [
+   null,
+   68
+  ],
+  "red": [
+   null,
+   75
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "temp_c": {
+  "label": "Body temperature",
+  "unit": "\u00b0C",
+  "yellow": [
+   36.0,
+   37.5
+  ],
+  "orange": [
+   35.5,
+   38.0
+  ],
+  "red": [
+   35.0,
+   39.0
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "glucose_mmol": {
+  "label": "Blood glucose",
+  "unit": "mmol/L",
+  "yellow": [
+   3.9,
+   7.8
+  ],
+  "orange": [
+   3.5,
+   10.0
+  ],
+  "red": [
+   3.0,
+   13.9
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "pvt_median_ms": {
+  "label": "Reaction time (median)",
+  "unit": "ms",
+  "yellow": [
+   null,
+   320
+  ],
+  "orange": [
+   null,
+   360
+  ],
+  "red": [
+   null,
+   450
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "pvt_lapses": {
+  "label": "Reaction lapses (over 500 ms)",
+  "unit": "lapses",
+  "yellow": [
+   null,
+   2.5
+  ],
+  "orange": [
+   null,
+   5.5
+  ],
+  "red": [
+   null,
+   10.5
+  ],
+  "source": "PLACEHOLDER"
+ },
+ "red_flags": {
+  "_how_to_read": "Red flags that can move an emergency protocol forward (see red_flag_routes in protocols). A flag is active when `metric` is below `below` or above `above` for at least `for_s` seconds, and the signal quality is at least `min_signal_quality` (so a slipped sensor is not read as a lost pulse). PLACEHOLDER numbers: Yenna reviews.",
+  "pulse_lost": {
+   "label": "Pulse lost",
+   "metric": "hr",
+   "below": 38,
+   "for_s": 3,
+   "min_signal_quality": 0.6,
+   "source": "PLACEHOLDER"
+  },
+  "hr_very_low": {
+   "label": "Heart rate very low",
+   "metric": "hr",
+   "below": 45,
+   "for_s": 5,
+   "min_signal_quality": 0.6,
+   "source": "PLACEHOLDER"
+  },
+  "hr_very_high": {
+   "label": "Heart rate very high",
+   "metric": "hr",
+   "above": 150,
+   "for_s": 5,
+   "min_signal_quality": 0.6,
+   "source": "PLACEHOLDER"
+  },
+  "spo2_critical": {
+   "label": "Blood oxygen critical",
+   "metric": "spo2",
+   "below": 85,
+   "for_s": 5,
+   "min_signal_quality": 0.6,
+   "source": "PLACEHOLDER"
+  }
+ },
+ "daily_targets": {
+  "_how_to_read": "Behaviour targets for the daily missions (never health results). PLACEHOLDER: Yenna reviews.",
+  "water_l": 2.0,
+  "meals": 2,
+  "exercise_min": 30,
+  "source": "PLACEHOLDER"
+ },
+ "cv": {
+  "_how_to_read": "Unresponsive crew member detection (webcam + PPG, runs on the laptop, no video stored). Read by frontend/src/cv. In microgravity an unconscious person floats instead of falling, so every camera value is measured RELATIVE TO THE TORSO (origin between the shoulders, scaled by shoulder width): 'sw' = shoulder widths. unresponsive_score = weights x (limb stillness, neutral body posture, eyes closed, smooth drift, staring, still hand from PPG), 0 to 1. PLACEHOLDER: tune with the debug panel on /admin; Yenna reviews.",
+  "limb_motion_low": 0.05,
+  "limb_motion_spike": 0.4,
+  "motion_step_s": 0.5,
+  "landmark_visibility": 0.5,
+  "eyes_closed_score": 0.5,
+  "stare_after_s": 20,
+  "nbp": {
+   "_how_to_read": "Neutral body posture (relaxed body in microgravity): elbows bent elbow_deg, wrists rise above the elbows by wrist_rise sw, upper arms raised upper_arm_raise_deg away from the torso line, wrists in front of the elbows by depth_margin sw (depth is noisy), held for hold_s. Scored against the person's own posture at calibration.",
+   "elbow_deg": [
+    60,
+    120
+   ],
+   "tolerance_deg": 30,
+   "wrist_rise": 0.2,
+   "upper_arm_raise_deg": 30,
+   "depth_margin": 0.1,
+   "hold_s": 3
+  },
+  "drift": {
+   "_how_to_read": "Torso movement in the image, in sw/s (rotation counted in radians/s). Slow, steady drift (between min_speed and max_speed, with little wobble around a straight line) supports 'unresponsive'; jerky movement does not.",
+   "min_speed": 0.02,
+   "max_speed": 0.6,
+   "max_wobble": 0.05
+  },
+  "unresponsive_threshold": 0.7,
+  "suspect_after_s": 25,
+  "suspect_after_s_with_red_vitals": 10,
+  "checkin_countdown_s": 15,
+  "voice_level": 0.04,
+  "voice_min_s": 0.3,
+  "cooldown_s": 120,
+  "window_s": 5,
+  "calibration_s": 5,
+  "weights": {
+   "limb_stillness": 0.3,
+   "nbp": 0.25,
+   "eyes": 0.25,
+   "drift": 0.1,
+   "stare": 0.05,
+   "still_hand": 0.05
+  },
+  "ppg": {
+   "_how_to_read": "Pulse checks on the live vitals stream (works with or without the camera). Pulse lost = clip on with good contact (signal_quality at or above good_quality, baseline steady) but the pulse wave is flat (pulse_amplitude below flat_ratio x the person's recent amplitude) or no beats for no_pulse_s seconds, or the thresholds.json red flag named pulse_lost_red_flag. Clip off = signal_quality below clip_off_quality or the baseline jumps by more than baseline_jump_ratio. A long clean signal (quality at or above clean_quality for still_hand_s) means the hand is not moving.",
+   "pulse_lost_red_flag": "pulse_lost",
+   "good_quality": 0.6,
+   "flat_ratio": 0.15,
+   "no_pulse_s": 5,
+   "clip_off_quality": 0.2,
+   "baseline_jump_ratio": 0.5,
+   "clean_quality": 0.9,
+   "still_hand_s": 60,
+   "stale_after_s": 5
+  },
+  "fall": {
+   "_how_to_read": "Moon base only (1/6 g: people can still fall there). Uses the image's 'down' because the Moon base camera is mounted upright. Hips move down faster than hip_drop_speed sw/s, then the body stays still (image motion at or below still_motion sw/s) for still_after_s.",
+   "environments": [
+    "moon"
+   ],
+   "hip_drop_speed": 1.5,
+   "still_after_s": 2,
+   "still_motion": 0.05
+  },
+  "source": "PLACEHOLDER"
+ }
+}

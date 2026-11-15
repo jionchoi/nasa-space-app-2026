@@ -1,0 +1,27 @@
+{
+  "id": "chest_pain",
+  "title": "Chest pain or pressure",
+  "draft": "DRAFT - Yenna reviews",
+  "steps": [
+    { "n": 1, "text": "Stay calm. Stop all activity. Help the crew member rest in a secure, comfortable position and loosen tight clothing.", "red_flag": false, "timer_s": null },
+    { "n": 2, "key": "awake", "text": "Check if they are awake.", "check": "Are they awake and answering you?", "red_flag": true, "timer_s": null, "on_yes": "next", "on_no": 8 },
+    { "n": 3, "equipment": ["sensor"], "text": "Clip the sensor on their finger. Keep the hand still for 30 seconds so the readings at the top settle.", "red_flag": false, "timer_s": 30 },
+    { "n": 4, "text": "Ask about the pain.", "check": "Is the pain strong, crushing, or spreading to the arm, jaw or back?", "red_flag": true, "timer_s": null, "on_yes": "next", "on_no": "next" },
+    { "n": 5, "text": "Look at them closely.", "check": "Are they short of breath, sweaty, or feeling faint?", "red_flag": true, "timer_s": null, "on_yes": "next", "on_no": "next" },
+    { "n": 6, "equipment": ["oxygen"], "key": "oxygen", "text": "Give oxygen: put the oxygen mask from the medical kit on them and set the flow the kit card shows. Watch the blood oxygen at the top.", "red_flag": false, "timer_s": 60 },
+    { "n": 7, "equipment": ["medical_kit"], "text": "Send the message to the flight surgeon now (panel below). Use the medical kit only as its card or the flight surgeon tells you. Keep them resting for 5 minutes.", "red_flag": false, "timer_s": 300 },
+    { "n": 8, "key": "breathing", "text": "Check their breathing: look, listen and feel for 10 seconds.", "check": "Are they breathing normally?", "red_flag": true, "timer_s": 10, "on_yes": "next", "on_no": "cpr" },
+    { "n": 9, "text": "Stay with them and keep watching the vitals. Do not leave them alone.", "check": "Have they stopped responding or stopped breathing?", "red_flag": true, "timer_s": null, "on_yes": "cpr", "on_no": "next" }
+  ],
+  "red_flags": [
+    "Not awake or not answering",
+    "Not breathing normally",
+    "Blood oxygen (SpO2) in the danger range",
+    "Heart rate in the danger range (very fast or very slow)",
+    "Irregular heart rhythm"
+  ],
+  "red_flag_routes": [
+    { "flag": "pulse_lost", "goto": "cpr", "message": "Pulse lost", "_draft": "DRAFT - Yenna reviews" },
+    { "flag": "spo2_critical", "goto": 6, "message": "Blood oxygen critical", "_draft": "DRAFT - Yenna reviews" }
+  ]
+}

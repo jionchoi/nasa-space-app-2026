@@ -1,0 +1,13 @@
+{
+ "_status": "DRAFT - Yenna reviews",
+ "rate_per_min": 110,
+ "compressions": 30,
+ "breaths": 2,
+ "breaths_pause_s": 5,
+ "switch_rescuer_s": 120,
+ "microgravity_tips": [
+  "DRAFT: Restrain the patient against a firm surface (straps or the crew medical restraint) so they do not float away from you.",
+  "DRAFT: Brace yourself so your pushes go into the chest. Published microgravity CPR methods: the Evetts-Russomano position and the handstand position. Yenna adds how to do each.",
+  "DRAFT: Swap rescuers when the timer says so. Compressions are tiring without gravity."
+ ]
+}
