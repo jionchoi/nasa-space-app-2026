@@ -22,7 +22,7 @@ export function EmergencyBar({ title, where, draft, startedAt, now, onEnd }: Bar
   const usingMock = useUsingMock();
   const source = useVitalsSource();
   return (
-    <header className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b border-[#4A1219] bg-[#2A0A0E] px-6 py-3 text-[#F2EEEE]">
+    <header className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b border-[#4A1219] bg-[#2A0A0E] px-6 py-3 text-[#F2EEEE] short:py-2">
       <span className="glow-slow text-xs font-extrabold tracking-[0.18em] text-alert">● EMERGENCY</span>
       <h1 className="font-display text-xl font-bold">{title}</h1>
       {draft && <span className="rounded-full border border-watch/50 px-2 text-[11px] text-watch">{draft}</span>}
@@ -58,10 +58,10 @@ export function EmergencyVitals({ frames }: { frames: VitalsFrame[] }) {
           const st = live?.vitals[k] ?? 'green';
           const entry = entryOf(thresholds, k);
           return (
-            <div key={k} className={`flex flex-col px-6 py-2.5 ${st === 'red' ? 'bg-[#1E080B]' : 'bg-[#0E0708]'} ${live?.poor ? 'opacity-50 grayscale' : ''}`}>
+            <div key={k} className={`flex flex-col px-6 py-2.5 short:py-1.5 ${st === 'red' ? 'bg-[#1E080B]' : 'bg-[#0E0708]'} ${live?.poor ? 'opacity-50 grayscale' : ''}`}>
               <span className="text-xs text-[#B8999C]">{SHORT[k]}</span>
               <span className="flex items-baseline gap-1.5">
-                <span className={`font-mono text-[30px] font-semibold ${st === 'green' ? '' : STATUS_CLASS[st].text}`}>{latest ? fmt(latest[k], 0) : '--'}</span>
+                <span className={`font-mono text-[30px] font-semibold short:text-[24px] ${st === 'green' ? '' : STATUS_CLASS[st].text}`}>{latest ? fmt(latest[k], 0) : '--'}</span>
                 <span className="text-xs text-[#B8999C]">{entry?.unit}</span>
                 {st !== 'green' && <span className={`rounded-full px-2 text-[11px] font-extrabold text-bg ${STATUS_CLASS[st].bg}`}>{statusLabel(st)}</span>}
                 {k === 'hr' && live?.irregular && <span className="text-[11px] font-bold text-alert">Irregular</span>}

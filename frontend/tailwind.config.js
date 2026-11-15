@@ -7,6 +7,8 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      // short: laptop screens under ~820px tall (13" laptops with browser chrome). Emergency mode shrinks to fit.
+      screens: { short: { raw: '(max-height: 820px)' } },
       colors: {
         bg: token('bg'),
         header: token('header'),

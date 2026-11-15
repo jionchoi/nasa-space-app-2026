@@ -83,15 +83,15 @@ export function CprGuide({ config, latest, onLog, onBack, onPulseBack }: Props) 
   const switchNow = running && switchLeft > config.switch_rescuer_s - 6 && cycles > 0;
 
   return (
-    <section aria-label="CPR guide" className="flex min-h-0 flex-1 flex-col gap-5">
+    <section aria-label="CPR guide" className="flex flex-1 flex-col gap-5 short:gap-3">
       <span className="text-[13px] tracking-[0.12em] text-alert">CPR · CREW MEMBER NOT RESPONDING</span>
-      <div className="flex flex-wrap items-center gap-10">
-        <div key={beat} className={`flex h-[230px] w-[230px] flex-col items-center justify-center rounded-full border-[3px] border-alert bg-alert/15 ${running && phase === 'compress' ? 'animate-beat' : 'opacity-60'}`}>
-          <span className="font-mono text-[64px] font-semibold leading-none">{phase === 'compress' ? count : '…'}</span>
+      <div className="flex flex-wrap items-center gap-10 short:gap-6">
+        <div key={beat} className={`flex h-[230px] w-[230px] flex-col short:h-[170px] short:w-[170px] items-center justify-center rounded-full border-[3px] border-alert bg-alert/15 ${running && phase === 'compress' ? 'animate-beat' : 'opacity-60'}`}>
+          <span className="font-mono text-[64px] font-semibold short:text-[48px] leading-none">{phase === 'compress' ? count : '…'}</span>
           <span className="text-sm text-[#F3B7BD]">of {config.compressions} · then {config.breaths} breaths</span>
         </div>
         <div className="flex flex-col gap-3">
-          <span className="text-[30px] font-bold">{phase === 'compress' ? (running ? 'Push with the beat' : 'Press Start, then push with the beat') : `Give ${config.breaths} breaths`}</span>
+          <span className="text-[30px] font-bold short:text-[24px]">{phase === 'compress' ? (running ? 'Push with the beat' : 'Press Start, then push with the beat') : `Give ${config.breaths} breaths`}</span>
           <span className="flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => step(-5)} disabled={rate <= lo} aria-label="Slower" className="h-11 w-11 rounded-control border border-[#5A2A30] text-xl hover:bg-white/5 disabled:opacity-40">−</button>
             <span className="font-mono text-[22px]">{rate}</span><span className="text-[#B8999C]">per minute ({lo}–{hi})</span>

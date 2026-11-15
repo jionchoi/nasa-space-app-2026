@@ -164,8 +164,8 @@ export default function Emergency() {
       {saveError && <p role="alert" className="bg-watch/10 px-5 py-2 text-watch">{saveError}</p>}
       <EmergencyVitals frames={frames} />
 
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <main className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-5 py-6 sm:px-9">
+      <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_380px]">
+        <main className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-5 py-6 sm:px-9 short:gap-3 short:py-4">
           {flags.active.length > 0 && (
             <p role="status" className="rounded-card border-2 border-alert bg-alert/15 px-4 py-3 text-lg font-semibold">
               Red flag from the sensor: {flags.active.map((f) => flags.defs[f]?.label ?? f).join(', ')}. Check the crew member yourself and answer each step.
@@ -189,7 +189,7 @@ export default function Emergency() {
             />
           )}
         </main>
-        <aside className="flex min-h-0 flex-col gap-4 border-t border-[#2A1416] bg-[#0E0708] p-5 lg:border-l lg:border-t-0">
+        <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-[#2A1416] bg-[#0E0708] p-5 lg:border-l lg:border-t-0 short:gap-3 short:p-4">
           <RedFlags flags={protocol.red_flags} lit={lit} />
           <SurgeonMessage draft={draft} onLog={(text) => em.addLog('message', text)}
             onSent={(m) => setSentMessages((all) => ({ ...all, [m.id]: m }))} />

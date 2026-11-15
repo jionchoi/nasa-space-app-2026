@@ -58,7 +58,7 @@ function StepTimer({ seconds, done, onDone }: { seconds: number; done: boolean; 
 export function StepView(p: Props) {
   const { step } = p;
   return (
-    <section aria-label={`Step ${step.n} of ${p.total}`} className={`flex min-h-0 flex-1 flex-col gap-5 ${step.red_flag ? 'rounded-panel border-2 border-alert/60 p-4' : ''}`}>
+    <section aria-label={`Step ${step.n} of ${p.total}`} className={`flex flex-1 flex-col gap-5 short:gap-3 ${step.red_flag ? 'rounded-panel border-2 border-alert/60 p-4' : ''}`}>
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-[13px] tracking-[0.12em] text-[#B8999C]">{step.id ? `${step.id} · ` : ''}STEP {step.n} OF {p.total}</span>
         <span className="flex gap-1.5" aria-hidden>
@@ -73,10 +73,10 @@ export function StepView(p: Props) {
         <p className="self-start rounded-full border border-alert/60 bg-alert/10 px-3 py-1 text-sm font-semibold text-[#FFB3BB]">Urgency: {step.urgency}</p>
       )}
       {step.check && step.check === step.text
-        ? <p className="max-w-[900px] font-display text-[40px] font-bold leading-[1.15]">{step.check}</p>
+        ? <p className="max-w-[900px] font-display text-[30px] font-bold leading-[1.15] sm:text-[40px] short:text-[30px]">{step.check}</p>
         : <>
-          <p className="max-w-[900px] font-display text-[40px] font-bold leading-[1.15]">{step.text}</p>
-          {step.check && <p className="max-w-[820px] text-[22px] text-[#F5DE8A]">{step.check}</p>}
+          <p className="max-w-[900px] font-display text-[30px] font-bold leading-[1.15] sm:text-[40px] short:text-[30px]">{step.text}</p>
+          {step.check && <p className="max-w-[820px] text-[20px] text-[#F5DE8A] sm:text-[22px] short:text-[19px]">{step.check}</p>}
         </>}
       {step.type === 'end' && <p className="text-lg text-[#F5DE8A]">End of this protocol path. The case is not closed automatically.</p>}
       {step.links?.map((l) => (
@@ -114,20 +114,20 @@ export function StepView(p: Props) {
           <>
             {(['no', 'yes'] as const).map((v) => (
               <button key={v} type="button" onClick={() => p.onAnswer(v)} aria-pressed={p.answer === v}
-                className={`h-[72px] min-w-[180px] rounded-2xl border-2 text-[22px] font-extrabold ${p.answer === v ? 'border-[#F2EEEE] bg-[#F2EEEE] text-[#0A0506]' : 'border-[#F2EEEE] hover:bg-white/10'}`}>
+                className={`h-[72px] min-w-[120px] rounded-2xl short:h-[60px] sm:min-w-[180px] border-2 text-[22px] font-extrabold ${p.answer === v ? 'border-[#F2EEEE] bg-[#F2EEEE] text-[#0A0506]' : 'border-[#F2EEEE] hover:bg-white/10'}`}>
                 {v === 'yes' ? 'Yes' : 'No'}
               </button>
             ))}
             {p.answer && (
               <button type="button" disabled={!p.canNext || p.finished} onClick={p.onNext}
-                className={`h-[72px] min-w-[200px] rounded-2xl text-xl font-extrabold disabled:opacity-40 ${p.nextLabel === 'Start CPR' ? 'bg-alert text-white' : 'bg-[#F2EEEE] text-[#0A0506]'}`}>
+                className={`h-[72px] min-w-[160px] rounded-2xl short:h-[60px] sm:min-w-[200px] text-xl font-extrabold disabled:opacity-40 ${p.nextLabel === 'Start CPR' ? 'bg-alert text-white' : 'bg-[#F2EEEE] text-[#0A0506]'}`}>
                 {p.nextLabel}
               </button>
             )}
           </>
         ) : (
           <button type="button" disabled={!p.canNext || p.finished} onClick={p.onNext}
-            className={`h-[72px] min-w-[240px] rounded-2xl text-xl font-extrabold disabled:opacity-40 ${p.nextLabel === 'Start CPR' ? 'bg-alert text-white' : 'bg-[#F2EEEE] text-[#0A0506]'}`}>
+            className={`h-[72px] min-w-[200px] rounded-2xl short:h-[60px] sm:min-w-[240px] text-xl font-extrabold disabled:opacity-40 ${p.nextLabel === 'Start CPR' ? 'bg-alert text-white' : 'bg-[#F2EEEE] text-[#0A0506]'}`}>
             {p.nextLabel}
           </button>
         )}
