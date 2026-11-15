@@ -1,5 +1,6 @@
 // REST client. Every call falls back to src/mock/ when the backend is unreachable, and the shared mock flag
 // (useUsingMock) tells the UI to show "Offline: mock data". WebSockets live in ./live.ts.
+import { currentMode } from './mode';
 import type {
   Alert, CabinSummary, CheckRequest, CheckResult, CprConfig, DailyCheckRecord, DailyEntry, EmergencyLogIn,
   Delivery, EmergencyLog, Environment, MissionsResponse, EscalationConfig, Guidance, Labels, Measurements, Message, MessageIn, Persona, Protocol, Questionnaire, RadiationSummary,
@@ -41,16 +42,21 @@ const pick = <T,>(table: unknown, key: string): T => {
   return t[key] ?? t.A ?? Object.values(t)[0];
 };
 
+class ApiError extends Error {}
+
 async function request<T>(path: string, fallback: () => T, init?: RequestInit): Promise<T> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
     const res = await fetch(API_URL + path, { ...init, signal: ctrl.signal });
-    if (!res.ok) throw new Error(`${res.status}`);
+    if (!res.ok) throw new ApiError(`Request failed (${res.status})`);
     const data = (await res.json()) as T;
     setMock(false);
     return data;
-  } catch {
+  } catch (error) {
+    if(error instanceof ApiError)throw error;
+    const content = /^\/api\/(environments|thresholds|regions|escalation|guidance|measurements|questionnaire|cpr|labels|protocols)(\/|$)/.test(path);
+    if(currentMode()!=='demo' && !content)throw error;
     setMock(true);
     return fallback();
   } finally {

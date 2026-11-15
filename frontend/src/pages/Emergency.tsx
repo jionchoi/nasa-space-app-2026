@@ -1,3 +1,5 @@
+import { useSignals } from '../state/SignalContext';
+import { signalRequest } from '../api/signals';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getCpr, getProtocol } from '../api/client';
@@ -22,6 +24,9 @@ import { useApp } from '../state/AppContext';
 import type { CprConfig, Message, Protocol, VitalsFrame } from '../types/contracts';
 
 export default function Emergency() {
+  const signals=useSignals();
+  const demo=signals.mode==='demo';
+  const [saveError,setSaveError]=useState<string|null>(null);
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   // Old links used protocol=collapse; it is now "unresponsive" (the backend also answers the old id).
@@ -35,7 +40,7 @@ export default function Emergency() {
   const [ended, setEnded] = useState<number | null>(null);
   const { frames, latest } = useVitals(persona);
   const trigger = params.get('trigger');
-  const em = useEmergency(protocol, trigger, params.get('preanswer'), params.get('goto'));
+  const em = useEmergency(protocol, demo?trigger:'crew', demo?params.get('preanswer'):null, demo?params.get('goto'):null);
   const flags = useRedFlagRoutes(protocol, frames, thresholds, em, ended === null);
   const [sentMessages, setSentMessages] = useState<Record<string, Message>>({});
   const live = useMemo(() => liveStatus(latest, thresholds), [latest, thresholds]);
@@ -94,7 +99,7 @@ export default function Emergency() {
       stepsTotal={protocol.steps.length} messages={Object.values(sentMessages)} onBack={() => navigate('/')} />, `${protocol.title} · handled`);
   }
 
-  const end = (skipConfirm = false) => {
+  const end = async (skipConfirm = false) => {
     if (!skipConfirm && !window.confirm('End the emergency? You will see a summary of what was done.')) return;
     const at = Date.now();
     em.addLog('end', 'Emergency ended by the crew');
@@ -105,11 +110,17 @@ export default function Emergency() {
       return [n, { question: s?.check ?? '', answer: value, by: em.answeredBy[Number(n)] ?? 'crew' }];
     }));
     const messages = Object.values(sentMessages).map((m) => ({ id: m.id, text: m.text, status: m.status, sent_at: m.sent_at, status_text: m.status_text }));
-    addEmergency({ endedAt, title: protocol.title, durationS }, {
+    const record = {
       protocol: protocol.id, title: protocol.title, started: new Date(em.startedAt).toISOString(), ended: endedAt,
       duration_s: durationS, log: [...em.log, { t: endedAt, kind: 'end', text: 'Emergency ended by the crew' }],
-      answers, messages, trigger: trigger ?? 'crew',
-    });
+      answers, messages, trigger: demo?trigger ?? 'crew':'crew',
+    };
+    if(demo)addEmergency({endedAt,title:protocol.title,durationS},record);
+    else {
+      if(!signals.session){setSaveError('No signal session is available to save this log.');return;}
+      try{await signalRequest('/api/v2/emergency-logs',{subject_id:signals.session.subject_id,session_id:signals.session.id,data:record});}
+      catch(e){setSaveError(String(e));return;}
+    }
     setEnded(at);
   };
   endRef.current = end;
@@ -120,7 +131,8 @@ export default function Emergency() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#0A0506] text-[#F2EEEE] lg:h-[100dvh] lg:overflow-hidden">
-      <EmergencyBar title={protocol.title} where={where} draft={protocol.draft} startedAt={em.startedAt} now={now} onEnd={() => end()} />
+      <EmergencyBar title={protocol.title} where={where} draft={protocol.draft} startedAt={em.startedAt} now={now} onEnd={() => void end()} />
+      {saveError && <p role="alert" className="bg-watch/10 px-5 py-2 text-watch">{saveError}</p>}
       <EmergencyVitals frames={frames} />
 
       <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_380px]">

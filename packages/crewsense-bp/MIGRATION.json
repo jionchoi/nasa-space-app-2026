@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-15",
+  "source": "NASA local sensing prototype",
+  "files": [
+    {
+      "source": "bp_experiment/__init__.py",
+      "target": "packages/crewsense-bp/src/crewsense_bp/__init__.py",
+      "sha256": "f39800c3fc55ec0b569d73db9224655b429ed6113218df299f2ba3c4187ea6a2"
+    },
+    {
+      "source": "bp_experiment/cpu.py",
+      "target": "packages/crewsense-bp/src/crewsense_bp/cpu.py",
+      "sha256": "a151d28b807a802ca1fe39fafb70dbd4bab43f30b91e3d852661340018fb6a79"
+    },
+    {
+      "source": "bp_experiment/preprocessing.py",
+      "target": "packages/crewsense-bp/src/crewsense_bp/preprocessing.py",
+      "sha256": "1acb934505f956512b0b4112a8d1b65a25bd3495f60a52566fd7e4403f156bb2"
+    }
+  ]
+}

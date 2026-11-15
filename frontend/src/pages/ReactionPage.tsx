@@ -1,3 +1,5 @@
+import { useSignals } from '../state/SignalContext';
+import { signalRequest } from '../api/signals';
 import { ArrowLeft, CheckCircle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -11,6 +13,7 @@ import type { PvtResult, Questionnaire } from '../types/contracts';
 
 /** The reaction test on its own (opened from the brain and mood panel). The result feeds brain and mood today. */
 export default function ReactionPage() {
+  const {mode,session}=useSignals();
   const { persona } = useApp();
   const usingMock = useUsingMock();
   const [config, setConfig] = useState<Questionnaire | null>(null);
@@ -21,8 +24,10 @@ export default function ReactionPage() {
   useEffect(() => { getQuestionnaire().then(setConfig); }, []);
 
   const save = async (result: PvtResult) => {
-    const res = await postForm(persona, 'pvt', result as unknown as Record<string, unknown>);
-    setSaved(res?.ok ? 'ok' : 'failed');
+    try {
+      const res = mode==='demo'?await postForm(persona,'pvt',result as unknown as Record<string,unknown>):session?await signalRequest<{ok:boolean}>('/api/v2/reaction-tests',{session_id:session.id,result}):null;
+      setSaved(res?.ok?'ok':'failed');
+    }catch{setSaved('failed');}
   };
 
   return (
@@ -30,11 +35,11 @@ export default function ReactionPage() {
       <AppHeader />
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center gap-6 px-6 py-8 text-center">
         {!config ? <p className="text-muted">Loading…</p> : saved === 'idle' ? (
-          <ReactionTest key={round} config={config.pvt} baseline={baseline} onDone={save} doneLabel="Save result" />
+          <ReactionTest key={round} config={config.pvt} baseline={mode==='demo'?baseline:undefined} onDone={save} doneLabel="Save result" />
         ) : (
           <>
             {saved === 'ok' ? (
-              <p className="flex items-center gap-2 text-2xl font-semibold"><CheckCircle className="h-7 w-7 text-ok" weight="fill" aria-hidden /> Saved. It now counts for brain and mood today.</p>
+              <p className="flex items-center gap-2 text-2xl font-semibold"><CheckCircle className="h-7 w-7 text-ok" weight="fill" aria-hidden /> {mode==='demo'?'Saved. It now counts for brain and mood today.':'Saved for this signal session. No health score assigned.'}</p>
             ) : (
               <p className="text-xl text-watch">{usingMock ? 'The backend is off, so the result was not saved.' : 'Could not save the result.'}</p>
             )}

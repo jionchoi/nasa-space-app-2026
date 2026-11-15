@@ -31,6 +31,8 @@ export default function DailyCheck() {
   const [extra, setExtra] = useState<{ temp_c: number | null; glucose_mmol: number | null }>({ temp_c: null, glucose_mmol: null });
   const [bp, setBp] = useState<{ bp_sys: number | null; bp_dia: number | null }>({ bp_sys: null, bp_dia: null });
   const [pvt, setPvt] = useState<PvtResult | null>(null);
+  const [error,setError]=useState<string|null>(null);
+  const [attempt,setAttempt]=useState(0);
   const [result, setResult] = useState<CheckResult | null>(null);
   const seated = useRef<VitalsFrame[]>([]);
   const stand = useRef<VitalsFrame[]>([]);
@@ -72,17 +74,18 @@ export default function DailyCheck() {
   useEffect(() => {
     if (step !== S.summary) return;
     let live = true;
+    setError(null);
     postCheck({ persona, seated_frames: seated.current, stand_frames: stand.current, answers, ...extra, ...bp, pvt }, env).then((r) => {
       if (!live) return;
       setResult(r);
       setCheckDoneAt(new Date().toISOString());
       refreshStreak();
       refreshMissions();
-    });
+    }).catch(e=>{if(live)setError(String(e));});
     return () => { live = false; };
     // run once when the summary opens
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  }, [step,attempt]);
 
   const why = (metric: string) => measurements?.metrics[metric]?.why_check;
   if (!config) return <div className="grid h-screen place-items-center text-muted">Loading the daily check…</div>;
@@ -132,7 +135,9 @@ export default function DailyCheck() {
         <QuestionsStep questions={config.questions} answers={answers}
           onAnswer={(id, value) => setAnswers((a) => ({ ...a, [id]: value }))} onDone={() => setStep(S.summary)} whyFor={why} />
       )}
-      {step === S.summary && <SummaryStep result={result} skipped={skipped} demo={demoFilled} onBack={() => navigate('/')} />}
+      {step === S.summary && (error
+        ? <><p role="alert" className="text-watch">{error}</p><button className="btn" onClick={() => setAttempt((a) => a + 1)}>Retry save</button></>
+        : <SummaryStep result={result} skipped={skipped} demo={demoFilled} onBack={() => navigate('/')} />)}
     </CheckShell>
   );
 }

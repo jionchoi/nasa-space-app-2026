@@ -1,3 +1,4 @@
+-e ../packages/crewsense-signals
 fastapi
 uvicorn[standard]
 pydantic>=2

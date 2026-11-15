@@ -1,3 +1,4 @@
+import { useSignals } from '../state/SignalContext';
 import { useEffect, useState } from 'react';
 import { getDaily, getStatus } from '../api/client';
 import type { DailyEntry, RegionStatus } from '../types/contracts';
@@ -22,11 +23,13 @@ export function useStatus(persona: string, env: string) {
 
 /** Daily entries for the trend chart. `refreshKey` reloads them (e.g. after a daily check). */
 export function useDaily(persona: string, refreshKey?: unknown) {
+  const {mode}=useSignals();
   const [daily, setDaily] = useState<DailyEntry[]>([]);
   useEffect(() => {
     let live = true;
+    if(mode!=='demo'){setDaily([]);return;}
     getDaily(persona).then((rows) => { if (live) setDaily(rows); });
     return () => { live = false; };
-  }, [persona, refreshKey]);
+  }, [persona, refreshKey,mode]);
   return daily;
 }

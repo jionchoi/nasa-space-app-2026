@@ -14,9 +14,11 @@ def summarize(seated: list[dict], stand: list[dict], cfg: dict, min_quality: flo
     """Vitals for today from the seated and standing recordings."""
     def usable(frames: list[dict]) -> list[dict]:
         good = [f for f in frames if min_quality is None or f["signal_quality"] >= min_quality]
-        return good or frames
+        return good
 
     seated, stand = usable(seated), usable(stand) if stand else []
+    if not seated:
+        raise ValueError("No usable seated measurement frames; repeat the measurement")
     rest = seated[-int(cfg.get("rest_window_s", 60)):]
     hr_rest = median(f["hr"] for f in rest)
     frames = seated + stand

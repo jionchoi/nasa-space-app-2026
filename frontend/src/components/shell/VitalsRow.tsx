@@ -8,6 +8,8 @@ import { USUAL_FIELD, usualValue } from '../../lib/metrics';
 import { entryOf, fmt, LIVE_VITALS, STATUS_CLASS } from '../../lib/status';
 import { useApp, useStatusLabel } from '../../state/AppContext';
 import { useHealth } from '../../state/HealthContext';
+import { useSignals } from '../../state/SignalContext';
+import { SignalVitals } from '../signals/SignalVitals';
 import { Sparkline } from '../common/Sparkline';
 
 const SHORT: Record<string, string> = { hr: 'Heart rate', hrv_rmssd: 'HRV', spo2: 'SpO₂', rr: 'Breathing' };
@@ -21,6 +23,9 @@ export function VitalsRow() {
   const { active: demo } = useDemo();
   const badge = personaBadge(personaInfo);
   const poor = !!live?.poor;
+  const { mode } = useSignals();
+  // Measurement / Research mode: the measured PPG values (no persona replay, no thresholds applied).
+  if (mode !== 'demo') return <SignalVitals compact />;
 
   return (
     <section aria-label="Live vitals" className="relative flex flex-wrap items-stretch border-b border-line bg-[#06070A] px-6">

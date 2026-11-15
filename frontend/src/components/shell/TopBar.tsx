@@ -13,6 +13,8 @@ import { useCv } from '../../state/CvContext';
 import { useHealth } from '../../state/HealthContext';
 import { missionHHMM, minuteOfDay, toMinutes, useMissionClock, useRoutine } from '../../state/RoutineContext';
 import { useShell } from '../../state/ShellContext';
+import { useSignals } from '../../state/SignalContext';
+import { ModePicker } from '../signals/SignalControls';
 import type { Environment, RegionId } from '../../types/contracts';
 
 /** Dot colour from the delay in environments.json: live, short delay, several minutes. */
@@ -211,8 +213,42 @@ export function EmergencyButton() {
   );
 }
 
-/** The full v4 top bar. `children` = an extra row under it (e.g. the daily check progress). */
+/** Measurement / Research mode (PPG integration): who is measured and the signal connection, no persona data. */
+function SignalWho() {
+  const { session, connection } = useSignals();
+  return (
+    <span className="flex min-w-0 flex-col leading-tight">
+      <span className="whitespace-nowrap text-[13px] font-semibold">{session?.subject_id ?? 'No crew session'}</span>
+      <span className="whitespace-nowrap text-[11px] text-muted">Local measurements · signal {connection}</span>
+    </span>
+  );
+}
+
+/** The full v4 top bar. `children` = an extra row under it (e.g. the daily check progress).
+ *  Outside Demo mode the persona-based parts (routine, radiation, CO2, camera, inbox) are hidden. */
 export function TopBar({ children }: { children?: React.ReactNode }) {
+  const { mode, error } = useSignals();
+  if (mode !== 'demo') {
+    return (
+      <header className="relative z-30 shrink-0 border-b border-line bg-header">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 2xl:px-6">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
+            <MenuButton />
+            <Wordmark />
+            <SignalWho />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {error && <span role="alert" className="text-sm text-watch">{error}</span>}
+            <ModePicker />
+            <span className="text-xs text-muted">Camera detection · demo only</span>
+            <MuteToggle />
+            <EmergencyButton />
+          </div>
+        </div>
+        {children}
+      </header>
+    );
+  }
   return (
     <header className="relative z-30 shrink-0 border-b border-line bg-header">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 2xl:px-6">
@@ -227,6 +263,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
           <Co2Pill />
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <ModePicker />
           <Clock />
           <CameraButton />
           <MuteToggle />

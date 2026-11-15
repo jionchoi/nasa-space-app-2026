@@ -1,0 +1,32 @@
+{
+  "record": "bidmc_01_Signals",
+  "role": "development",
+  "algorithm": "causal_butterworth_peak_intervals_v1",
+  "reference": "BIDMC HR monitor numeric, integer endpoint second, no optimized shift",
+  "hr_window_s": 8.0,
+  "filter_settle_s": 2.0,
+  "batches": 480,
+  "valid_output_count": 471,
+  "scored_count": 471,
+  "valid_output_fraction": 0.98125,
+  "mae_bpm": 0.9367,
+  "rmse_bpm": 3.7044,
+  "bias_bpm": -0.4831,
+  "error_p95_abs_bpm": 1.639,
+  "error_limits_95_bpm": [
+    -7.6817,
+    6.7154
+  ],
+  "status_counts_without_value": {
+    "warming_up": 9
+  },
+  "signals_sha256": "21495169cc36e82352d8e12cc6430927946d02d240b030715088d02396ea2d5c",
+  "numerics_sha256": "27d43794cf2e7150db10e8bfe61d2bfdb26873a8f1629ffc5fbee5c9a4eb6ef5",
+  "limitations": [
+    "No astronaut or clinical validation",
+    "Monitor timing/averaging unknown",
+    "Overlapping windows are not independent observations",
+    "Quality checks are heuristic; false acceptance not quantified",
+    "PRV, rhythm and SpO2 accuracy not evaluated by this command"
+  ]
+}

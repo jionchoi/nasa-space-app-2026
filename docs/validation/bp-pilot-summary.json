@@ -1,0 +1,372 @@
+{
+  "created_at_utc": "2026-11-15T09:43:49.551539+00:00",
+  "artifact_sha256": "d4e5c7e5c9b9cdaef7ebce6a12a578df20eedeedad473bb15ee428ab526df4a9",
+  "parameters": 53514,
+  "artifact_bytes": 200587,
+  "adoption": {
+    "passed": false,
+    "conditions": {
+      "window_mae_within_limits": false,
+      "subject_macro_mae_within_limits": false,
+      "beats_train_mean_each_target_by_10_percent": false,
+      "subject_macro_beats_train_mean_each_target_by_10_percent": false,
+      "parameter_budget": true,
+      "artifact_budget": true,
+      "cpu_latency_budget": true,
+      "enough_test_patients": true,
+      "valid_pressure_order": true
+    },
+    "relative_improvement_over_mean": [
+      0.044950421864946466,
+      -0.08650394898017977
+    ],
+    "subject_macro_relative_improvement_over_mean": [
+      0.04278788416950474,
+      -0.08618334538415318
+    ],
+    "service_enabled": false,
+    "meaning": "Pilot gate only; passing is not clinical or flight certification"
+  },
+  "evaluations": {
+    "train": {
+      "cnn": {
+        "target_order": [
+          "SBP",
+          "DBP"
+        ],
+        "windows": 7053,
+        "patients": 60,
+        "invalid_pressure_order_count": 0,
+        "mae_mmHg": [
+          11.909276008605957,
+          6.711439609527588
+        ],
+        "rmse_mmHg": [
+          15.477792739868164,
+          8.62757682800293
+        ],
+        "bias_mmHg": [
+          -6.195744037628174,
+          -0.6743053793907166
+        ],
+        "error_std_mmHg": [
+          14.183608055114746,
+          8.601181030273438
+        ],
+        "absolute_error_p95_mmHg": [
+          31.31911849975586,
+          16.952735900878906
+        ],
+        "within_5_mmHg_fraction": [
+          0.28626116546150576,
+          0.4629235786190274
+        ],
+        "within_10_mmHg_fraction": [
+          0.5272933503473699,
+          0.7623706224301715
+        ],
+        "subject_macro_mae_mmHg": [
+          12.134069327513377,
+          6.738952825466792
+        ]
+      },
+      "train_mean_baseline": {
+        "target_order": [
+          "SBP",
+          "DBP"
+        ],
+        "windows": 7053,
+        "patients": 60,
+        "invalid_pressure_order_count": 0,
+        "mae_mmHg": [
+          16.231971740722656,
+          10.028238296508789
+        ],
+        "rmse_mmHg": [
+          19.97511863708496,
+          12.053065299987793
+        ],
+        "bias_mmHg": [
+          0.0006703558610752225,
+          0.00020382858929224312
+        ],
+        "error_std_mmHg": [
+          19.975160598754883,
+          12.053072929382324
+        ],
+        "absolute_error_p95_mmHg": [
+          38.180030822753906,
+          21.757511138916016
+        ],
+        "within_5_mmHg_fraction": [
+          0.16730469303842335,
+          0.2808733872111158
+        ],
+        "within_10_mmHg_fraction": [
+          0.349496668084503,
+          0.5711044945413299
+        ],
+        "subject_macro_mae_mmHg": [
+          16.595950826009116,
+          10.04066560268402
+        ]
+      },
+      "target_summary_mmHg": {
+        "min": [
+          49.45028305053711,
+          31.676054000854492
+        ],
+        "max": [
+          180.78207397460938,
+          112.64752960205078
+        ],
+        "mean": [
+          118.7352066040039,
+          65.28305053710938
+        ],
+        "std": [
+          19.97511863708496,
+          12.053065299987793
+        ]
+      }
+    },
+    "validation": {
+      "cnn": {
+        "target_order": [
+          "SBP",
+          "DBP"
+        ],
+        "windows": 2160,
+        "patients": 18,
+        "invalid_pressure_order_count": 0,
+        "mae_mmHg": [
+          13.630372047424316,
+          9.893131256103516
+        ],
+        "rmse_mmHg": [
+          17.9758358001709,
+          12.58078670501709
+        ],
+        "bias_mmHg": [
+          -7.125877380371094,
+          -1.1221832036972046
+        ],
+        "error_std_mmHg": [
+          16.503116607666016,
+          12.530641555786133
+        ],
+        "absolute_error_p95_mmHg": [
+          35.93545150756836,
+          24.411937713623047
+        ],
+        "within_5_mmHg_fraction": [
+          0.2810185185185185,
+          0.32037037037037036
+        ],
+        "within_10_mmHg_fraction": [
+          0.4810185185185185,
+          0.6134259259259259
+        ],
+        "subject_macro_mae_mmHg": [
+          13.63035315937466,
+          9.893122620052761
+        ]
+      },
+      "train_mean_baseline": {
+        "target_order": [
+          "SBP",
+          "DBP"
+        ],
+        "windows": 2160,
+        "patients": 18,
+        "invalid_pressure_order_count": 0,
+        "mae_mmHg": [
+          11.977304458618164,
+          7.973389625549316
+        ],
+        "rmse_mmHg": [
+          15.444104194641113,
+          9.978307723999023
+        ],
+        "bias_mmHg": [
+          -0.840522825717926,
+          0.4622713625431061
+        ],
+        "error_std_mmHg": [
+          15.421180725097656,
+          9.967613220214844
+        ],
+        "absolute_error_p95_mmHg": [
+          31.435691833496094,
+          18.81648063659668
+        ],
+        "within_5_mmHg_fraction": [
+          0.2601851851851852,
+          0.3921296296296296
+        ],
+        "within_10_mmHg_fraction": [
+          0.5092592592592593,
+          0.7111111111111111
+        ],
+        "subject_macro_mae_mmHg": [
+          11.977308670679728,
+          7.973386274443732
+        ]
+      },
+      "target_summary_mmHg": {
+        "min": [
+          75.61788940429688,
+          40.563167572021484
+        ],
+        "max": [
+          182.75697326660156,
+          113.6349868774414
+        ],
+        "mean": [
+          119.57544708251953,
+          64.82085418701172
+        ],
+        "std": [
+          15.421191215515137,
+          9.967602729797363
+        ]
+      }
+    },
+    "test": {
+      "cnn": {
+        "target_order": [
+          "SBP",
+          "DBP"
+        ],
+        "windows": 2138,
+        "patients": 18,
+        "invalid_pressure_order_count": 0,
+        "mae_mmHg": [
+          13.137836456298828,
+          10.034036636352539
+        ],
+        "rmse_mmHg": [
+          16.512340545654297,
+          12.63698959350586
+        ],
+        "bias_mmHg": [
+          -1.9354588985443115,
+          1.026950716972351
+        ],
+        "error_std_mmHg": [
+          16.39851951599121,
+          12.595200538635254
+        ],
+        "absolute_error_p95_mmHg": [
+          32.70628356933594,
+          25.88467025756836
+        ],
+        "within_5_mmHg_fraction": [
+          0.2656688493919551,
+          0.2979420018709074
+        ],
+        "within_10_mmHg_fraction": [
+          0.4536950420954163,
+          0.5954162768942938
+        ],
+        "subject_macro_mae_mmHg": [
+          13.261455138524374,
+          9.984467029571533
+        ]
+      },
+      "train_mean_baseline": {
+        "target_order": [
+          "SBP",
+          "DBP"
+        ],
+        "windows": 2138,
+        "patients": 18,
+        "invalid_pressure_order_count": 0,
+        "mae_mmHg": [
+          13.756182670593262,
+          9.235158920288086
+        ],
+        "rmse_mmHg": [
+          16.933347702026367,
+          11.304254531860352
+        ],
+        "bias_mmHg": [
+          8.278740882873535,
+          3.753743886947632
+        ],
+        "error_std_mmHg": [
+          14.77156925201416,
+          10.662821769714355
+        ],
+        "absolute_error_p95_mmHg": [
+          32.329345703125,
+          21.690597534179688
+        ],
+        "within_5_mmHg_fraction": [
+          0.21702525724976612,
+          0.3587464920486436
+        ],
+        "within_10_mmHg_fraction": [
+          0.3980355472404116,
+          0.6113189897100093
+        ],
+        "subject_macro_mae_mmHg": [
+          13.85424914624956,
+          9.192248317930433
+        ]
+      },
+      "target_summary_mmHg": {
+        "min": [
+          71.1743392944336,
+          39.08198165893555
+        ],
+        "max": [
+          164.98275756835938,
+          100.79804992675781
+        ],
+        "mean": [
+          110.456298828125,
+          61.52921676635742
+        ],
+        "std": [
+          14.771597862243652,
+          10.662814140319824
+        ]
+      }
+    }
+  },
+  "benchmark": {
+    "device": "cpu",
+    "backend": "NumPy/SciPy, no PyTorch import",
+    "requested_blas_threads": 1,
+    "batch_size": 1,
+    "warmup_calls": 30,
+    "measured_calls": 300,
+    "includes": "input quality checks, window filtering/normalization, CNN forward, target inverse scaling; excludes disk IO, imports, acquisition and resampling from 500Hz",
+    "latency_ms": {
+      "median": 1.0367085,
+      "p95": 1.06101875,
+      "max": 1.090833
+    },
+    "rss_after_imports_bytes": 98664448,
+    "rss_after_warmup_bytes": 99401728,
+    "peak_process_rss_bytes": 99500032,
+    "incremental_warm_rss_bytes": 737280,
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "torch_imported": false,
+    "flight_hardware_tested": false,
+    "power_measured": false
+  },
+  "limitations": [
+    "Small convenience cohort selected by available channels and quality, one hospital, anesthetized surgical patients",
+    "Window-based current BP estimates; not future BP forecasts or clinical validation",
+    "No test-person calibration; no age, case ID, patient ID, ABP, or BP labels in model inputs",
+    "Label quality exclusions affect cohort and coverage; artifact detection is unvalidated",
+    "Original 500Hz windows downsampled independently; filtering uses only the completed past window",
+    "Power and flight hardware not measured; NumPy/SciPy/Python runtime memory is included in isolated process RSS",
+    "License notices differ between current API spec and dataset page; no raw redistribution or commercial clearance asserted"
+  ]
+}

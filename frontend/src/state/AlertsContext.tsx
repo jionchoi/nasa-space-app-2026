@@ -4,6 +4,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ackAlert, connectAlerts, getAlerts, useUsingMock } from '../api/client';
 import type { Alert } from '../types/contracts';
+import { useSignals } from './SignalContext';
 import { useApp } from './AppContext';
 
 interface AlertsState {
@@ -19,6 +20,7 @@ const upsert = (list: Alert[], alert: Alert) =>
   list.some((a) => a.id === alert.id) ? list.map((a) => (a.id === alert.id ? alert : a)) : [alert, ...list];
 
 export function AlertsProvider({ children }: { children: ReactNode }) {
+  const {mode}=useSignals();
   const { persona } = useApp();
   const usingMock = useUsingMock();
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -26,7 +28,7 @@ export function AlertsProvider({ children }: { children: ReactNode }) {
   const [localAcks, setLocalAcks] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
-    if (usingMock) return;
+    if (usingMock||mode!=='demo') return;
     let live = true;
     setAlerts([]);
     getAlerts(persona).then((rows) => { if (live && rows) setAlerts(rows); });
@@ -34,7 +36,7 @@ export function AlertsProvider({ children }: { children: ReactNode }) {
       setAlerts((prev) => (message.type === 'snapshot' ? message.alerts : upsert(prev, message.alert)));
     });
     return () => { live = false; close(); };
-  }, [persona, usingMock]);
+  }, [persona, usingMock,mode]);
 
   const ack = useCallback((id: string) => {
     if (usingMock) {

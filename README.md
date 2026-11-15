@@ -42,6 +42,39 @@ Everything runs on this laptop with no internet. The header shows **On-board · 
 answers, and **Live sensor** / **Replay** for where the vitals come from (the app switches back to the replay 3 s
 after the sensor stops).
 
+## PPG and blood pressure signals (Measurement and Research modes)
+
+From the `ppg-bp-integration` branch (Jian). The header's **Mode** selector separates:
+
+- **Demo:** the simulated crew A, B, C, dashboard, daily check, emergency drills, camera detector and offline mocks.
+- **Measurement:** a subject/device-specific signal session. Needs a connected producer or a registered real recording.
+  No automatic fallback to simulated data.
+- **Research:** the same signal pipeline, plus clearly marked synthetic-waveform scenarios and a gated research BP model.
+
+`pip install -r requirements.txt` also installs the PPG core (`packages/crewsense-signals`, editable). To replay
+recorded waveforms (e.g. PhysioNet BIDMC), start the backend with the launcher instead of plain uvicorn:
+
+```
+python scripts/run_backend.py --recordings-dir /path/to/bidmc       # from the repository root
+```
+
+Then pick Research or Measurement, enter crew/device ids, choose a `Signals.csv` recording and start the session.
+The first pulse value needs an 8 s usable window plus 2 s settling; pulse-rate variability needs 60 s. PPG RMSSD is
+pulse-rate variability, not ECG HRV. SpO2, breathing rate, rhythm diagnosis and real clinical alerts are not computed
+from measured signals yet, and source loss or end of file clears the numbers (no silent switch to persona data).
+
+A live producer (sensor) creates a session in the UI, then sends RawBatch messages to
+`/ws/v2/ingest?session_id=<ID>`; see [contracts-v2](docs/contracts-v2.md). The old `/ws/sensor` stays for the demo.
+
+**Research blood pressure (optional, off by default).** The model needs synchronized ECG + PPG, and its pilot failed
+its accuracy gate, so it stays unavailable even when switched on. Cuff entry in the daily check always works.
+To try it: `pip install -r backend/requirements-bp.txt`, then
+`python scripts/run_backend.py --enable-research-bp --bp-model <tiny_bp_cpu.npz> --bp-report <bp_cpu_pilot.json>`
+(or `COPILOT_ENABLE_RESEARCH_BP=1`). Weights and patient-level data are not committed.
+Evidence: [BP summary](docs/validation/bp-pilot-summary.json), [core parity](docs/validation/integration-core-parity.json),
+[integration status](docs/INTEGRATION_STATUS.md). Signal tests: `python -m pytest -q tests ../packages/crewsense-signals/tests`
+from `backend/`.
+
 ## Data
 
 <!-- sources-table -->

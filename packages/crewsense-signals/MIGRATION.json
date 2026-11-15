@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-15",
+  "source": "NASA local sensing prototype",
+  "files": [
+    {
+      "source": "sensing/__init__.py",
+      "target": "packages/crewsense-signals/src/crewsense_signals/ppg/__init__.py",
+      "sha256": "d209073af655563a826f5d6fc89934aaef50cfb293d6484aa3d1d9355339077e"
+    },
+    {
+      "source": "sensing/schemas.py",
+      "target": "packages/crewsense-signals/src/crewsense_signals/ppg/schemas.py",
+      "sha256": "5a16473b53f0b793eef346cfd77c5c3bbdf109d59989bcf44f3e607cd2f7dc4b"
+    },
+    {
+      "source": "sensing/quality.py",
+      "target": "packages/crewsense-signals/src/crewsense_signals/ppg/quality.py",
+      "sha256": "103c01b4bc16243e0987915bd1d1c44943e64c886b655546ca4db31db40adf87"
+    },
+    {
+      "source": "sensing/pipeline.py",
+      "target": "packages/crewsense-signals/src/crewsense_signals/ppg/pipeline.py",
+      "sha256": "238d4679aa110f10e162f59b5b0633124ab45b80c8e6e30546157d8a21d3bd97"
+    },
+    {
+      "source": "sensing/sources.py",
+      "target": "packages/crewsense-signals/src/crewsense_signals/ppg/sources.py",
+      "sha256": "019a7186d163b758d2ad6916ade975e692e2149cdbb0bc71f4b0f5c2a4beae31"
+    },
+    {
+      "source": "sensing/validation.py",
+      "target": "packages/crewsense-signals/src/crewsense_signals/ppg/validation.py",
+      "sha256": "251ddd2c407f9a1240ace3e2e03adfd5ac4f6e7ddd3222a02d64a50545e80abf"
+    }
+  ]
+}

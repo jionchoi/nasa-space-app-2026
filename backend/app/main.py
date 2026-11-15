@@ -8,16 +8,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import db, ws
-from .routers import assist, core, environment, records, status
+from .routers import assist, core, environment, records, signals, status
+from .signals.runtime import registry
 
 logging.basicConfig(level=logging.INFO)
-
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logging.getLogger("copilot").info("Local database: %s %s", db.path(), db.counts())
-    yield
+    try:
+        yield
+    finally:
+        await registry.close()
 
 
 app = FastAPI(title="Astronaut Health Co-Pilot", lifespan=lifespan)
@@ -32,5 +35,5 @@ app.include_router(status.router)
 app.include_router(records.router)
 app.include_router(environment.router)
 app.include_router(assist.router)
+app.include_router(signals.router)
 app.include_router(ws.router)
-
