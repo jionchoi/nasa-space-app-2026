@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
-from .. import alerts, cabin, daily_log, db, radiation, store
+from .. import alerts, cabin, daily_log, db, radiation, store, symptoms
 from ..models import CheckRequest, CheckResult, RegionStatus
 from ..rules import check as check_rules
 from ..rules.escalation import advice_text, overall_level
@@ -19,7 +19,9 @@ PERSONA_META = ["id", "name", "description", "simulated", "mission_day", "event_
 def _statuses(persona: dict, env: str | None = None) -> list[dict]:
     """Region statuses from the daily data, plus the live radiation event (dose for `env`) and the cabin CO2 context."""
     data = daily_log.overlay(persona)  # today's logs (water, exercise, body mass, reaction test)
-    rows = region_statuses(data, store.thresholds(), store.regions(), store.escalation())
+    thresholds = store.thresholds()
+    rows = region_statuses(data, thresholds, store.regions(), store.escalation(),
+                           active_symptoms=symptoms.active(persona["id"], thresholds))
     radiation.apply_to_status(rows, env)
     cabin.add_co2_context(rows, data)
     return rows

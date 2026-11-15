@@ -29,7 +29,8 @@ def test_config_files(client):
         Environment.model_validate(env)
     for pid in ("chest_pain", "unresponsive"):
         protocol = Protocol.model_validate(client.get(f"/api/protocols/{pid}").json())
-        assert any(s.on_no == "cpr" or s.on_yes == "cpr" for s in protocol.steps)
+        # Nov 15: medical lead's node protocols. CPR is a step (CL07, CL13); chest pain hands an unresponsive crew member to CL00.
+        assert any(s.cpr for s in protocol.steps) or any(s.on_no == "CL00" for s in protocol.steps)
     assert client.get("/api/protocols/nope").status_code == 404
     assert len(client.get("/api/questionnaire").json()["questions"]) == 9  # incl. the optional SANS eyesight question
     assert client.get("/api/cpr").json()["rate_per_min"] > 0

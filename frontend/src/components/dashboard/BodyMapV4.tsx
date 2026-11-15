@@ -21,15 +21,28 @@ const CHIP_H = 48;
 const rank = (s: Status) => STATUS_ORDER.indexOf(s);
 const c = (s: Status, a = 1) => `rgb(var(--c-${STATUS_TOKEN[s]}) / ${a})`;
 
-/** Scales the fixed 560 x 860 drawing down to the column width (never up). */
+/** Space kept under the drawing for the figure credit and the bottom padding. */
+const BELOW = 36;
+
+/** Scales the fixed 560 x 860 drawing down (never up) so it fits the column width and, on wide screens
+ *  (dashboard side by side), the height left in the window, so the whole body is visible without scrolling. */
 function useFit(ref: React.RefObject<HTMLDivElement>) {
   const [k, setK] = useState(1);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const ro = new ResizeObserver(([e]) => setK(Math.min(1, e.contentRect.width / W)));
-    ro.observe(el);
-    return () => ro.disconnect();
+    const update = () => {
+      const wide = window.matchMedia('(min-width: 1024px)').matches;
+      const availW = wide ? W : (el.parentElement?.clientWidth ?? W) - 40;
+      const availH = wide ? window.innerHeight - (el.getBoundingClientRect().top + window.scrollY) - BELOW : Infinity;
+      setK(Math.max(0.35, Math.min(1, availW / W, availH / H)));
+    };
+    update();
+    // The header can change height (wrapping, alerts), so watch the page as well as the window.
+    const ro = new ResizeObserver(update);
+    ro.observe(document.body);
+    window.addEventListener('resize', update);
+    return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, [ref]);
   return k;
 }
@@ -83,12 +96,12 @@ export function BodyMapV4() {
   };
 
   return (
-    <section aria-label="Body map" className="flex flex-col items-center gap-2 border-line bg-map px-5 pb-6 pt-4 lg:border-r">
-      <span role="status" className={`inline-flex h-8 items-center rounded-full border px-3.5 text-[13px] font-bold ${wr >= 2 ? 'shadow-[0_0_20px_var(--glow)]' : ''}`}
+    <section aria-label="Body map" className="flex flex-col items-center gap-2 border-line bg-map px-5 pb-3 pt-4 lg:h-full lg:border-r">
+      <span role="status" className={`inline-flex h-8 shrink-0 items-center rounded-full border px-3.5 text-[13px] font-bold ${wr >= 2 ? 'shadow-[0_0_20px_var(--glow)]' : ''}`}
         style={{ borderColor: c(ws), color: c(ws), background: c(ws, 0.08), ['--glow' as string]: c(ws, 0.35) }}>
         {badge}
       </span>
-      <div ref={box} className="w-full max-w-[560px]" style={{ height: H * k }}>
+      <div ref={box} className="shrink-0" style={{ width: W * k, height: H * k }}>
         <div className="relative origin-top-left" style={{ width: W, height: H, transform: `scale(${k})` }}>
           <div aria-hidden className={`absolute rounded-[50%] ${wr === 3 ? 'glow-fast' : wr === 2 ? 'glow-slow' : ''}`} style={aura} />
           {broken

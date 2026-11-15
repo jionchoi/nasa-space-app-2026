@@ -1,0 +1,581 @@
+{
+ "_status": "From the medical lead's workbook (Master Health Indicator Catalog). Shown in the Learn pop-up; it wins over regions.json / measurements.json text where they disagree (those files are kept unchanged). Re-run backend/scripts/import_medical.py after a new export.",
+ "source_file": "data/medical/NASA_space_project_medical_research(Master Health Indicator Catalog).csv",
+ "disclaimer": "Research prototype \u00b7 not clinically validated",
+ "indicators": {
+  "01": {
+   "id": "01",
+   "name": "Heart Rate (HR)",
+   "category": "Cardiovascular",
+   "system": "Cardiovascular / Autonomic",
+   "unit": "bpm",
+   "method": "Continuous wearable biosensor (PPG / chest strap)",
+   "how_to_measure": [
+    "Don and secure chest strap or smart shirt ensuring direct skin contact over sternum/ribcage.",
+    "Power on sensor module and verify Bluetooth/telemetry sync with ISS biomedical laptop/tablet.",
+    "Calibrate signal quality, confirm real-time waveform display, and wear continuously during duty/sleep."
+   ],
+   "what": "Autonomic nervous system activity, cardiac workload, and cardiovascular function.",
+   "why_space": "Microgravity removes hydrostatic blood pressure gradients, causing fluid headward shift, stroke volume drop, and elevated resting/workload HR.",
+   "normal_range": "60 \u2013 100 bpm (resting adult astronaut norm)",
+   "space_effect": "Transient resting bradycardia during first 24-48h, followed by compensatory upward shift (+5 to 10 bpm) and blunted peak exercise HR.",
+   "abnormal": "Persistent tachycardia signals dehydration, infection, hypercapnia, or deconditioning; bradycardia indicates excessive vagal tone or conduction defect.",
+   "baseline": "30-day pre-flight seated resting morning average HR (\u00b1 5 bpm).",
+   "limitations": "Motion artifact during physical activity; sensor displacement; dry skin poor PPG conductivity.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.1 (Cardiovascular Health & Physiological Monitoring)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "hr_rest",
+    "hr"
+   ],
+   "data_source": "Live"
+  },
+  "02": {
+   "id": "02",
+   "name": "Heart Rate Variability (HRV)",
+   "category": "Cardiovascular",
+   "system": "Autonomic / Cardiovascular",
+   "unit": "ms (RMSSD)",
+   "method": "Resting 5-min ECG recording / optical wearable telemetry",
+   "how_to_measure": [
+    "Assume quiet resting seated or supine position for 5 minutes in low-stimulation environment.",
+    "Initiate 5-minute timed high-resolution resting ECG/PPG capture sequence via onboard app.",
+    "Complete measurement without speaking or shifting position; verify R-R interval data integrity."
+   ],
+   "what": "Sympathetic vs parasympathetic autonomic cardiac modulation and baroreceptor responsiveness.",
+   "why_space": "Serves as an objective, sensitive biomarker for accumulated operational stress, neuroendocrine exhaustion, and recovery quality in orbit.",
+   "normal_range": "35 \u2013 75 ms (rMSSD resting baseline)",
+   "space_effect": "Depressed rMSSD by 20% to 30% during spaceflight due to continuous sympathetic dominance, sleep fragmentation, and microgravity adaptation.",
+   "abnormal": "Pronounced rMSSD drop indicates acute autonomic strain, elevated allostatic load, fatigue, or operational stress; HRV alone cannot diagnose autonomic collapse.",
+   "baseline": "14-day pre-flight standardized morning 5-minute seated resting rMSSD baseline.",
+   "limitations": "Highly sensitive to transient emotional state, recent caffeine, circadian timing, and respiration rate.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.1 (Autonomic Function & Cardiovascular Monitoring)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "hrv_rmssd"
+   ],
+   "data_source": "Live"
+  },
+  "03": {
+   "id": "03",
+   "name": "Oxygen Saturation (SpO\u2082)",
+   "category": "Cardiovascular",
+   "system": "Cardiopulmonary / Respiratory",
+   "unit": "% SpO\u2082",
+   "method": "Fingertip pulse oximeter / wearable optical sensor",
+   "how_to_measure": [
+    "Clean and warm index or middle finger; inspect sensor emitter and detector windows.",
+    "Apply oximeter probe firmly to fingertip; rest hand motionless on stable surface.",
+    "Record continuous SpO2 and pulse reading after signal stabilizes for at least 30 seconds."
+   ],
+   "what": "Percentage of oxygen-saturated hemoglobin in arterial blood circulation.",
+   "why_space": "Confirms systemic tissue oxygenation in sealed cabin environments vulnerable to ECLSS fluctuations, pocket hypercapnia, and hypobaric operations.",
+   "normal_range": "95% \u2013 100% SpO\u2082 on nominal cabin atmosphere",
+   "space_effect": "Mild transient reduction to 95\u201397% from cephalad fluid shifts, pulmonary capillary engorgement, and altered ventilation-perfusion matching.",
+   "abnormal": "Desaturation indicates arterial hypoxia, ECLSS scrub failure, toxic inhalation, atelectasis, or acute pulmonary impairment.",
+   "baseline": "Individual pre-flight resting room-air SpO\u2082 average (typically 97%\u201399%).",
+   "limitations": "Peripheral vasoconstriction, cold extremities, nail polish, or severe motion artifact distort pulse ox readings.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & Vol 2, Sec. 6.2 (Cardiopulmonary & Respiratory Monitoring)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "spo2"
+   ],
+   "data_source": "Live"
+  },
+  "04": {
+   "id": "04",
+   "name": "Blood Pressure Classification",
+   "category": "Cardiovascular",
+   "system": "Cardiovascular / Hemodynamics",
+   "unit": "mmHg",
+   "method": "Automated pneumatic arm cuff (oscillometric)",
+   "how_to_measure": [
+    "Rest seated/relaxed for 5 minutes; apply pneumatic cuff over bare upper arm aligned with brachial artery.",
+    "Support arm at heart level without muscle tension; initiate automated inflation cycle on monitor.",
+    "Remain still and silent during deflation; record systolic, diastolic, and MAP readings into health log."
+   ],
+   "what": "Dynamic systemic arterial pressure (systolic, diastolic, mean arterial pressure).",
+   "why_space": "Loss of gravity gradient alters central venous pressure and arterial baroreflex setpoint, precipitating post-landing and in-flight orthostatic instability.",
+   "normal_range": "90\u2013120 / 60\u201380 mmHg (MAP 70\u2013100 mmHg)",
+   "space_effect": "Central blood volume increases acutely before plasma volume contracts 10\u201315%; resting blood pressure remains normal or slightly decreased with reduced diurnal dipping.",
+   "abnormal": "Hypotension poses syncope and cerebral hypoperfusion risks during G-transitions; hypertension exacerbates intracranial pressure and SANS progression.",
+   "baseline": "30-day pre-flight resting seated brachial blood pressure average.",
+   "limitations": "Oscillometric cuffs sensitive to arm movement, improper cuff sizing, and microgravity arterial compliance shifts.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.1 (Cardiovascular Standards & Hemodynamic Assessment)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "bp_sys",
+    "bp_dia"
+   ],
+   "data_source": "Manual"
+  },
+  "05": {
+   "id": "05",
+   "name": "Heart Rhythm",
+   "category": "Cardiovascular",
+   "system": "Cardiac Electrophysiology",
+   "unit": "ECG Morphology / Rhythm",
+   "method": "Multi-lead biomedical ECG telemetry / 12-lead ECG",
+   "how_to_measure": [
+    "Cleanse electrode sites with alcohol prep pads; apply pre-gelled Ag/AgCl telemetry electrodes.",
+    "Connect lead wires according to standard anatomical positions; power on ECG data acquisition unit.",
+    "Verify 12-lead signal baseline stability, check for motion artifact, and transmit rhythm strip to MCC."
+   ],
+   "what": "Cardiac electrical conduction, sinus rhythm regularity, and cardiac ectopic activity.",
+   "why_space": "Exposure to microgravity, electrolyte fluctuations (K+, Mg++), space radiation, and autonomic stress increases crew arrhythmogenic susceptibility.",
+   "normal_range": "Normal Sinus Rhythm (NSR), HR 60\u2013100 bpm, < 1 PVC/hour",
+   "space_effect": "Increased incidence of benign supraventricular and ventricular ectopy (PVCs, PACs) triggered by fluid shifts and elevated circulating catecholamines.",
+   "abnormal": "Frequent or complex arrhythmias indicate myocardial irritability, electrolyte shifts, ischemia, or life-threatening conduction instability.",
+   "baseline": "Pre-flight 24-hour Holter ECG recording documenting normal sinus rhythm and absence of complex ectopy.",
+   "limitations": "Microgravity motion artifacts, dry gel electrode degradation, single-lead limitations in detecting complex ischemia.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.1 (Cardiac Electrophysiology & Arrhythmia Monitoring)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "irregular"
+   ],
+   "data_source": "Live"
+  },
+  "06": {
+   "id": "06",
+   "name": "Stand Test / Orthostatic Response",
+   "category": "Cardiovascular",
+   "system": "Neurovestibular / Cardiovascular",
+   "unit": "\u0394 bpm / \u0394 mmHg",
+   "method": "LBNP orthostatic challenge (in microgravity) / Active stand test (1g/planetary surface)",
+   "how_to_measure": [
+    "Pre-test rest: 5 min supine. Microgravity: secure in LBNP device; Planetary/1g: lie supine before standing.",
+    "Microgravity: apply staged negative pressure (-10 to -40 mmHg LBNP); Planetary/1g: stand upright quietly with continuous HR/BP.",
+    "Maintain protocol for 3\u20135 min with continuous telemetry; log heart rate, blood pressure, and any presyncopal symptoms."
+   ],
+   "what": "Baroreflex sensitivity, sympathetic vasoconstrictor reserve, and orthostatic tolerance.",
+   "why_space": "Cardiovascular deconditioning and plasma volume loss in space impair cerebral perfusion upon re-exposure to gravity or during centrifuge operations.",
+   "normal_range": "LBNP/Stand: HR increase < 20 bpm; SBP change between -10 and +10 mmHg",
+   "space_effect": "Microgravity progressively degrades baroreflex sensitivity; astronauts exhibit excessive tachycardia and postural hypotension upon orthostatic stress.",
+   "abnormal": "Exaggerated tachycardia or precipitous SBP drop indicates orthostatic intolerance, severe hypovolemia, and high presyncope risk.",
+   "baseline": "Pre-flight standardized baseline LBNP response profile (-30 to -40 mmHg) and 10-minute active stand test.",
+   "limitations": "Conventional stand test is impossible in free-floating microgravity; LBNP is required on orbit, while stand tests are reserved for 1g/planetary gravity.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.1 (Orthostatic Intolerance & Neurovestibular Countermeasures)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "stand_hr_rise"
+   ],
+   "data_source": "Live"
+  },
+  "07": {
+   "id": "07",
+   "name": "Body Temperature",
+   "category": "Metabolic & Physiological",
+   "system": "Thermoregulatory / Systemic",
+   "unit": "\u00b0C",
+   "method": "Infrared tympanic thermometer / ingestible core sensor pill",
+   "how_to_measure": [
+    "Ensure sensor pill ingestion protocol or attach forehead double-sensor / inspect tympanic probe.",
+    "For tympanic: align ear canal and depress trigger for 1-second infrared scan; for sensor pill: hold receiver.",
+    "Confirm stable core temperature reading, log timestamp relative to circadian cycle and exercise."
+   ],
+   "what": "Core body thermal balance, metabolic heat storage, and circadian thermoregulation.",
+   "why_space": "Impaired convective and evaporative heat transfer in microgravity leads to sustained elevated core temperature (\"space fever\") and heat strain.",
+   "normal_range": "36.5\u00b0C \u2013 37.2\u00b0C (circadian nadir ~36.2\u00b0C)",
+   "space_effect": "Resting core body temperature resets approximately 1.0\u00b0C higher; thermoregulatory response during exercise is delayed with higher heat storage.",
+   "abnormal": "Pyrexia indicates systemic infection, sepsis, or heat illness; hypothermia signals environmental ECLSS failure or severe metabolic collapse.",
+   "baseline": "14-day pre-flight circadian resting core temperature profile established across 24-hour cycles.",
+   "limitations": "Tympanic readings operator-dependent; forehead heat-flux sensors impacted by local sweat layer; pill transit time variable.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & Vol 2, Sec. 6.2.4 [V2 6012] (Thermoregulation & Clinical Monitoring)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "temp_c"
+   ],
+   "data_source": "Manual"
+  },
+  "08": {
+   "id": "08",
+   "name": "Blood Glucose",
+   "category": "Metabolic & Physiological",
+   "system": "Endocrine / Metabolic",
+   "unit": "mg/dL",
+   "method": "Capillary fingerstick glucometer / minimally invasive CGM",
+   "how_to_measure": [
+    "Cleanse finger puncture site with alcohol swab and allow skin to air dry completely.",
+    "Perform lancet puncture on lateral finger pad; wipe away first blood droplet and apply second droplet to strip.",
+    "Insert strip into calibrated POC glucometer; record fasting or 2-hour postprandial glucose value."
+   ],
+   "what": "Peripheral glucose regulation, circulating glycemic levels, and insulin sensitivity.",
+   "why_space": "Physical inactivity, dietary changes, and chronic stress in space induce insulin resistance and altered carbohydrate metabolism.",
+   "normal_range": "Fasting: 70 \u2013 99 mg/dL; 2-hour postprandial: < 140 mg/dL",
+   "space_effect": "Emergence of subclinical peripheral insulin resistance, elevated fasting insulin, and altered postprandial glycemic excursions.",
+   "abnormal": "Hypoglycemia (<60 mg/dL) causes neuroglycopenia, cognitive impairment, and syncope; hyperglycemia (>180 mg/dL) indicates metabolic deregulation.",
+   "baseline": "Pre-flight baseline fasting capillary glucose (average of 3 morning draws) and HbA1c.",
+   "limitations": "Capillary fingerstick sampling sensitive to interstitial dilution and test strip moisture degradation in cabin air.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.6 (Metabolic Profiling & Endocrine Function Monitoring)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "glucose_mmol"
+   ],
+   "data_source": "Manual"
+  },
+  "09": {
+   "id": "09",
+   "name": "Meals / Nutrition",
+   "category": "Metabolic & Physiological",
+   "system": "Gastrointestinal / Metabolic",
+   "unit": "kcal / mL / g",
+   "method": "Electronic food log (ISS FIT app) & barcode scanner",
+   "how_to_measure": [
+    "Scan barcode of each food/beverage package using ISS FIT tablet scanner prior to consumption.",
+    "Enter portion percentage consumed (25%, 50%, 75%, 100%) and log additional water rehydration volume.",
+    "Submit daily dietary log to synchronize macronutrient, sodium, and caloric totals with Mission Control."
+   ],
+   "what": "Daily caloric energy intake, fluid consumption, and macronutrient/micronutrient balance.",
+   "why_space": "Anorexia of spaceflight and high operational tempo often result in chronic negative energy balance, accelerating muscle and bone degradation.",
+   "normal_range": "Caloric intake: 2,500 \u2013 3,200 kcal/day (crew-specific); Fluid intake: \u2265 2.5 L/day",
+   "space_effect": "Voluntary caloric intake frequently drops to 70\u201380% of daily energy expenditure; fluid intake decreases due to blunted thirst reflex.",
+   "abnormal": "Prolonged deficits cause rapid lean muscle wasting, exacerbated bone demineralization, immune dysfunction, and impaired operational endurance.",
+   "baseline": "NASA nutritional prescription based on basal metabolic rate (BMR) and individual body mass.",
+   "limitations": "Subject to crew recall bias, barcode scanning omissions, and estimation error of shared or uneaten food rations.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.6 & Vol 2, Sec. 7.1 (Crew Nutrition & Food System Requirements)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "hydration_l",
+    "calories_pct"
+   ],
+   "data_source": "Manual"
+  },
+  "10": {
+   "id": "10",
+   "name": "Sleep",
+   "category": "Behavioral & Cognitive",
+   "system": "Central Nervous System / Sleep",
+   "unit": "hours / % efficiency",
+   "method": "Wrist actigraphy (Actiwatch) & sleep EEG headband",
+   "how_to_measure": [
+    "Fasten Actiwatch device to non-dominant wrist and don dry-sensor sleep EEG headband before lights-out.",
+    "Press event marker button when attempting sleep and upon final morning awakening.",
+    "Dock devices into station laptop upon waking to offload sleep latency, duration, and architecture metrics."
+   ],
+   "what": "Total sleep time (TST), sleep architecture (SWS/REM), and sleep efficiency.",
+   "why_space": "90-minute circadian orbital cycles, vehicle noise, and microgravity sleeping postures disrupt sleep architecture and induce cumulative sleep debt.",
+   "normal_range": "7.0 \u2013 8.5 hours/night; Sleep efficiency > 85%",
+   "space_effect": "Sleep duration decreases to 5.8\u20136.2 hours on orbit; slow-wave sleep (SWS) and REM sleep are reduced and fragmented.",
+   "abnormal": "Chronic sleep restriction impairs cognitive function, psychomotor vigilance, decision-making, and emotional stability.",
+   "baseline": "Pre-flight 14-day actigraphy and subjective sleep diary establishing individual baseline sleep duration.",
+   "limitations": "Actigraphy overestimates sleep during quiet motionless wakefulness; EEG headbands prone to night displacement.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.3 & Vol 2, Sec. 7.3 [V2 7038] (Sleep & Circadian Entrainment)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "sleep_h"
+   ],
+   "data_source": "Manual"
+  },
+  "11": {
+   "id": "11",
+   "name": "Mood",
+   "category": "Behavioral & Cognitive",
+   "system": "Neurobehavioral / Behavioral Health",
+   "unit": "Score (1\u201310)",
+   "method": "Computerized neurobehavioral survey (B-CAT / VAS)",
+   "how_to_measure": [
+    "Open computerized behavioral survey (B-CAT) on crew iPad during evening scheduled evaluation.",
+    "Rate subjective mood, interpersonal cohesion, operational stress, and perceived workload on visual scales.",
+    "Submit confidential response packet directly to Flight Surgeon / Behavioral Health Support link."
+   ],
+   "what": "Psychological well-being, emotional stability, operational stress, and crew cohesion.",
+   "why_space": "Prolonged confinement, isolation, heavy workloads, and sensory deprivation heighten vulnerability to mood disorders and interpersonal friction.",
+   "normal_range": "Score 7 \u2013 10 / 10 (nominal positive behavioral health status)",
+   "space_effect": "Mood scores can fluctuate during mission mid-point (\"third-quarter phenomenon\") as psychological strain accumulates.",
+   "abnormal": "Marked mood decrements signal psychological distress, operational burnout, anxiety, or depressive reaction requiring clinical intervention.",
+   "baseline": "Pre-flight neurobehavioral evaluation baseline score across multiple standardized domains.",
+   "limitations": "Self-report surveys subject to operational reporting bias, social desirability, and mission stigma concerns.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.4 & Vol 2, Sec. 7.4 (Behavioral Health & Psychological Support)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "mood"
+   ],
+   "data_source": "Manual"
+  },
+  "12": {
+   "id": "12",
+   "name": "Reaction Time",
+   "category": "Behavioral & Cognitive",
+   "system": "Neurocognitive / Psychomotor",
+   "unit": "ms (PVT reaction time)",
+   "method": "3-minute Brief Psychomotor Vigilance Test (PVT-B) tablet",
+   "how_to_measure": [
+    "Launch standardized 3-minute PVT-B software protocol on crew tablet in a quiet environment.",
+    "Respond as rapidly as possible to millisecond counter stimuli using dominant thumb press.",
+    "Review mean response speed (1/RT), fastest 10% RT, and lapse frequency (RT \u2265 355 ms); log automated test report."
+   ],
+   "what": "Psychomotor speed, sustained attention, vigilance, and executive processing speed.",
+   "why_space": "Cognitive slowing and lapse frequency directly threaten flight safety during complex maneuvers (docking, robotics, EVA).",
+   "normal_range": "Mean RT: 200 \u2013 250 ms; 0 \u2013 1 lapses (\u2265355 ms) per 3-minute PVT-B trial",
+   "space_effect": "Slower reaction times and increased attentional lapses occur primarily during high-workload phases, circadian desynchrony, and sleep deficit.",
+   "abnormal": "Increased response latencies and lapses (>2) indicate critical cognitive fatigue, hypercapnic impairment, or acute sleep loss.",
+   "baseline": "Pre-flight standardized 3-minute PVT-B baseline mean response speed (1/RT) and lapse frequency.",
+   "limitations": "Validated for 3-minute duration using \u2265355 ms lapse threshold (vs 500 ms in 10-min PVT); sensitive to acute caffeine, fatigue, or display latency.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.4 & Vol 2, Sec. 10.1 (Cognitive Performance & Psychomotor Vigilance)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "pvt_median_ms",
+    "pvt_lapse_rate_pct"
+   ],
+   "data_source": "Live"
+  },
+  "13": {
+   "id": "13",
+   "name": "Exercise",
+   "category": "Musculoskeletal & Immune",
+   "system": "Musculoskeletal / Aerobic",
+   "unit": "W / % VO\u2082max / kg",
+   "method": "CEVIS cycle ergometer, T2 treadmill & ARED telemetry",
+   "how_to_measure": [
+    "Connect heart rate chest strap and calibrate exercise hardware telemetry (CEVIS / T2 / ARED).",
+    "Execute prescribed cardiovascular or resistive training protocol maintaining target heart rate/workload.",
+    "Offload exercise performance telemetry file (power wattage, speed, total force, work volume) to ground."
+   ],
+   "what": "Cardiorespiratory work volume, aerobic power output, and resistive force generation.",
+   "why_space": "Daily exercise countermeasures (CEVIS, T2, ARED) are essential to prevent severe musculoskeletal and cardiovascular deconditioning.",
+   "normal_range": "Aerobic: \u2265 30 min/day at 70\u201385% HRmax; Resistive: prescribed ARED load sets (100% compliance)",
+   "space_effect": "Exercise capacity (VO2peak) drops 15\u201320% without high-intensity training; mechanical loading must be artificially applied.",
+   "abnormal": "Low compliance or falling power output directly accelerates muscle atrophy, bone mineral loss, and post-landing disability.",
+   "baseline": "Pre-flight VO2max evaluation and 1-rep maximum (1RM) resistive loading profiles.",
+   "limitations": "CEVIS and ARED telemetry measure mechanical load, not direct in-vivo muscle fiber tension or bone strain.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.2 & Vol 2, Sec. 7.2 (Aerobic & Resistive Countermeasure Systems)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "exercise_min_7d"
+   ],
+   "data_source": "Manual"
+  },
+  "14": {
+   "id": "14",
+   "name": "Bone Biomarkers",
+   "category": "Musculoskeletal & Immune",
+   "system": "Skeletal / Bone Remodeling",
+   "unit": "ng/mL",
+   "method": "Venous/capillary blood sampling & cartridge bioanalyzer",
+   "how_to_measure": [
+    "Collect fasting venous/capillary blood sample into specified EDTA/heparin collection tube.",
+    "Centrifuge sample if required, load microfluidic analysis cartridge with plasma aliquot.",
+    "Run automated cartridge in onboard POC bioanalyzer; record bone turnover markers (CTX, P1NP, Ca++)."
+   ],
+   "what": "Systemic bone resorption (serum CTX) and formation (P1NP, osteocalcin) turnover rates.",
+   "why_space": "Absence of weight-bearing loading induces severe uncoupling of bone remodeling, releasing skeletal calcium into circulation.",
+   "normal_range": "Serum CTX: 0.15 \u2013 0.55 ng/mL; Total Calcium: 8.5 \u2013 10.2 mg/dL",
+   "space_effect": "Bone resorption markers (CTX) increase by 50\u2013100% within days, while bone formation markers remain flat or decrease.",
+   "abnormal": "Accelerated resorption indicates rapid cancellous bone decay, increased fracture vulnerability, and high risk of renal calculi.",
+   "baseline": "Pre-flight serum CTX and calcium panel drawn during baseline medical examination.",
+   "limitations": "Circadian rhythm in bone resorption; in-flight microfluidic cartridges sensitive to bubble formation in zero-g.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.2 (Musculoskeletal Health & Bone Density Loss Mitigation)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [],
+   "data_source": "Mission device"
+  },
+  "15": {
+   "id": "15",
+   "name": "Immune Biomarkers",
+   "category": "Musculoskeletal & Immune",
+   "system": "Immune / Hematologic",
+   "unit": "pg/mL / counts/\u00b5L",
+   "method": "In-flight saliva/blood collection & cartridge analyzer",
+   "how_to_measure": [
+    "Collect morning unstimulated saliva using Salivette swab or obtain capillary fingerstick sample.",
+    "Process sample in onboard centrifuge and insert test strip/cartridge into cytokine immunoassay reader.",
+    "Measure concentrations of target cytokines (IL-6, TNF-alpha) and viral DNA copies; sync with ground."
+   ],
+   "what": "Pro-inflammatory cytokines (IL-6, TNF-alpha, IL-1beta) and leukocyte distribution.",
+   "why_space": "Spaceflight stressors (radiation, microgravity, sleep deprivation) suppress cell-mediated immunity and provoke latent virus reactivation.",
+   "normal_range": "IL-6: < 5.0 pg/mL; TNF-alpha: < 8.0 pg/mL; Normal leukocyte differentials",
+   "space_effect": "Persistent subclinical immune dysregulation with cytokine elevation, blunted T-cell function, and reactivation of EBV/VZV herpesviruses.",
+   "abnormal": "Cytokine changes are nonspecific; they must be interpreted alongside clinical symptoms, physical examination, and other laboratory findings.",
+   "baseline": "Pre-flight resting cytokine baseline and viral antibody titer panel.",
+   "limitations": "Cytokine changes are nonspecific; affected by circadian rhythm, exercise, and minor stress; requires clinical and laboratory correlation.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 3.1 & 4.7 (Immunological Dysregulation & Host Defense)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [],
+   "data_source": "Mission device"
+  },
+  "16": {
+   "id": "16",
+   "name": "Radiation Dose",
+   "category": "Environmental",
+   "system": "Whole Body / Radiobiology",
+   "unit": "mSv / mGy",
+   "method": "Crew Passive Dosimeter (CPD) & Active Personal Dosimeter (APD)",
+   "how_to_measure": [
+    "Wear active personal dosimeter (APD) on operational flight suit continuously during duty hours.",
+    "Perform weekly optical/digital readout and dock APD with station radiation console.",
+    "Inspect passive dosimeter badge (CPD) position and verify real-time dose rate alarms (<1.0 mSv/day)."
+   ],
+   "what": "Ambient ionizing radiation exposure and absorbed equivalent dose from GCR and SPE.",
+   "why_space": "Space radiation outside Earth's magnetosphere produces cumulative DNA double-strand breaks, cancer risks, and acute radiation sickness risk.",
+   "normal_range": "Background in LEO: 0.3 \u2013 0.8 mSv/day (< 1.0 mSv/day nominal); Career limit based on NASA Permissible Exposure Limits",
+   "space_effect": "Continuous exposure to galactic cosmic rays (GCR) and episodic solar particle events (SPE), yielding daily doses 100x higher than Earth surface.",
+   "abnormal": "Dose rates > 10 mSv/hr trigger operational storm shelter protocols; clinical ARS requires high total absorbed dose (>0.7 Gy), dose rate, and whole-body exposure.",
+   "baseline": "Cumulative lifetime radiation exposure record maintained by NASA Radiation Health Officer.",
+   "limitations": "Dosimeters measure physical dose/rate; clinical ARS depends on total absorbed dose, exposure duration, radiation characteristics, and body volume exposed.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 1, Sec. 4.8 [V1 4029] & Vol 2, Sec. 6.8 (Space Permissible Exposure Limits & ALARA)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+   "research_status": "Needs Review",
+   "metrics": [
+    "radiation_msv",
+    "radiation_total_msv"
+   ],
+   "data_source": "Mission device"
+  },
+  "17": {
+   "id": "17",
+   "name": "Cabin CO\u2082",
+   "category": "Environmental",
+   "system": "Environmental / ECLSS",
+   "unit": "mmHg (ppCO\u2082)",
+   "method": "ECLSS Major Constituent Analyzer (MCA) & portable sensor",
+   "how_to_measure": [
+    "Power on handheld/portable optical CO2 sensor or query station ECLSS MCA telemetry channel.",
+    "Take ambient ppCO2 readings at crew breathing height across multiple station modules/sleep cabins.",
+    "Verify local ppCO2 is below 2.0 mmHg; verify adequate ventilation flow and cabin fan operation."
+   ],
+   "what": "Ambient spacecraft cabin partial pressure of carbon dioxide (ppCO2).",
+   "why_space": "In microgravity, absence of natural thermal convection causes CO2 accumulation around crew heads, triggering headaches and visual impairment.",
+   "normal_range": "Cabin ppCO2 < 2.0 mmHg (approx. < 2,600 ppm); nominal target < 1.5 mmHg",
+   "space_effect": "CO2 levels in closed spacecraft cabins run significantly higher than terrestrial atmospheric levels (0.3 mmHg), fluctuating with crew activity and ECLSS cycling.",
+   "abnormal": "Elevated ppCO2 (>2.0 mmHg) is associated with astronaut headaches and SANS symptoms; clinical toxicity and narcosis occur at much higher terrestrial levels.",
+   "baseline": "Vehicle ECLSS baseline environmental limit specification (NASA-STD-3001 Vol 2).",
+   "limitations": "Localized air stagnation pockets in station modules may differ substantially from central ECLSS MCA sensor readings.",
+   "evidence": "Mixed evidence / proposed cutoff",
+   "citation": "NASA-STD-3001 Vol 2, Sec. 6.2.3 [V2 6027] (Environmental Health - Cabin CO2 Limits)",
+   "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_2",
+   "research_status": "Needs Review",
+   "metrics": [
+    "co2_mmhg",
+    "co2_ppm"
+   ],
+   "data_source": "Mission device"
+  }
+ },
+ "metric_index": {
+  "hr_rest": "01",
+  "hr": "01",
+  "hrv_rmssd": "02",
+  "spo2": "03",
+  "bp_sys": "04",
+  "bp_dia": "04",
+  "irregular": "05",
+  "stand_hr_rise": "06",
+  "temp_c": "07",
+  "glucose_mmol": "08",
+  "hydration_l": "09",
+  "calories_pct": "09",
+  "sleep_h": "10",
+  "mood": "11",
+  "pvt_median_ms": "12",
+  "pvt_lapse_rate_pct": "12",
+  "exercise_min_7d": "13",
+  "radiation_msv": "16",
+  "radiation_total_msv": "16",
+  "co2_mmhg": "17",
+  "co2_ppm": "17"
+ },
+ "data_source_types": {
+  "Live": "Measured by the app (finger PPG clip or the on-screen reaction test).",
+  "Manual": "Typed in or answered by the crew (log, daily check).",
+  "Simulation": "Simulated crew member (Demo mode).",
+  "Mission device": "Read from a mission instrument or data feed (dosimeter, cabin air analyser, lab analyser)."
+ },
+ "safety": {
+  "Scope": {
+   "decision": "Research prototype only",
+   "handoff": "Do not label clinical validated or safe for operational deployment."
+  },
+  "Jion JSON schema": {
+   "decision": "Not provided in uploaded material",
+   "handoff": "The exported JSON is a provisional schema; adapt exact field names after Jion provides interface."
+  },
+  "Emergency recognition": {
+   "decision": "Human assessment > sensors",
+   "handoff": "No isolated PPG loss or video limp flag diagnoses cardiac arrest."
+  },
+  "Collapse duration": {
+   "decision": "UNDECIDED",
+   "handoff": "Jion and medical lead must agree candidate detector threshold, false-positive policy, crew-alert behavior."
+  },
+  "Collapse check-in": {
+   "decision": "Possible collapse. Are you okay? Please respond.",
+   "handoff": "Crew alarm must not wait for response timer in an actual emergency."
+  },
+  "Live red flag integration": {
+   "decision": "UNDECIDED",
+   "handoff": "Agree with Jian: validated pulse signal-loss handling, SpO2 signal check, HR/rhythm flags."
+  },
+  "Medical kit": {
+   "decision": "Crew medical kit procedures only",
+   "handoff": "Never embed medications/doses/devices not actually onboard."
+  },
+  "Microgravity CPR": {
+   "decision": "ER for initial BLS per 2020 aerospace guidelines",
+   "handoff": "Train rescuers; secure patient/rescuer; transition to restraint system, do not infer technique works identically across spacecraft."
+  },
+  "Earth communication": {
+   "decision": "Asynchronous urgent contact",
+   "handoff": "Request flight surgeon immediately, but do not wait for Earth transmission/response to act on-board."
+  },
+  "Data source type": {
+   "decision": "Tag each indicator",
+   "handoff": "Live/Manual/Simulation/Mission device; original spreadsheet mixes the categories."
+  },
+  "FDA pulse oximetry": {
+   "decision": "Sensor can be inaccurate",
+   "handoff": "Assessment includes symptoms and signal quality; normal values do not rule out emergencies."
+  },
+  "Mission CO2 standard": {
+   "decision": "2026 Rev F [V2 6004] one-hour average <=3 mmHg",
+   "handoff": "2 mmHg provisional watch, >3 one-hour noncompliance, off-nominal action mission-defined."
+  },
+  "Mood scale": {
+   "decision": "Pending validated selection",
+   "handoff": "Do not claim numeric 1\u201310 mood score clinically validated."
+  },
+  "Protocol validation": {
+   "decision": "Pending crew medical authority",
+   "handoff": "These are educational flow examples adapted from terrestrial guidance."
+  },
+  "Demo switches": {
+   "decision": "simulation_enabled = true; clinical_auto_alert_enabled = false",
+   "handoff": "No real clearance/decision automation until medical and engineering signoff."
+  }
+ },
+ "switches": {
+  "simulation_enabled": true,
+  "clinical_auto_alert_enabled": false,
+  "_note": "clinical_auto_alert_enabled = false: no automatic alerts from real sensor data (Measurement / Research mode). Demo mode alerts on simulated data only."
+ }
+}

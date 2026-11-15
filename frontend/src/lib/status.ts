@@ -40,17 +40,37 @@ export function entryOf(thresholds: Thresholds | null, metric: string): Threshol
   return entry && typeof entry === 'object' ? (entry as ThresholdEntry) : undefined;
 }
 
-const outside = (value: number, band?: Band | null) =>
-  !!band && ((band[0] !== null && value < band[0]) || (band[1] !== null && value > band[1]));
+/** Outside a level's band: below low / above high; an edge listed in `inclusive` counts too (">= 38.5"). */
+export function beyond(value: number, entry: ThresholdEntry | undefined, level: 'yellow' | 'orange' | 'red'): boolean {
+  const band: Band | null | undefined = entry?.[level];
+  if (!band) return false;
+  const incl = entry?.inclusive?.[level] ?? [];
+  const [lo, hi] = band;
+  return (lo !== null && (value < lo || (incl.includes('low') && value === lo)))
+    || (hi !== null && (value > hi || (incl.includes('high') && value === hi)));
+}
 
-/** Same rule as the backend: below low or above high of a band is at least that status. */
-export function judge(value: number, entry?: ThresholdEntry): Status {
+/** Same rule as the backend (rules/judge.py): below low or above high of a band is at least that status. An entry with
+ *  `requires_symptoms` reaches red (Act now) only with a red-flag symptom logged (`symptoms`). */
+export function judge(value: number, entry?: ThresholdEntry, symptoms = false): Status {
   let status: Status = 'green';
   if (!entry) return status;
-  if (outside(value, entry.yellow)) status = 'yellow';
-  if (outside(value, entry.orange)) status = 'orange';
-  if (outside(value, entry.red)) status = 'red';
+  if (beyond(value, entry, 'yellow')) status = 'yellow';
+  if (beyond(value, entry, 'orange')) status = 'orange';
+  if (beyond(value, entry, 'red') && (symptoms || !entry.requires_symptoms)) status = 'red';
   return status;
+}
+
+/** Watch when a live value is too far from the frozen pre-flight usual (thresholds.json `baseline`, e.g. live heart
+ *  rate more than 10 bpm above the usual resting rate). Null without a usual or a rule. */
+export function baselineWatch(value: number, entry: ThresholdEntry | undefined, usual: number | null | undefined): boolean {
+  const b = entry?.baseline;
+  if (!b || usual == null) return false;
+  if (b.rise?.yellow != null && value - usual > b.rise.yellow) return true;
+  if (b.fall?.yellow != null && usual - value > b.fall.yellow) return true;
+  if (b.drop_pct?.yellow != null && usual > 0 && ((usual - value) / usual) * 100 > b.drop_pct.yellow) return true;
+  if (b.drop?.yellow != null && usual - value >= b.drop.yellow) return true;
+  return false;
 }
 
 /** The limit of a band that is closest to the value (the side the value could cross). */
@@ -86,16 +106,29 @@ export function implausible(metric: string, value: number | null | undefined, th
   return (lo !== null && value < lo) || (hi !== null && value > hi);
 }
 
-export function liveStatus(frame: VitalsFrame | undefined, thresholds: Thresholds | null): LiveStatus | null {
+export interface LiveOptions {
+  /** A red-flag symptom is logged (fulfils requires_symptoms rules, e.g. RULE-05 irregular pulse). */
+  symptoms?: boolean;
+  /** Frozen pre-flight usual per baseline metric (e.g. {hr_rest: 62.5}) for the live baseline rule. */
+  usual?: Partial<Record<string, number | null>>;
+}
+
+export function liveStatus(frame: VitalsFrame | undefined, thresholds: Thresholds | null, opts: LiveOptions = {}): LiveStatus | null {
   if (!frame) return null;
   const signal = judge(frame.signal_quality, entryOf(thresholds, 'signal_quality'));
   const poor = signal === 'red';
   const invalid = LIVE_VITALS.filter((key) => implausible(key, frame[key], thresholds));
   const vitals = Object.fromEntries(
-    LIVE_VITALS.map((key) => [key, invalid.includes(key) ? 'green' : judge(frame[key], entryOf(thresholds, key))]),
+    LIVE_VITALS.map((key) => {
+      if (invalid.includes(key)) return [key, 'green'];
+      const entry = entryOf(thresholds, key);
+      const level = judge(frame[key], entry, opts.symptoms);
+      const usual = entry?.baseline?.metric ? opts.usual?.[entry.baseline.metric] : null;
+      return [key, level === 'green' && baselineWatch(frame[key], entry, usual) ? 'yellow' : level];
+    }),
   ) as Record<LiveVital, Status>;
   const red: string[] = poor ? [] : LIVE_VITALS.filter((key) => vitals[key] === 'red');
-  if (!poor && judge(frame.irregular ? 1 : 0, entryOf(thresholds, 'irregular')) === 'red') red.push('irregular');
+  if (!poor && judge(frame.irregular ? 1 : 0, entryOf(thresholds, 'irregular'), opts.symptoms) === 'red') red.push('irregular');
   return { vitals, invalid, irregular: frame.irregular, signal, poor, red };
 }
 

@@ -319,6 +319,48 @@
         "note": "Tablet or laptop (the app)"
       },
       "app_fix": "The app reports a lapse RATE in % (lapses / targets), with a lapse = 355 ms or slower (same rule as the CSA PRET reference group), not a lapse count."
+    },
+    "calories_pct": {
+      "how_to_measure": [
+        "Scan barcode of each food/beverage package using ISS FIT tablet scanner prior to consumption.",
+        "Enter portion percentage consumed (25%, 50%, 75%, 100%) and log additional water rehydration volume.",
+        "Submit daily dietary log to synchronize macronutrient, sodium, and caloric totals with Mission Control."
+      ],
+      "why_check": "Anorexia of spaceflight and high operational tempo often result in chronic negative energy balance, accelerating muscle and bone degradation.",
+      "equipment": "Food log",
+      "can_do_in_space": {
+        "possible": true,
+        "note": "Electronic food log (ISS FIT app) & barcode scanner"
+      },
+      "source": "Master Health Indicator Catalog, indicator 09"
+    },
+    "co2_mmhg": {
+      "how_to_measure": [
+        "Power on handheld/portable optical CO2 sensor or query station ECLSS MCA telemetry channel.",
+        "Take ambient ppCO2 readings at crew breathing height across multiple station modules/sleep cabins.",
+        "Verify local ppCO2 is below 2.0 mmHg; verify adequate ventilation flow and cabin fan operation."
+      ],
+      "why_check": "In microgravity, absence of natural thermal convection causes CO2 accumulation around crew heads, triggering headaches and visual impairment.",
+      "equipment": "Cabin CO2 analyser (mission device)",
+      "can_do_in_space": {
+        "possible": true,
+        "note": "ECLSS Major Constituent Analyzer (MCA) & portable sensor"
+      },
+      "source": "Master Health Indicator Catalog, indicator 17"
+    },
+    "radiation_msv": {
+      "how_to_measure": [
+        "Wear active personal dosimeter (APD) on operational flight suit continuously during duty hours.",
+        "Perform weekly optical/digital readout and dock APD with station radiation console.",
+        "Inspect passive dosimeter badge (CPD) position and verify real-time dose rate alarms (<1.0 mSv/day)."
+      ],
+      "why_check": "Space radiation outside Earth's magnetosphere produces cumulative DNA double-strand breaks, cancer risks, and acute radiation sickness risk.",
+      "equipment": "Dosimeter (mission device)",
+      "can_do_in_space": {
+        "possible": true,
+        "note": "Crew Passive Dosimeter (CPD) & Active Personal Dosimeter (APD)"
+      },
+      "source": "Master Health Indicator Catalog, indicator 16"
     }
   }
 }

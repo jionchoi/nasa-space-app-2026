@@ -12,12 +12,25 @@ def bounds(entry: dict | None, level: str) -> tuple[float | None, float | None]:
     return (band[0], band[1])
 
 
-def judge(value: float, entry: dict | None) -> str:
-    """A value below `low` or above `high` of a band is at least that status. Worst wins."""
+def beyond(value: float, entry: dict | None, level: str) -> bool:
+    """Outside this level's band: below `low` / above `high`. An edge listed in `inclusive` (e.g. {"red": ["high"]}
+    for ">= 38.5") counts too, so each sheet edge sits on exactly one side."""
+    lo, hi = bounds(entry, level)
+    incl = ((entry or {}).get("inclusive") or {}).get(level) or []
+    below = lo is not None and (value < lo or ("low" in incl and value == lo))
+    above = hi is not None and (value > hi or ("high" in incl and value == hi))
+    return below or above
+
+
+def judge(value: float, entry: dict | None, symptoms: bool = False) -> str:
+    """A value below `low` or above `high` of a band is at least that status. Worst wins.
+    An entry with `requires_symptoms` reaches red (Act now) only with a red-flag symptom logged (`symptoms`);
+    without one it stays at the level below (e.g. RULE-04 BP > 180/120 without symptoms = Warning)."""
     status = "green"
     for level in LEVELS:
-        lo, hi = bounds(entry, level)
-        if (lo is not None and value < lo) or (hi is not None and value > hi):
+        if level == "red" and (entry or {}).get("requires_symptoms") and not symptoms:
+            continue
+        if beyond(value, entry, level):
             status = level
     return status
 

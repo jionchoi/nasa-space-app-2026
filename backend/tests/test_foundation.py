@@ -24,7 +24,7 @@ def test_labels_endpoint_reads_the_file(client, temp_data):
 def test_every_metric_has_unit_and_only_ranges():
     """thresholds.json keeps ranges and sources; how to measure lives in measurements.json (Nov 14)."""
     for key, entry in store.thresholds().items():
-        if isinstance(entry, dict) and key not in ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt", "plausible"):
+        if isinstance(entry, dict) and key not in ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt", "plausible", "symptoms"):
             parsed = ThresholdEntry.model_validate(entry)
             assert parsed.unit, key
             assert "how_to_measure" not in entry, key
@@ -37,7 +37,7 @@ def test_region_alerts_created_once(client):
     first = client.get("/api/alerts?persona=B").json()
     by_region = {a["region"]: a for a in first}
     assert by_region["heart"]["level"] == "orange" and by_region["heart"]["source"] == "rules"
-    assert by_region["bones_muscles"]["level"] == "yellow"
+    assert by_region["brain_mood"]["level"] == "orange"  # mood 4/10 for 3 days (RULE-11)
     assert "Warning" in by_region["heart"]["message"]  # status word from labels.json
     for a in first:
         Alert.model_validate(a)
@@ -55,13 +55,17 @@ def test_ack_alert(client):
     assert client.post("/api/alerts/nope/ack").status_code == 404
 
 
-def test_red_live_vitals_create_one_alert_each():
-    assert alerts.check_frame("C", frame()) == []
-    created = alerts.check_frame("C", frame(hr=135, irregular=True))
-    assert {a["metric"] for a in created} == {"hr", "irregular"}
+def test_red_live_vitals_create_one_alert_each(client):
+    assert alerts.check_frame("C", frame(), now=0) == []
+    assert alerts.check_frame("C", frame(hr=135, irregular=True), now=1) == []  # RULE-01: must hold 10 s
+    created = alerts.check_frame("C", frame(hr=135, irregular=True), now=11)
+    assert {a["metric"] for a in created} == {"hr"}  # RULE-05: irregular alone is not Act now (no symptom logged)
     assert all(a["level"] == "red" and a["source"] == "vitals" and a["region"] == "heart" for a in created)
-    assert alerts.check_frame("C", frame(hr=136, irregular=True)) == []  # still red: no repeat
-    assert alerts.check_frame("C", frame(hr=150, signal_quality=0.3)) == []  # poor signal is ignored
+    assert alerts.check_frame("C", frame(hr=136, irregular=True), now=12) == []  # still red: no repeat
+    client.post("/api/forms", json={"persona": "C", "kind": "symptoms", "data": {"symptoms": ["chest_pain"]}})
+    created = alerts.check_frame("C", frame(hr=136, irregular=True), now=13)
+    assert {a["metric"] for a in created} == {"irregular"}  # with chest pain logged, the irregular pulse is Act now
+    assert alerts.check_frame("C", frame(hr=150, signal_quality=0.3), now=30) == []  # poor signal is ignored
 
 
 def test_alerts_websocket_pushes_new_alerts(client):

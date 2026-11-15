@@ -21,10 +21,11 @@ describe('pulse lost', () => {
     expect(t?.region).toBe('heart');
   });
 
-  it('"Open emergency mode" goes to "Not responding" answered NO, never straight to CPR', () => {
+  it('"Open emergency mode" opens the collapse protocol at CL00 with the red flag shown: nothing pre-answered, no CPR jump', () => {
     const url = actNowTrigger({ ...none, pulseLost: true })!.emergencyUrl;
     expect(url).toContain('protocol=unresponsive');
-    expect(url).toContain('preanswer=responsive:no');
+    expect(url).toContain('flag=pulse_lost');
+    expect(url).not.toContain('preanswer');
     expect(url).not.toContain('goto=cpr');
   });
 
@@ -34,15 +35,12 @@ describe('pulse lost', () => {
     expect(t?.open).toHaveLength(1); // still acknowledged together
   });
 
-  it('in emergency mode a lost pulse counts as the pulse_lost red flag, which routes to CPR with a countdown', () => {
+  it('in emergency mode a lost pulse lights the pulse_lost red flag and never routes anywhere (no auto-route, Nov 15)', () => {
     const flag = (mockThresholds as { cv: { ppg: { pulse_lost_red_flag: string } } }).cv.ppg.pulse_lost_red_flag;
     expect(withPulseLost([], 'lost', flag)).toEqual([flag]);
     expect(withPulseLost([], 'ok', flag)).toEqual([]);
     expect(withPulseLost([flag], 'lost', flag)).toEqual([flag]);
-    const routes = (mockProtocols as unknown as Record<string, Protocol>).unresponsive.red_flag_routes ?? [];
-    const route = routes.find((r) => r.flag === flag);
-    expect(route?.goto).toBe('cpr');
-    expect(route?.countdown_s ?? 5).toBe(5);
+    for (const p of Object.values(mockProtocols as unknown as Record<string, Protocol>)) expect(p.red_flag_routes ?? []).toEqual([]);
   });
 
   it('waits no_pulse_s = 4 s (thresholds.json)', () => {

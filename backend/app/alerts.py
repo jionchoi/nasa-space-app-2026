@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from . import db, store
+from . import db, store, symptoms
 from .rules.judge import implausible, judge
 from .rules.regions import region_list
 
@@ -23,6 +24,7 @@ LEVELS = ("yellow", "orange", "red")
 _subscribers: set[tuple[asyncio.Queue, asyncio.AbstractEventLoop]] = set()
 _region_seen: dict[str, dict[str, str]] = {}  # persona -> region -> last status seen
 _live_red: dict[str, set[str]] = {}  # persona -> metrics currently red
+_red_since: dict[str, dict[str, float]] = {}  # persona -> metric -> monotonic time it turned red
 
 
 def now_iso() -> str:
@@ -152,21 +154,49 @@ def check_regions(persona: str, statuses: list[dict], env: str = "iss") -> list[
     return created
 
 
-def red_vitals(frame: dict, thresholds: dict) -> list[str]:
-    """Same rule as the frontend's liveStatus(): vitals in the red range, ignored when the signal is poor."""
+def red_vitals(frame: dict, thresholds: dict, symptoms: bool = False) -> list[str]:
+    """Same rule as the frontend's liveStatus(): vitals in the red range, ignored when the signal is poor.
+    Rules marked requires_symptoms (RULE-05 irregular pulse) are red only with a red-flag symptom logged."""
     if judge(float(frame["signal_quality"]), thresholds.get("signal_quality")) == "red":
         return []
     red = [k for k in LIVE_VITALS if frame.get(k) is not None and not implausible(k, float(frame[k]), thresholds)
-           and judge(float(frame[k]), thresholds.get(k)) == "red"]
-    if judge(1.0 if frame.get("irregular") else 0.0, thresholds.get("irregular")) == "red":
+           and judge(float(frame[k]), thresholds.get(k), symptoms) == "red"]
+    if judge(1.0 if frame.get("irregular") else 0.0, thresholds.get("irregular"), symptoms) == "red":
         red.append("irregular")
     return red
 
 
-def check_frame(persona: str, frame: dict) -> list[dict]:
-    """Alert once when a live vital enters the red range (again after it has left it)."""
+def held_red(persona: str, red: set[str], thresholds: dict, now: float | None = None) -> set[str]:
+    """The red vitals that have stayed red for their `red_for_s` (RULE-01 / RULE-03: sustained 10 s, good signal)."""
+    now = time.monotonic() if now is None else now
+    since = _red_since.setdefault(persona, {})
+    for metric in list(since):
+        if metric not in red:
+            del since[metric]
+    for metric in red:
+        since.setdefault(metric, now)
+    return {m for m in red if now - since[m] >= float((thresholds.get(m) or {}).get("red_for_s") or 0)}
+
+
+def check_symptoms(persona: str, logged: list[str]) -> list[dict]:
+    """A red-flag symptom logged = Act now on its own (red alert, source rules, metric "symptom:<id>")."""
     thresholds = store.thresholds()
-    red = set(red_vitals(frame, thresholds))
+    created = []
+    for s in logged:
+        if s not in symptoms.red_flag_ids(thresholds):
+            continue
+        alert = create(persona, "red", f"Symptom logged: {symptoms.label(s, thresholds)}", "rules",
+                       region=symptoms.region(s, thresholds), metric=f"symptom:{s}")
+        if alert:
+            created.append(alert)
+    return created
+
+
+def check_frame(persona: str, frame: dict, now: float | None = None) -> list[dict]:
+    """Alert once when a live vital has been in the red range for its red_for_s (again after it has left it).
+    `now`: monotonic seconds (tests); default time.monotonic()."""
+    thresholds = store.thresholds()
+    red = held_red(persona, set(red_vitals(frame, thresholds, bool(symptoms.active(persona, thresholds)))), thresholds, now)
     before = _live_red.get(persona, set())
     _live_red[persona] = red
     created = []
@@ -198,3 +228,4 @@ def emergency_handled(persona: str, title: str, ended: str, duration_s: float, l
 def reset() -> None:
     _region_seen.clear()
     _live_red.clear()
+    _red_since.clear()

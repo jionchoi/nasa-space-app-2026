@@ -1,84 +1,317 @@
 {
   "id": "unresponsive",
-  "title": "Crew member not responding",
-  "draft": "DRAFT - Yenna reviews",
-  "_note": "Microgravity order: stop the drift and restrain the crew member against a surface first; only then airway, breathing, pulse and CPR. PLACEHOLDER text, based on general first-aid order; Yenna checks against NASA guidance.",
+  "title": "Crew member not responding (possible collapse)",
+  "draft": "From the medical lead's workbook: educational flow adapted from terrestrial guidance; protocol validation pending crew medical authority. The app prescribes no drugs, doses, oxygen or IV.",
+  "source_file": "data/medical/NASA_space_project_medical_research(Collapse Protocol).csv",
+  "start": "CL00",
   "steps": [
     {
       "n": 1,
-      "key": "responsive",
-      "text": "Call their name loudly and squeeze their shoulder. Watch their face and hands.",
-      "check": "Does the crew member respond?",
+      "id": "CL00",
+      "type": "action",
+      "text": "Possible collapse detected or reported. ALERT nearby crew and open the emergency check-in: 'Possible collapse. Are you okay? Please respond.' Do not let an unanswered app prompt delay hands-on response.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CL01",
+      "urgency": "Immediate onboard alarm",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Detection limp duration: NOT YET AGREED with Jion. Simulated event only; no camera-only diagnosis.",
       "red_flag": true,
-      "timer_s": null,
-      "on_yes": 8,
-      "on_no": "next"
+      "timer_s": null
     },
     {
       "n": 2,
-      "text": "Stop the drift: hold them by the torso (not the arms) and guide them to the nearest wall or the medical restraint area. Call your crew for help now.",
-      "equipment": [
-        "restraint"
+      "id": "CL01",
+      "type": "decision",
+      "text": "Does the crewmember respond to voice or gentle touch?",
+      "check": "Does the crewmember respond to voice or gentle touch?",
+      "on_yes": "CL02",
+      "on_no": "CL03",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
       ],
-      "red_flag": false,
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Protect rescuer and patient from drifting or collision.",
+      "red_flag": true,
       "timer_s": null
     },
     {
       "n": 3,
-      "text": "Restrain them face up against a firm surface: straps across the chest and hips. Put your own feet in foot loops so you stay in place.",
-      "equipment": [
-        "restraint"
+      "id": "CL02",
+      "type": "decision",
+      "text": "Is there chest pain, breathing difficulty, fainting, severe injury, or marked confusion after the event?",
+      "check": "Is there chest pain, breathing difficulty, fainting, severe injury, or marked confusion after the event?",
+      "on_yes": "CL10",
+      "on_no": "CL11",
+      "next": null,
+      "urgency": "Crew medical review",
+      "sources": [
+        "AHA_BLS_2025"
       ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Even if responsive, suspected fall may need medical review.",
       "red_flag": false,
       "timer_s": null
     },
     {
       "n": 4,
-      "key": "breathing",
-      "text": "Open the airway: tilt the head back gently, chin up. Look, listen and feel for breathing for 10 seconds.",
-      "check": "Are they breathing normally?",
+      "id": "CL03",
+      "type": "decision",
+      "text": "Is the unresponsive crewmember breathing normally? (Gasping is NOT normal breathing.)",
+      "check": "Is the unresponsive crewmember breathing normally? (Gasping is NOT normal breathing.)",
+      "on_yes": "CL04",
+      "on_no": "CL05",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Rapid breathing assessment; activate crew medical emergency response.",
       "red_flag": true,
-      "timer_s": 10,
-      "on_yes": "next",
-      "on_no": "cpr"
+      "timer_s": null
     },
     {
       "n": 5,
-      "key": "pulse",
-      "text": "Feel for a pulse at the side of the neck for up to 10 seconds, or read it on the finger sensor.",
-      "equipment": [
-        "sensor"
+      "id": "CL04",
+      "type": "action",
+      "text": "UNRESPONSIVE BUT BREATHING: secure the person in a safe position appropriate to the habitat; monitor breathing continuously and request immediate crew medical intervention. Do not give food, drink or medication by mouth.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CL12",
+      "urgency": "Flight surgeon now + onboard response",
+      "sources": [
+        "AHA_BLS_2025"
       ],
-      "check": "Can you feel a pulse?",
-      "red_flag": true,
-      "timer_s": 10,
-      "on_yes": "next",
-      "on_no": "cpr"
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Airway positioning is per crew medical training and mission protocol.",
+      "red_flag": false,
+      "timer_s": null,
+      "equipment": [
+        "restraint"
+      ]
     },
     {
       "n": 6,
-      "key": "oxygen",
-      "text": "Give oxygen: put the oxygen mask from the medical kit on them and set the flow the kit card shows.",
-      "equipment": [
-        "oxygen"
+      "id": "CL05",
+      "type": "decision",
+      "text": "For a trained medical responder only: is a definite pulse found within 10 seconds?",
+      "check": "For a trained medical responder only: is a definite pulse found within 10 seconds?",
+      "on_yes": "CL06",
+      "on_no": "CL07",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
       ],
-      "red_flag": false,
-      "timer_s": 60
+      "refs": [
+        "REF-10"
+      ],
+      "note": "If unsure/no definite pulse: choose NO. A PPG pulse-loss signal alone is not cardiac-arrest diagnosis.",
+      "red_flag": true,
+      "timer_s": 10
     },
     {
       "n": 7,
-      "text": "Keep them restrained with the airway open and the sensor on their finger. Watch the vitals at the top.",
-      "check": "Has breathing stopped or turned into gasping?",
+      "id": "CL06",
+      "type": "action",
+      "text": "PULSE PRESENT, NOT BREATHING NORMALLY: initiate crew medical respiratory-arrest protocol and trained rescue ventilation, reassessing pulse and breathing per medical guidance. Escalate to flight surgeon immediately.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CL12",
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Crew medical training governs ventilation and airway equipment.",
       "red_flag": true,
-      "timer_s": null,
-      "on_yes": "cpr",
-      "on_no": "next"
+      "timer_s": null
     },
     {
       "n": 8,
-      "text": "Stay with them, keep them restrained and warm, and send the message to the flight surgeon (panel below).",
+      "id": "CL07",
+      "type": "action",
+      "text": "NO DEFINITE PULSE AND NOT BREATHING NORMALLY: start CPR immediately, call for AED and crew medical kit. Adult BLS target: 100–120 compressions/min, 5–6 cm depth on firm surface, full recoil; trained rescuers use ventilation per BLS. Do NOT delay CPR waiting for ground contact.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CL08",
+      "urgency": "Immediate cardiac arrest response",
+      "sources": [
+        "AHA_BLS_2025",
+        "SPACE_CPR_2020",
+        "ER_2011"
+      ],
+      "refs": [
+        "REF-10",
+        "REF-16",
+        "REF-15"
+      ],
+      "note": "In microgravity, trained rescuers may use Evetts–Russomano initially and transition to approved medical restraint system; actual procedure requires mission training.",
+      "red_flag": true,
+      "timer_s": null,
+      "cpr": true,
+      "equipment": [
+        "restraint"
+      ]
+    },
+    {
+      "n": 9,
+      "id": "CL08",
+      "type": "action",
+      "text": "Apply the available AED/defibrillator according to device instructions and the approved crew medical procedure. Minimize pauses in CPR and follow device prompts; ensure patient/rescuer anchoring in microgravity.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CL09",
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025",
+        "SPACE_CPR_2020"
+      ],
+      "refs": [
+        "REF-10",
+        "REF-16"
+      ],
+      "note": "Do not invent device settings or medication doses.",
+      "red_flag": true,
+      "timer_s": null,
+      "equipment": [
+        "aed"
+      ]
+    },
+    {
+      "n": 10,
+      "id": "CL09",
+      "type": "decision",
+      "text": "Has the crewmember clearly regained responsiveness and normal breathing?",
+      "check": "Has the crewmember clearly regained responsiveness and normal breathing?",
+      "on_yes": "CL12",
+      "on_no": "CL13",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "No automatic confirmation from sensor alone.",
+      "red_flag": true,
+      "timer_s": null
+    },
+    {
+      "n": 11,
+      "id": "CL10",
+      "type": "action",
+      "text": "Severe symptoms or injury after a collapse: activate crew medical response now; if chest pain, enter chest-pain protocol CP00. Keep patient secured and continue assessment.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": null,
+      "urgency": "Flight surgeon now + crew medical response",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "Route CP00 only after urgent stabilization.",
+      "red_flag": false,
+      "timer_s": null,
+      "links": [
+        {
+          "to": "CP00",
+          "label": "Open the chest-pain protocol (CP00)"
+        }
+      ]
+    },
+    {
+      "n": 12,
+      "id": "CL11",
+      "type": "end",
+      "text": "Responsive after suspected collapse without reported red flags: crew medical officer assesses possible fall/syncope and sensor false-positive. Do not automatically authorize an EVA or high-risk task.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": null,
+      "urgency": "Prompt crew review",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Review event record/sensor reliability.",
       "red_flag": false,
       "timer_s": null
+    },
+    {
+      "n": 13,
+      "id": "CL12",
+      "type": "end",
+      "text": "Ongoing emergency care: keep patient under direct crew observation, maintain appropriate support and monitoring, document event and consult flight surgeon now when communication permits.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": null,
+      "urgency": "Flight surgeon now + ongoing onboard care",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Never rely on an Earth round-trip before immediate treatment.",
+      "red_flag": false,
+      "timer_s": null
+    },
+    {
+      "n": 14,
+      "id": "CL13",
+      "type": "action",
+      "text": "Continue resuscitation according to trained crew medical responders and AED prompts until approved stopping criteria are met or reassessment directs otherwise; rotate rescuers if possible.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CL08",
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025",
+        "SPACE_CPR_2020"
+      ],
+      "refs": [
+        "REF-10",
+        "REF-16"
+      ],
+      "note": "This loop is a demo workflow, not an autonomous clinical stop rule.",
+      "red_flag": true,
+      "timer_s": null,
+      "cpr": true,
+      "equipment": [
+        "aed"
+      ]
     }
   ],
   "red_flags": [
@@ -89,18 +322,6 @@
     "Heart rate in the danger range (very fast or very slow)",
     "Irregular heart rhythm"
   ],
-  "red_flag_routes": [
-    {
-      "flag": "pulse_lost",
-      "goto": "cpr",
-      "message": "Pulse lost",
-      "_draft": "DRAFT - Yenna reviews"
-    },
-    {
-      "flag": "spo2_critical",
-      "goto": 6,
-      "message": "Blood oxygen critical",
-      "_draft": "DRAFT - Yenna reviews"
-    }
-  ]
+  "red_flag_routes": [],
+  "_note": "Sensors never answer a step or move the crew on: red flags only light up (Integration & Safety: human assessment > sensors). Old red_flag_routes (5 s auto-route to CPR) removed Nov 15."
 }

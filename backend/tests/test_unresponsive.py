@@ -4,20 +4,17 @@ from app import sensor, store
 
 def test_old_collapse_protocol_id_still_works(client):
     assert client.get("/api/protocols/collapse").json()["id"] == "unresponsive"
-    assert client.get("/api/protocols/unresponsive").json()["title"] == "Crew member not responding"
+    assert client.get("/api/protocols/unresponsive").json()["title"].startswith("Crew member not responding")
 
 
-def test_microgravity_order_restrain_before_airway_and_cpr_route():
-    steps = store.protocol("unresponsive")["steps"]
-    keys = [s.get("key") for s in steps]
-    assert keys[0] == "responsive"
-    # Stop the drift and restrain come before the airway/breathing check.
-    first_check = keys.index("breathing")
-    assert any("drift" in s["text"] for s in steps[:first_check])
-    assert any("Restrain" in s["text"] for s in steps[:first_check])
-    assert keys.index("pulse") > first_check
-    routes = {r["flag"]: r["goto"] for r in store.protocol("unresponsive")["red_flag_routes"]}
-    assert routes["pulse_lost"] == "cpr"
+def test_collapse_protocol_order_and_no_auto_route():
+    """Nov 15: the medical lead's Collapse Protocol CL00-CL13. Responds? (CL01) -> breathing? (CL03) -> pulse? (CL05)
+    -> CPR (CL07). Sensors never move the crew on: no red_flag_routes."""
+    steps = {s["id"]: s for s in store.protocol("unresponsive")["steps"]}
+    assert list(steps)[0] == "CL00" and steps["CL00"]["next"] == "CL01"
+    assert steps["CL01"]["on_no"] == "CL03" and steps["CL03"]["on_no"] == "CL05" and steps["CL05"]["on_no"] == "CL07"
+    assert steps["CL07"]["cpr"] and steps["CL13"]["cpr"] and steps["CL13"]["next"] == "CL08"
+    assert store.protocol("unresponsive")["red_flag_routes"] == []
 
 
 def test_event_types_renamed(client):

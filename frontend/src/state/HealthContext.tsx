@@ -8,7 +8,9 @@ import { useCabin, useRadiation } from '../hooks/useEnvironment';
 import { useMessages, type MessagesApi } from '../hooks/useMessages';
 import { useDaily, useStatus } from '../hooks/useStatus';
 import { useVitals } from '../hooks/useVitals';
-import { byUrgency, liveRegionStatus, liveStatus, raiseLevel, worse, type LiveStatus } from '../lib/status';
+import { usualValue } from '../lib/metrics';
+import { symptomsConfig, useActiveSymptoms } from '../lib/symptoms';
+import { byUrgency, liveRegionStatus, liveStatus, raiseLevel, worse, type LiveOptions, type LiveStatus } from '../lib/status';
 import type { CabinSummary, DailyEntry, RadiationSummary, RegionId, RegionStatus, Status, VitalsFrame } from '../types/contracts';
 import { useAlerts } from './AlertsContext';
 import { useApp, useStatusLabel } from './AppContext';
@@ -25,6 +27,10 @@ interface HealthState {
   liveRegions: Partial<Record<RegionId, Status>>;
   /** A live vital has been red for 10+ s. */
   danger: boolean;
+  /** Red-flag symptoms logged in the last hour (thresholds.json "symptoms"). */
+  symptoms: string[];
+  /** What liveStatus was judged with (symptoms, frozen usual), for other screens judging the same frames. */
+  liveOptions: LiveOptions;
   cabin: CabinSummary | null;
   radiation: RadiationSummary | null;
   messages: MessagesApi;
@@ -44,12 +50,21 @@ export function HealthProvider({ children }: { children: ReactNode }) {
   const statuses = useStatus(persona, env);
   const daily = useDaily(persona, checkDoneAt);
   const { frames, latest } = useVitals(persona);
-  const live = useMemo(() => liveStatus(latest, thresholds), [latest, thresholds]);
-  const danger = useDanger(frames, thresholds);
+  // Red-flag symptoms logged here, plus those the backend raised an alert for (logged in another tab or by the demo).
+  const localSymptoms = useActiveSymptoms(persona, thresholds);
+  const { alerts: allAlerts, setFallback } = useAlerts();
+  const activeMin = symptomsConfig(thresholds)?.active_minutes ?? 60;
+  const symptomKey = [...new Set([...localSymptoms, ...allAlerts
+    .filter((a) => a.metric?.startsWith('symptom:') && Date.now() - Date.parse(a.t) < activeMin * 60_000)
+    .map((a) => a.metric!.slice('symptom:'.length))])].join(',');
+  const symptoms = useMemo(() => (symptomKey ? symptomKey.split(',') : []), [symptomKey]);
+  const usualHr = useMemo(() => usualValue(daily, 'hr_rest'), [daily]);
+  const liveOptions = useMemo<LiveOptions>(() => ({ symptoms: symptoms.length > 0, usual: { hr_rest: usualHr } }), [symptoms, usualHr]);
+  const live = useMemo(() => liveStatus(latest, thresholds, liveOptions), [latest, thresholds, liveOptions]);
+  const danger = useDanger(frames, thresholds, liveOptions);
   const cabin = useCabin();
   const radiation = useRadiation(persona, env);
   const messages = useMessages();
-  const { setFallback } = useAlerts();
 
   // Alerts built in the browser are only used when the backend is off (every page has the Inbox now).
   const mockAlerts = useMockAlerts(statuses, live);
@@ -66,8 +81,8 @@ export function HealthProvider({ children }: { children: ReactNode }) {
   const attention = shown.filter((s) => s.status !== 'green').length;
 
   const value = useMemo<HealthState>(() => ({
-    statuses, shown, daily, frames, latest, live, liveRegions, danger, cabin, radiation, messages, worst, selected, attention,
-  }), [statuses, shown, daily, frames, latest, live, liveRegions, danger, cabin, radiation, messages, worst, selected, attention]);
+    statuses, shown, daily, frames, latest, live, liveRegions, danger, symptoms, liveOptions, cabin, radiation, messages, worst, selected, attention,
+  }), [statuses, shown, daily, frames, latest, live, liveRegions, danger, symptoms, liveOptions, cabin, radiation, messages, worst, selected, attention]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

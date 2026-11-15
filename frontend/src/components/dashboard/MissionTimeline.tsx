@@ -19,6 +19,7 @@ const PX = 20; // px per hour
 const DAY_H = 24;
 const BACK_DAYS = 3;
 const H = 132;
+const OPEN_KEY = 'copilot-timeline-open';
 
 type Kind = 'done' | 'missed' | 'next' | 'norecord' | 'log' | 'forecast' | Status;
 interface TlEvent { key: string; at: number; label: string; kind: Kind; region: RegionId | null; detail: string }
@@ -100,14 +101,16 @@ export function MissionTimeline() {
       if (f.kind === 'mood') out.push({ key: `m-${f.t}`, at: Date.parse(f.t), label: `Mood ${f.data.mood ?? ''}/10`, kind: 'log', region: 'brain_mood', detail: 'Mood and symptoms logged' });
       if (f.kind === 'pvt') out.push({ key: `p-${f.t}`, at: Date.parse(f.t), label: 'Reaction test', kind: 'log', region: 'brain_mood', detail: 'Reaction test saved' });
     }
-    // Alerts raised close together (e.g. several areas at once) become one diamond: worst first, "+N".
-    const sortedAlerts = alerts.filter((a) => a.source !== 'emergency').sort((a, b) => a.t.localeCompare(b.t));
+    // Every medical concern is shown, emergencies included. Alerts raised close together (e.g. several areas at once)
+    // become one diamond: worst first, "+N", and the tooltip lists every message in the group.
+    const sortedAlerts = [...alerts].sort((a, b) => a.t.localeCompare(b.t));
     let group: typeof sortedAlerts = [];
     const flush = () => {
       if (!group.length) return;
       const worst = [...group].sort((a, b) => STATUS_ORDER.indexOf(b.level) - STATUS_ORDER.indexOf(a.level))[0];
+      const name = worst.region ? label(worst.region) : worst.source === 'emergency' ? 'Emergency' : label(null);
       out.push({ key: `a-${group[0].id}`, at: Date.parse(group[0].t), kind: worst.level, region: worst.region,
-        label: `${label(worst.region)}: ${statusLabel(worst.level)}${group.length > 1 ? ` +${group.length - 1}` : ''}`,
+        label: `${name}: ${statusLabel(worst.level)}${group.length > 1 ? ` +${group.length - 1}` : ''}`,
         detail: group.map((a) => a.message).join(' · ') });
       group = [];
     };
@@ -125,6 +128,19 @@ export function MissionTimeline() {
     return out.filter((e) => e.at >= start && e.at <= start + days * DAY_H * 3_600_000).sort((a, b) => a.at - b.at);
   }, [schedule, missions, history, alerts, shown, start, days, now, regions, statusLabel]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Collapsed by default so the area details below get the space; the choice is remembered per browser.
+  const [open, setOpenState] = useState(() => { try { return localStorage.getItem(OPEN_KEY) === '1'; } catch { return false; } });
+  const setOpen = (v: boolean) => { setOpenState(v); try { localStorage.setItem(OPEN_KEY, v ? '1' : '0'); } catch { /* storage blocked */ } };
+
+  // One-line summary for the collapsed bar: concerns in the window, forecasts and the next routine item.
+  const summary = useMemo(() => {
+    const concerns = events.filter((e) => STATUS_ORDER.includes(e.kind as Status) && e.at <= now.getTime());
+    const worst = [...concerns].sort((a, b) => STATUS_ORDER.indexOf(b.kind as Status) - STATUS_ORDER.indexOf(a.kind as Status))[0];
+    const forecasts = events.filter((e) => e.kind === 'forecast').length;
+    const next = events.find((e) => e.kind === 'next' && e.at > now.getTime());
+    return { concerns: concerns.length, worst: worst?.kind as Status | undefined, forecasts, next };
+  }, [events, now]);
+
   // Drag (mouse and touch) with pointer events; a drag never counts as a tap on an event.
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(700);
@@ -136,7 +152,7 @@ export function MissionTimeline() {
     const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [open]);
   const clamp = useCallback((v: number) => Math.max(0, Math.min(total - width, v)), [total, width]);
   const offset = clamp(off ?? nowX - width * 0.62);
   const centerNow = () => setOff(nowX - width * 0.62);
@@ -170,15 +186,38 @@ export function MissionTimeline() {
   }, [events, xOf]);
 
   return (
-    <section aria-label="Mission timeline" className="rounded-panel border border-line bg-map px-3.5 pb-2.5 pt-3">
-      <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-        <span className="text-xs font-bold tracking-[0.12em] text-muted">MISSION TIMELINE</span>
-        <span className="text-xs text-muted/80">drag left / right · tap an event</span>
+    <section aria-label="Mission timeline" className={`rounded-panel border border-line bg-map px-3.5 ${open ? 'pb-2.5 pt-3' : 'py-1.5'}`}>
+      <div className={`flex flex-wrap items-center gap-2.5 ${open ? 'mb-1.5' : ''}`}>
+        <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mission-timeline-body"
+          className="flex min-h-9 items-center gap-2 rounded-lg text-left hover:text-text">
+          <span aria-hidden className={`text-muted transition-transform ${open ? 'rotate-90' : ''}`}>›</span>
+          <span className="text-xs font-bold tracking-[0.12em] text-muted">MISSION TIMELINE</span>
+        </button>
+        {open ? (
+          <span className="text-xs text-muted/80">drag left / right · tap an event</span>
+        ) : (
+          <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
+            <span>
+              {summary.worst && <span className={STATUS_CLASS[summary.worst].text}>◆ </span>}
+              {summary.concerns === 0 ? 'No health concerns' : `${summary.concerns} health ${summary.concerns === 1 ? 'concern' : 'concerns'}`} in the last {BACK_DAYS} days
+            </span>
+            {summary.forecasts > 0 && <span><span className="text-warn">◇</span> {summary.forecasts} {summary.forecasts === 1 ? 'forecast' : 'forecasts'}</span>}
+            {summary.next && <span>Next: {summary.next.label} {new Date(summary.next.at).toISOString().slice(11, 16)}</span>}
+          </span>
+        )}
         <span className="flex-1" />
-        <button type="button" onClick={() => shift(-8)} aria-label="Earlier" className="h-9 w-9 rounded-lg border border-line-strong hover:bg-raised">‹</button>
-        <button type="button" onClick={centerNow} className="h-9 rounded-lg border border-line-strong px-3 text-xs hover:bg-raised">Now</button>
-        <button type="button" onClick={() => shift(8)} aria-label="Later" className="h-9 w-9 rounded-lg border border-line-strong hover:bg-raised">›</button>
+        {open ? (
+          <>
+            <button type="button" onClick={() => shift(-8)} aria-label="Earlier" className="h-9 w-9 rounded-lg border border-line-strong hover:bg-raised">‹</button>
+            <button type="button" onClick={centerNow} className="h-9 rounded-lg border border-line-strong px-3 text-xs hover:bg-raised">Now</button>
+            <button type="button" onClick={() => shift(8)} aria-label="Later" className="h-9 w-9 rounded-lg border border-line-strong hover:bg-raised">›</button>
+            <button type="button" onClick={() => setOpen(false)} className="h-9 rounded-lg border border-line-strong px-3 text-xs hover:bg-raised">Hide</button>
+          </>
+        ) : (
+          <button type="button" onClick={() => setOpen(true)} className="h-9 rounded-lg border border-line-strong px-3 text-xs hover:bg-raised">Show timeline</button>
+        )}
       </div>
+      {open && <div id="mission-timeline-body">
       <div ref={box} onPointerDown={onDown} className="relative cursor-grab select-none overflow-hidden active:cursor-grabbing" style={{ height: H, touchAction: 'pan-y' }}>
         <div className="absolute left-0 top-0" style={{ height: H, width: total, transform: `translateX(${-offset}px)`, transition: drag.current ? 'none' : 'transform .25s' }}>
           <div aria-hidden className="absolute inset-x-0 top-[64px] h-0.5 bg-line" />
@@ -229,6 +268,7 @@ export function MissionTimeline() {
         <span><span className="text-muted">○</span> upcoming</span><span><span className="text-info">●</span> logged</span>
         <span><span className={STATUS_CLASS.yellow.text}>◆</span> alert</span><span><span className="text-warn">◇</span> forecast</span>
       </div>
+      </div>}
     </section>
   );
 }

@@ -42,7 +42,7 @@ def main() -> None:
     write("vitals.json", {pid: store.persona(pid)["stream"][: None if pid == "C" else 60] for pid in ids})
     write("protocols.json", {pid: get(f"/api/protocols/{pid}") for pid in ("chest_pain", "unresponsive")})
     for name in ("environments", "thresholds", "regions", "escalation", "questionnaire", "cpr", "labels", "guidance",
-                 "measurements", "sources"):
+                 "measurements", "sources", "references", "indicators"):
         write(f"{name}.json", get(f"/api/{name}"))
     # Locations with planets (the surface rover) get one entry per planet: "rover:moon", "rover:mars".
     keys = [f"{e['id']}:{p}" if e.get("planets") else e["id"] for e in get("/api/environments") for p in (e.get("planets") or [None])]

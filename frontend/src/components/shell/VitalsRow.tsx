@@ -5,7 +5,7 @@ import { useUsingMock, useVitalsSource } from '../../api/client';
 import { personaBadge } from '../demo/demoSteps';
 import { useDemo } from '../../lib/demo';
 import { USUAL_FIELD, usualValue } from '../../lib/metrics';
-import { entryOf, fmt, implausible, LIVE_VITALS, STATUS_CLASS } from '../../lib/status';
+import { baselineWatch, entryOf, fmt, implausible, judge, LIVE_VITALS, STATUS_CLASS } from '../../lib/status';
 import { useApp, useStatusLabel } from '../../state/AppContext';
 import { useHealth } from '../../state/HealthContext';
 import { useSignals } from '../../state/SignalContext';
@@ -15,7 +15,7 @@ import { Sparkline } from '../common/Sparkline';
 const SHORT: Record<string, string> = { hr: 'Heart rate', hrv_rmssd: 'HRV', spo2: 'SpO₂', rr: 'Breathing' };
 
 export function VitalsRow() {
-  const { frames, latest, live, daily } = useHealth();
+  const { frames, latest, live, daily, liveOptions } = useHealth();
   const { thresholds, personaInfo, jumpTo } = useApp();
   const statusLabel = useStatusLabel();
   const source = useVitalsSource();
@@ -68,7 +68,9 @@ export function VitalsRow() {
               </span>
               {flagged && <span className="text-[11px] font-bold text-alert" role="alert">Irregular rhythm</span>}
             </span>
-            <Sparkline values={frames.map((f) => (implausible(key, f[key], thresholds) ? null : f[key]))} className={`ml-auto h-7 w-16 shrink-0 ${poor ? 'text-muted' : status === 'green' ? 'text-muted' : cls.text}`} width={64} height={28} />
+            <Sparkline values={frames.map((f) => (implausible(key, f[key], thresholds) ? null : f[key]))}
+              statusOf={poor ? undefined : (v) => { const st = judge(v, entry, liveOptions.symptoms); return st === 'green' && baselineWatch(v, entry, entry?.baseline?.metric ? liveOptions.usual?.[entry.baseline.metric] : null) ? 'yellow' : st; }}
+              className={`ml-auto h-7 w-16 shrink-0 ${poor ? 'text-muted' : cls.text}`} width={64} height={28} strokeWidth={2} />
           </div>
         );
       })}

@@ -9,7 +9,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { undraft } from '../../lib/env';
 import { postEvent } from '../../api/client';
-import { actNowTrigger } from '../../lib/actNow';
+import { actNowTrigger, firedRules } from '../../lib/actNow';
+import { symptomsConfig } from '../../lib/symptoms';
 import { useCrewAlarm } from '../../lib/crewAlarm';
 import { audioOut, useMuted } from '../../lib/sound';
 import { entryOf, fmt, LIVE_VITALS } from '../../lib/status';
@@ -47,7 +48,7 @@ function useAlarmBeep(on: boolean) {
 
 export function ActNowAlert() {
   const { alerts, ack } = useAlerts();
-  const { danger, live, latest, shown, radiation, messages } = useHealth();
+  const { danger, live, latest, shown, radiation, messages, symptoms } = useHealth();
   const { regions, guidance, thresholds, labels, persona } = useApp();
   const { panel, openInbox } = useShell();
   const crewAlarm = useCrewAlarm();
@@ -60,12 +61,17 @@ export function ActNowAlert() {
   const lost = pulse.status === 'lost';
   const [pulseAcked, setPulseAcked] = useState(false);
   useEffect(() => { if (!lost) setPulseAcked(false); }, [lost]);
+  const symptomsCfg = symptomsConfig(thresholds);
+  const [symptomsAcked, setSymptomsAcked] = useState('');
+  const symptomKey = symptoms.join(',');
+  const newSymptoms = symptomKey && symptomKey !== symptomsAcked ? symptoms : [];
 
   // Camera alarms without a lost pulse have their own screen (crew alarm); "Emergency handled" is a record, not an alarm.
   const redVitals = live && !live.poor ? live.red : [];
-  const trigger = useMemo(() => actNowTrigger({ alerts, redVitals, danger: danger && !dangerAcked, pulseLost: lost && !pulseAcked, regions }),
+  const trigger = useMemo(() => actNowTrigger({ alerts, redVitals, danger: danger && !dangerAcked, pulseLost: lost && !pulseAcked, regions,
+    symptoms: newSymptoms, symptomsConfig: symptomsCfg }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [alerts, redVitals.join(','), danger, dangerAcked, lost, pulseAcked, regions]);
+    [alerts, redVitals.join(','), danger, dangerAcked, lost, pulseAcked, regions, newSymptoms.join(','), symptomsCfg]);
   const open = trigger?.open ?? [];
   const blocked = !!crewAlarm || checkInDeadline !== null || pathname.startsWith('/emergency') || panel === 'inbox';
   const visible = !!trigger && !blocked;
@@ -88,6 +94,7 @@ export function ActNowAlert() {
   const solar = region === 'radiation' && radiation?.event ? radiation.event : null;
 
   const headline = pulseKind ? `Pulse lost. ${pulse.reason}.`
+    : trigger.kind === 'symptom' ? `${symptoms.map((x) => symptomsCfg?.red_flag[x] ?? x).join(', ')} logged.`
     : solar ? solar.alert
     : first?.source === 'vitals' || !first ? `${redVitals.map((k) => entryOf(thresholds, k)?.label ?? k).join(', ') || 'Live vitals'} in the danger range.`
     : status?.reason ?? first.message;
@@ -102,11 +109,15 @@ export function ActNowAlert() {
     const limit = band ? [band[0] !== null ? `below ${band[0]}` : '', band[1] !== null ? `above ${band[1]}` : ''].filter(Boolean).join(' or ') : '';
     return `${entry?.label ?? k} ${latest ? fmt(latest[k as (typeof LIVE_VITALS)[number]], 0) : ''} ${entry?.unit ?? ''}: ${labels.red} range is ${limit}${danger ? ', for 10 s or more' : ''}.`;
   });
-  const why = [first && first.source === 'rules' ? first.message : '', ...ruleLines, vitalsLine].filter(Boolean);
+  // Which of the medical lead's rules fired (e.g. "RULE-01 + RULE-05 + chest pain or pressure logged").
+  const fired = firedRules(redVitals, thresholds, symptoms, symptomsCfg);
+  const why = [fired ? `Why: ${fired}.` : '', first && first.source === 'rules' ? first.message : '', ...ruleLines, vitalsLine].filter(Boolean);
   const item = region ? guidance?.regions[region]?.[guidance.status_keys.red] : undefined;
   const steps = [...(solar ? [solar.advice] : []), ...(item?.self_care ?? [])].map(undraft).filter(Boolean);
 
-  const acknowledge = () => { open.forEach((a) => ack(a.id)); setDangerAcked(true); if (pulseKind) setPulseAcked(true); };
+  const acknowledge = () => {
+    open.forEach((a) => ack(a.id)); setDangerAcked(true); setSymptomsAcked(symptomKey); if (pulseKind) setPulseAcked(true);
+  };
   const toEmergency = () => { acknowledge(); navigate(trigger.emergencyUrl); };
   const toDraft = async () => { openInbox(first ? await messages.draftFor(first) : null); };
 

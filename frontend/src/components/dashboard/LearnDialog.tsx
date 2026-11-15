@@ -1,6 +1,8 @@
 // v4 Learn pop-up for the selected area and metric (replaces the Learn tab and "Why this matters in space").
-// Text comes from regions.json, measurements.json and guidance.json (Yenna's DRAFT text). Anything not written yet
-// says "TODO(Yenna)" instead of an invented medical claim. Then where the numbers come from, with a tag per source.
+// Nov 15: the indicator text comes from the medical lead's Master Health Indicator Catalog (indicators.json); it wins
+// over regions.json / measurements.json where they disagree. "What this does" (regions.json) and "How to stay healthy"
+// (guidance.json) stay. Then where the numbers come from: the sheet rule, its REF IDs (references.json, linked), tags
+// for proposed / DEMO ONLY / team-default values and the medical lead's QA note. Anything missing says TODO.
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useVitalsSource } from '../../api/client';
@@ -12,14 +14,21 @@ import { useHealth } from '../../state/HealthContext';
 import { useShell } from '../../state/ShellContext';
 import { CrewPanelTable } from '../common/CrewReference';
 import { useAreaMetric } from './AreaDetail';
+import { useIndicators, useReferences } from '../../hooks/useMedical';
+import { useSignals } from '../../state/SignalContext';
 import { DraftTag } from './GuidanceCard';
 import { WithRefs } from './MetricInfo';
 
-type Tag = 'REAL' | 'EST' | 'PLACEHOLDER' | 'ON DEVICE' | 'SIMULATED';
+type Tag = 'REAL' | 'EST' | 'PLACEHOLDER' | 'ON DEVICE' | 'SIMULATED' | 'PROPOSED' | 'DEMO ONLY' | 'TEAM DEFAULT';
 const TAG_CLASS: Record<Tag, string> = {
   REAL: 'border-ok text-ok', EST: 'border-watch text-watch', PLACEHOLDER: 'border-watch text-watch',
   'ON DEVICE': 'border-info text-info', SIMULATED: 'border-line-strong text-soft',
+  PROPOSED: 'border-info text-info', 'DEMO ONLY': 'border-warn text-warn', 'TEAM DEFAULT': 'border-watch text-watch',
 };
+const TAG_TEXT: Partial<Record<Tag, string>> = {
+  PROPOSED: 'Proposed · not clinically validated', 'TEAM DEFAULT': 'Team default',
+};
+const LEVEL_WORD = { yellow: 'Watch', orange: 'Warning', red: 'Act now' } as const;
 const TODO = 'TODO(Yenna): not written yet.';
 
 function Row({ k, draft, children }: { k: string; draft?: boolean; children: ReactNode }) {
@@ -37,6 +46,9 @@ export function LearnDialog() {
   const { cabin, radiation, selected, shown } = useHealth();
   const { meta, row } = useAreaMetric();
   const pvt = usePvtNorms();
+  const catalog = useIndicators();
+  const references = useReferences();
+  const demo = useSignals().mode === 'demo';
   const vitalsSource = useVitalsSource();
   const closeRef = useRef<HTMLButtonElement>(null);
   const open = panel === 'learn';
@@ -51,6 +63,18 @@ export function LearnDialog() {
   const space = info?.can_do_in_space;
   const spaceNote = meta.space_effect ?? meta.spaceflight_note;
   const placeholder = (entry?.source ?? 'PLACEHOLDER').toUpperCase().startsWith('PLACEHOLDER');
+  const ind = catalog?.indicators[catalog.metric_index[metric] ?? ''];
+  const refLink = (id: string) => {
+    const ref = references?.references.find((r) => r.id === id);
+    if (!ref) return <span key={id} title="TODO: not in Scientific_References.csv">{id} (missing)</span>;
+    return ref.url
+      ? <a key={id} href={ref.url} target="_blank" rel="noreferrer" title={ref.title} className="text-info hover:underline">{id}</a>
+      : <span key={id} title={`${ref.title} (${ref.url_note ?? 'no URL'})`}>{id} (no URL yet)</span>;
+  };
+  // Which bands are team defaults (not on the sheet), in plain words.
+  const teamLevels = (Object.entries(entry?.band_sources ?? {}) as [keyof typeof LEVEL_WORD, string][])
+    .filter(([, src]) => src.startsWith('team-default')).map(([lv]) => LEVEL_WORD[lv]);
+  const teamBaseline = Object.entries(entry?.baseline_sources ?? {}).filter(([, src]) => src.startsWith('team-default')).map(([k]) => k);
 
   // Where these numbers come from.
   const sources: { text: ReactNode; tag: Tag }[] = [];
@@ -70,8 +94,16 @@ export function LearnDialog() {
   if (['hr_rest', 'hrv_rmssd', 'spo2', 'rr', 'irregular'].includes(metric)) {
     sources.push({ tag: vitalsSource === 'sensor' ? 'ON DEVICE' : 'SIMULATED', text: vitalsSource === 'sensor' ? <>Finger clip PPG, processed on this laptop.</> : <>Replayed recording (simulated crew member), through the same PPG pipeline.</> });
   }
-  sources.push({ tag: placeholder ? 'PLACEHOLDER' : 'REAL', text: <>Limits for {entry?.label ?? metric}: {placeholder ? 'placeholder, medical review pending (Yenna)' : entry?.source}.</> });
-  if (row?.kind === 'daily') sources.push({ tag: 'ON DEVICE', text: <>"Your usual": the median of your own last 30 days.</> });
+  if (entry?.rule_id) {
+    sources.push({ tag: 'PROPOSED', text: <>Limits for {entry.label ?? metric}: medical lead's threshold sheet, <b>{entry.rule_id}</b>{entry.ref_ids?.length ? <> · {entry.ref_ids.map((id, i) => <span key={id}>{i ? ', ' : ''}{refLink(id)}</span>)}</> : null}. {entry.evidence_status} · {entry.validation_status}.</> });
+    if (entry.demo_only) sources.push({ tag: 'DEMO ONLY', text: <>The sheet marks these limits as for the demo only.</> });
+    if (teamLevels.length || teamBaseline.length || entry.gap_note) {
+      sources.push({ tag: 'TEAM DEFAULT', text: <>{teamLevels.length ? <>Not on the sheet: the {teamLevels.join(' and ')} level{teamLevels.length > 1 ? 's' : ''}{teamBaseline.length ? ` and the baseline ${teamBaseline.join('/')} limit` : ''}. </> : teamBaseline.length ? <>Not on the sheet: the baseline {teamBaseline.join('/')} limit. </> : null}{entry.gap_note ?? ''}</> });
+    }
+  } else {
+    sources.push({ tag: placeholder ? 'PLACEHOLDER' : 'REAL', text: <>Limits for {entry?.label ?? metric}: {placeholder ? 'placeholder (Team default)' : entry?.source}.</> });
+  }
+  if (row?.kind === 'daily') sources.push({ tag: 'ON DEVICE', text: <>"Your usual": the median of your first 14 days (pre-flight baseline, frozen).</> });
   const refs = Object.entries(meta.refs ?? {});
 
   return (
@@ -87,14 +119,36 @@ export function LearnDialog() {
         <h2 id="learn-title" className="font-display text-[28px] font-bold leading-tight">{meta.label}{row ? ` · ${row.label}` : ''}</h2>
 
         <Row k="What this does" draft={isDraft(meta.function)}>{meta.function ? undraft(meta.function) : TODO}</Row>
-        <Row k="Why we check it" draft={isDraft(info?.why_check)}>{info ? undraft(info.why_check) : TODO}</Row>
-        <Row k="How it is measured" draft={info?.how_to_measure.some(isDraft)}>
-          {info?.how_to_measure.length ? <ol className="list-decimal space-y-1 pl-5">{info.how_to_measure.map((s) => <li key={s}>{undraft(s)}</li>)}</ol> : TODO}
-        </Row>
+        {ind ? (
+          <>
+            <Row k="Data source">
+              <span className="rounded-full border border-info px-2 py-0.5 text-xs text-info">{ind.data_source}</span>
+              {demo && <span className="ml-1.5 rounded-full border border-line-strong px-2 py-0.5 text-xs text-soft">Simulation (Demo mode)</span>}
+              <span className="ml-2 text-[13px] text-soft">{catalog?.data_source_types[ind.data_source]}</span>
+            </Row>
+            <Row k="How to measure">
+              <ol className="list-decimal space-y-1 pl-5">{ind.how_to_measure.map((s) => <li key={s}>{s}</li>)}</ol>
+              {info?.how_to_measure.length ? <p className="mt-1.5 text-[13px] text-soft">In this app: {info.how_to_measure.map(undraft).join(' ')}</p> : null}
+            </Row>
+            <Row k="What it measures">{ind.what}</Row>
+            <Row k="Why it matters in space">{ind.why_space}</Row>
+            <Row k="How spaceflight affects it">{ind.space_effect}</Row>
+            <Row k="Normal range">{ind.normal_range}</Row>
+            <Row k="Limitations">{ind.limitations}{metric === 'mood' ? ' The 1-10 mood score is not a validated mood test.' : ''}</Row>
+            <Row k="Citation">{ind.citation}{ind.url && <> · <a href={ind.url} target="_blank" rel="noreferrer" className="break-all text-info hover:underline">{ind.url}</a></>}</Row>
+          </>
+        ) : (
+          <>
+            <Row k="Why we check it" draft={isDraft(info?.why_check)}>{info ? undraft(info.why_check) : TODO}</Row>
+            <Row k="How it is measured" draft={info?.how_to_measure.some(isDraft)}>
+              {info?.how_to_measure.length ? <ol className="list-decimal space-y-1 pl-5">{info.how_to_measure.map((s) => <li key={s}>{undraft(s)}</li>)}</ol> : TODO}
+            </Row>
+            <Row k="Why this happens in space"><WithRefs text={spaceNote || TODO} refs={meta.refs} /></Row>
+          </>
+        )}
         <Row k="Can it be done on board?" draft={isDraft(space?.note)}>
           {space ? <><span className="font-semibold">{space.possible ? 'Yes.' : 'No.'}</span> {undraft(space.note)}</> : TODO}
         </Row>
-        <Row k="Why this happens in space"><WithRefs text={spaceNote || TODO} refs={meta.refs} /></Row>
         <Row k="How to stay healthy" draft={!!item?.draft}>
           {item?.prevention.length ? <ul className="list-disc space-y-0.5 pl-5">{item.prevention.map((p) => <li key={p}>{undraft(p)}</li>)}</ul> : TODO}
         </Row>
@@ -104,10 +158,13 @@ export function LearnDialog() {
           <span className="text-[13px] font-bold text-muted">Where these numbers come from</span>
           {sources.map((s, i) => (
             <span key={i} className="flex items-start gap-2 text-[13px] text-soft">
-              <span className={`mt-0.5 shrink-0 rounded-full border px-1.5 text-[10px] ${TAG_CLASS[s.tag]}`}>{s.tag}</span><span>{s.text}</span>
+              <span className={`mt-0.5 shrink-0 rounded-full border px-1.5 text-[10px] ${TAG_CLASS[s.tag]}`}>{TAG_TEXT[s.tag] ?? s.tag}</span><span>{s.text}</span>
             </span>
           ))}
-          {refs.length > 0 && (
+          {entry?.qa_note && (
+            <span className="text-[12px] text-soft"><b>Medical lead's note:</b> {entry.qa?.finding ?? entry.qa_note}{entry.qa?.recommendation ? ` ${entry.qa.recommendation}` : ''}</span>
+          )}
+          {refs.length > 0 && !ind && (
             <span className="text-[12px] text-muted">
               References: {refs.map(([id, r], i) => (
                 <span key={id}>{i ? ' · ' : ''}{id}{r.status === 'ok' && r.citation ? `: ${r.citation}` : ' (source pending)'}</span>

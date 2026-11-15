@@ -28,6 +28,13 @@ source cv) with a drafted message; the response is `{ "ok": true, "alert_id": ".
 
 ## Changes
 
+### Nov 15, 2026 (medical lead's sheet; details in docs/medsci-integration-report.md)
+- thresholds.json entries: optional `rule_id`, `ref_ids`, `evidence_status`, `validation_status`, `demo_only`, `qa_note`, `qa`, `actions`, `sheet`, `band_sources`, `inclusive` (band edges that count, e.g. `{"red": ["high"]}` for >= 38.5), `requires_symptoms`, `sustained_days`, `escalate_after_days`, `missed_days`, `baseline`, `red_for_s`, `scale_factor`. New metrics `co2_mmhg`, `radiation_msv`, `calories_pct`; new block `symptoms` (red-flag symptoms).
+- New GET `/api/references` (references.json) and `/api/indicators` (indicators.json).
+- Protocol steps: optional `id` (node ID), `type`, `next`, `urgency`, `sources`, `refs`, `note`, `cpr`, `links`; routes may be node IDs (another protocol's node opens that protocol). `red_flag_routes` is now empty: no auto-route.
+- Emergency URL: `?flag=pulse_lost` shows the red flag (never answers a step); `?preanswer=` and `?goto=cpr` are no longer used.
+- Forms: new kind `symptoms` (`{symptoms: [...]}`); a red-flag symptom in `mood` or `symptoms` creates a red alert (`metric: "symptom:<id>"`).
+
 ### Nov 15, 2026 (v4 UI redesign; all additions optional, nothing removed)
 
 - **Environment: optional `subtitle`** (also on each `planets` entry), e.g. `"Low Earth orbit · microgravity"`. Shown under

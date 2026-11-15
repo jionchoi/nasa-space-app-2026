@@ -6,35 +6,118 @@
   "label": "Resting heart rate",
   "unit": "bpm",
   "yellow": [
-   50,
-   68
+   60,
+   90
   ],
   "orange": [
-   45,
-   71
+   50,
+   100
   ],
   "red": [
    40,
-   90
+   120
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-01",
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "baseline": {
+   "metric": "hr_rest",
+   "rise": {
+    "yellow": 10
+   },
+   "fall": {
+    "yellow": 15
+   },
+   "_note": "Above/below the frozen pre-flight usual (regions.json baseline.first_days). Sheet: +/-15 bpm (RULE-01, read as '+/-15 bpm from baseline', Yenna confirms). Rise above +10 bpm: team default (so slow drift +10..15 bpm shows as Watch)."
+  },
+  "baseline_sources": {
+   "rise": "team-default",
+   "fall": "sheet"
+  },
+  "escalate_after_days": {
+   "from": "yellow",
+   "to": "orange",
+   "days": 3,
+   "source": "team-default"
+  },
+  "rule_id": "RULE-01",
+  "indicator_id": "01",
+  "ref_ids": [
+   "REF-01",
+   "REF-03"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: Resting HR <50/>90 and <40/>120 are stated as validated astronaut limits; not substantiated by general NASA standard. | Keep proposed baseline thresholds as DEMO ONLY; severe symptoms, consciousness and confirmed signal take priority over number.",
+  "qa": {
+   "finding": "QA 2026-11-14: Resting HR <50/>90 and <40/>120 are stated as validated astronaut limits; not substantiated by general NASA standard.",
+   "recommendation": "Keep proposed baseline thresholds as DEMO ONLY; severe symptoms, consciousness and confirmed signal take priority over number."
+  },
+  "actions": {
+   "watch": "Rest and repeat the pulse reading with good sensor contact. Check symptoms and record the trend.",
+   "act": "Stop strenuous work, summon the crew medical officer, and assess symptoms immediately."
+  },
+  "sheet": {
+   "baseline": "30-day pre-flight seated resting morning average HR (\u00b1 5 bpm)",
+   "nominal": "60 \u2013 100 bpm (resting adult astronaut norm)",
+   "watch": "Resting HR < 50 bpm or > 90 bpm (or \u00b115 bpm baseline)",
+   "act": "Resting HR < 40 bpm or > 120 bpm (or off-exercise > 160 bpm)",
+   "rationale": "Cardiovascular deconditioning, fluid shift, dehydration, or acute arrhythmogenic stress",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "hrv_rmssd": {
   "label": "Heart rate variability",
   "unit": "ms",
-  "yellow": [
-   37,
-   null
+  "yellow": null,
+  "orange": null,
+  "red": null,
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-02",
+  "baseline": {
+   "metric": "hrv_rmssd",
+   "drop_pct": {
+    "yellow": 20
+   }
+  },
+  "baseline_sources": {
+   "drop_pct": "sheet"
+  },
+  "escalate_after_days": {
+   "from": "yellow",
+   "to": "orange",
+   "days": 3,
+   "source": "team-default"
+  },
+  "no_act_now": true,
+  "rule_id": "RULE-02",
+  "indicator_id": "02",
+  "ref_ids": [
+   "REF-01"
   ],
-  "orange": [
-   32,
-   null
-  ],
-  "red": [
-   20,
-   null
-  ],
-  "source": "PLACEHOLDER"
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: 20% and 50% drops cannot establish severe autonomic collapse or be standalone emergency criteria. | Use repeated baseline deviation as a nonurgent trend flag; no independent Act-now from HRV alone.",
+  "qa": {
+   "finding": "QA 2026-11-14: 20% and 50% drops cannot establish severe autonomic collapse or be standalone emergency criteria.",
+   "recommendation": "Use repeated baseline deviation as a nonurgent trend flag; no independent Act-now from HRV alone."
+  },
+  "actions": {
+   "watch": "Repeat HRV under standardized quiet conditions; review recent sleep, exertion and symptoms.",
+   "act": "Do not activate an emergency solely from HRV. Escalate immediately if serious symptoms occur."
+  },
+  "sheet": {
+   "baseline": "14-day pre-flight standardized morning 5-minute seated resting rMSSD baseline",
+   "nominal": "35 \u2013 75 ms (rMSSD resting baseline)",
+   "watch": "Trend: RMSSD >20% below same-person baseline across repeated quality-checked readings (DEMO rule)",
+   "act": "NO STANDALONE HRV EMERGENCY RULE. Escalate based on serious symptoms or another independently verified risk.",
+   "rationale": "Provisional marker of cumulative autonomic strain and allostatic load; non-diagnostic for acute autonomic collapse alone.",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "spo2": {
   "label": "Blood oxygen",
@@ -55,27 +138,65 @@
    "oxygen",
    "spo2"
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-03",
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "red_for_s": 10,
+  "rule_id": "RULE-03",
+  "indicator_id": "03",
+  "ref_ids": [
+   "REF-01",
+   "REF-02"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: 90\u201394 and <90 are general clinical screening values, not verified ISS-specific safety limits; oximetry can misread. | Confirm measurement quality; urgent symptoms or repeated low SpO2 warrant immediate onboard assessment; do not infer CO2 from SpO2.",
+  "qa": {
+   "finding": "QA 2026-11-14: 90\u201394 and <90 are general clinical screening values, not verified ISS-specific safety limits; oximetry can misread.",
+   "recommendation": "Confirm measurement quality; urgent symptoms or repeated low SpO2 warrant immediate onboard assessment; do not infer CO2 from SpO2."
+  },
+  "actions": {
+   "watch": "Check sensor placement, repeat the reading and assess breathing and cabin oxygen conditions.",
+   "act": "Call the crew medical officer immediately for persistent low oxygen readings or breathing difficulty; follow approved medical/atmosphere procedures."
+  },
+  "sheet": {
+   "baseline": "Individual pre-flight resting room-air SpO\u2082 average (typically 97%\u201399%)",
+   "nominal": "95% \u2013 100% SpO\u2082 on nominal cabin atmosphere",
+   "watch": "SpO\u2082 90% \u2013 94% on ambient cabin atmosphere",
+   "act": "SpO\u2082 < 90% on cabin atmosphere",
+   "rationale": "Arterial desaturation, pocket hypercapnia, toxic inhalation, or atelectasis",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "rr": {
   "label": "Breathing rate",
   "unit": "breaths/min",
   "yellow": [
-   10,
+   null,
    20
   ],
   "orange": [
-   8,
+   null,
    24
   ],
   "red": [
-   6,
+   8,
    30
   ],
   "keywords": [
    "breathing rate"
   ],
-  "source": "PLACEHOLDER"
+  "source": "team-default",
+  "band_sources": {
+   "yellow": "team-default",
+   "orange": "team-default",
+   "red": "team-default"
+  },
+  "red_for_s": 10
  },
  "stand_hr_rise": {
   "label": "Heart rate rise on standing",
@@ -98,35 +219,123 @@
   "label": "Blood pressure, top number (systolic)",
   "unit": "mmHg",
   "yellow": [
-   90,
+   null,
    130
   ],
   "orange": [
-   85,
-   140
+   null,
+   160
   ],
   "red": [
-   80,
+   null,
    180
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-04",
+  "inclusive": {
+   "yellow": [
+    "high"
+   ],
+   "orange": [
+    "high"
+   ]
+  },
+  "requires_symptoms": true,
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "sheet",
+   "red": "sheet"
+  },
+  "gap_note": "Watch = 130 mmHg or more on 2 readings in a row ('repeated', team default), including 140-159 (team default; the sheet names 130-139). 121-129 counts as nominal and below 90 is not judged yet (team default).",
+  "rule_id": "RULE-04",
+  "indicator_id": "04",
+  "ref_ids": [
+   "REF-01",
+   "REF-03"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: 160/100 is not synonymous with hypertensive emergency; PPG category is not an oscillometric cuff measurement. | Distinguish operations caution from emergency; >180/120 WITH concerning symptoms requires urgent assessment; verify with cuff.",
+  "qa": {
+   "finding": "QA 2026-11-14: 160/100 is not synonymous with hypertensive emergency; PPG category is not an oscillometric cuff measurement.",
+   "recommendation": "Distinguish operations caution from emergency; >180/120 WITH concerning symptoms requires urgent assessment; verify with cuff."
+  },
+  "actions": {
+   "watch": "Obtain a calibrated cuff reading if available; recheck and record symptoms.",
+   "act": "Escalate immediately for serious symptoms with extreme BP or fainting. Do not diagnose an emergency from a PPG class."
+  },
+  "sheet": {
+   "baseline": "30-day pre-flight resting seated brachial blood pressure average",
+   "nominal": "90\u2013120 / 60\u201380 mmHg (MAP 70\u2013100 mmHg)",
+   "watch": "Repeated cuff SBP 130-139 or DBP 85-89 may prompt routine review; PPG BP class cannot be equated to mmHg",
+   "act": "Extreme cuff BP >180/120 WITH serious symptoms, syncope or severe clinical concern -> immediate crew medical response; 160/100 without symptoms requires prompt review, not automatic hypertensive emergency.",
+   "rationale": "Differentiates operational precaution (\u2265160/100 mmHg) from AHA-defined hypertensive emergency (>180/120 mmHg with target-organ symptoms).",
+   "escalation": "Conditional; per rule branch and symptoms"
+  },
+  "sustained_days": {
+   "yellow": 2
+  }
  },
  "bp_dia": {
   "label": "Blood pressure, bottom number (diastolic)",
   "unit": "mmHg",
   "yellow": [
-   60,
+   null,
    85
   ],
   "orange": [
-   55,
-   90
+   null,
+   100
   ],
   "red": [
-   50,
+   null,
    120
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-04",
+  "inclusive": {
+   "yellow": [
+    "high"
+   ],
+   "orange": [
+    "high"
+   ]
+  },
+  "requires_symptoms": true,
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "sheet",
+   "red": "sheet"
+  },
+  "gap_note": "Watch = 85 mmHg or more on 2 readings in a row ('repeated', team default), including 90-99 (team default; the sheet names 85-89). 81-84 counts as nominal (team default).",
+  "rule_id": "RULE-04",
+  "indicator_id": "04",
+  "ref_ids": [
+   "REF-01",
+   "REF-03"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: 160/100 is not synonymous with hypertensive emergency; PPG category is not an oscillometric cuff measurement. | Distinguish operations caution from emergency; >180/120 WITH concerning symptoms requires urgent assessment; verify with cuff.",
+  "qa": {
+   "finding": "QA 2026-11-14: 160/100 is not synonymous with hypertensive emergency; PPG category is not an oscillometric cuff measurement.",
+   "recommendation": "Distinguish operations caution from emergency; >180/120 WITH concerning symptoms requires urgent assessment; verify with cuff."
+  },
+  "actions": {
+   "watch": "Obtain a calibrated cuff reading if available; recheck and record symptoms.",
+   "act": "Escalate immediately for serious symptoms with extreme BP or fainting. Do not diagnose an emergency from a PPG class."
+  },
+  "sheet": {
+   "baseline": "30-day pre-flight resting seated brachial blood pressure average",
+   "nominal": "90\u2013120 / 60\u201380 mmHg (MAP 70\u2013100 mmHg)",
+   "watch": "Repeated cuff SBP 130-139 or DBP 85-89 may prompt routine review; PPG BP class cannot be equated to mmHg",
+   "act": "Extreme cuff BP >180/120 WITH serious symptoms, syncope or severe clinical concern -> immediate crew medical response; 160/100 without symptoms requires prompt review, not automatic hypertensive emergency.",
+   "rationale": "Differentiates operational precaution (\u2265160/100 mmHg) from AHA-defined hypertensive emergency (>180/120 mmHg with target-organ symptoms).",
+   "escalation": "Conditional; per rule branch and symptoms"
+  },
+  "sustained_days": {
+   "yellow": 2
+  }
  },
  "sleep_h": {
   "label": "Sleep",
@@ -136,31 +345,120 @@
    null
   ],
   "orange": [
-   5.6,
+   5.0,
    null
   ],
   "red": [
-   4.5,
+   4.0,
    null
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-10",
+  "sustained_days": {
+   "yellow": 2,
+   "orange": 2,
+   "red": 2
+  },
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "gap_note": "6-7 h counts as nominal and one short night alone does not count (team default).",
+  "rule_id": "RULE-10",
+  "indicator_id": "10",
+  "ref_ids": [
+   "REF-01",
+   "REF-02",
+   "REF-05"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: Sleep <4h two nights is a task-safety escalation, not an emergency diagnosis. | Use fatigue and task-safety restrictions pending crew evaluation; no automated prescription.",
+  "qa": {
+   "finding": "QA 2026-11-14: Sleep <4h two nights is a task-safety escalation, not an emergency diagnosis.",
+   "recommendation": "Use fatigue and task-safety restrictions pending crew evaluation; no automated prescription."
+  },
+  "actions": {
+   "watch": "Review sleep conditions and schedule; avoid high-risk tasks while significantly fatigued.",
+   "act": "Arrange immediate crew safety review if unable to remain alert for a critical activity; this is not itself a diagnosis."
+  },
+  "sheet": {
+   "baseline": "Pre-flight 14-day actigraphy and subjective sleep diary baseline",
+   "nominal": "7.0 \u2013 8.5 hours/night; Sleep efficiency > 85%",
+   "watch": "Sleep < 6.0 hrs/night for 2 nights or efficiency < 75%",
+   "act": "Sleep < 4.0 hrs/night for \u2265 2 days or 24h acute sleep loss",
+   "rationale": "Circadian desynchrony, sleep fragmentation, neurobehavioral vigilance decay",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "mood": {
   "label": "Mood",
   "unit": "of 5",
   "yellow": [
-   3,
+   7,
    null
   ],
   "orange": [
-   2,
+   6,
    null
   ],
   "red": [
-   null,
+   3,
    null
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-11",
+  "scale_factor": 2,
+  "inclusive": {
+   "red": [
+    "low"
+   ]
+  },
+  "sustained_days": {
+   "yellow": 3,
+   "orange": 3
+  },
+  "baseline": {
+   "metric": "mood",
+   "drop": {
+    "yellow": 2
+   }
+  },
+  "baseline_sources": {
+   "drop": "sheet"
+  },
+  "band_sources": {
+   "yellow": "team-default",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "gap_note": "The daily check asks 1-5; the rules double it onto the sheet's 1-10 scale (team default): Watch below 7/10 (= below 3.5/5) for 3 days or 2 points (1 on the 1-5 scale) under your usual for 3 days, Warning 4-5/10 (= 2-2.5/5) for 3 days, Act now 3/10 or less (= 1/5). Not a validated mood instrument (Integration & Safety).",
+  "rule_id": "RULE-11",
+  "indicator_id": "11",
+  "ref_ids": [
+   "REF-01",
+   "REF-05"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: One 1\u201310 survey is not a validated clinical screen; <=3 does not diagnose acute psychiatric crisis. | Select validated brief instrument, include privacy and direct red-flag symptom checks; do not infer disease from a score.",
+  "qa": {
+   "finding": "QA 2026-11-14: One 1\u201310 survey is not a validated clinical screen; <=3 does not diagnose acute psychiatric crisis.",
+   "recommendation": "Select validated brief instrument, include privacy and direct red-flag symptom checks; do not infer disease from a score."
+  },
+  "actions": {
+   "watch": "Offer confidential check-in, workload adjustment and optional support contact.",
+   "act": "If immediate safety or severe psychological distress is reported, alert the crew medical officer under the privacy/safety protocol."
+  },
+  "sheet": {
+   "baseline": "Pre-flight neurobehavioral evaluation baseline score across standardized domains",
+   "nominal": "Score 7 \u2013 10 / 10 (nominal positive behavioral health status)",
+   "watch": "Score drop \u2265 2 points below baseline for 3 consecutive days",
+   "act": "Survey score \u2264 3/10, acute panic crisis, or severe distress",
+   "rationale": "Confinement, isolation, operational stress, psychological third-quarter phenomenon",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "stress": {
   "label": "Stress",
@@ -200,18 +498,50 @@
   "label": "Fluids drunk",
   "unit": "L/day",
   "yellow": [
-   1.8,
+   2.0,
    null
   ],
   "orange": [
-   1.4,
+   1.5,
    null
   ],
-  "red": [
-   1.0,
-   null
+  "red": null,
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-09",
+  "sustained_days": {
+   "yellow": 2,
+   "orange": 2
+  },
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default"
+  },
+  "gap_note": "2.0-2.5 L counts as nominal (team default). Act now only with dehydration symptoms (symptom rule).",
+  "rule_id": "RULE-09",
+  "indicator_id": "09",
+  "ref_ids": [
+   "REF-01",
+   "REF-02"
   ],
-  "source": "PLACEHOLDER"
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: Fixed 2,500\u20133,200 kcal and 2.5L are not universal prescriptions; low intake alone not emergency. | Use astronaut-specific prescription; watch sustained deficits; urgent escalation depends on clinical dehydration/illness.",
+  "qa": {
+   "finding": "QA 2026-11-14: Fixed 2,500\u20133,200 kcal and 2.5L are not universal prescriptions; low intake alone not emergency.",
+   "recommendation": "Use astronaut-specific prescription; watch sustained deficits; urgent escalation depends on clinical dehydration/illness."
+  },
+  "actions": {
+   "watch": "Review intake and hydration against individual plan; inform nutrition/medical crew if deficit persists.",
+   "act": "Notify the medical officer if severe dehydration, inability to eat/drink, or concerning symptoms occur."
+  },
+  "sheet": {
+   "baseline": "NASA nutritional prescription based on BMR and individual body mass",
+   "nominal": "Caloric intake: 2,500 \u2013 3,200 kcal/day; Fluid: \u2265 2.5 L/day",
+   "watch": "Caloric intake < 80% target or fluid < 2.0 L/day for 2 days",
+   "act": "Caloric intake < 50% target for > 3 days or severe fluid deficit",
+   "rationale": "Chronic negative energy balance accelerating muscle wasting and bone loss",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "body_mass_change_pct": {
   "label": "Body mass change",
@@ -234,46 +564,95 @@
   "label": "Exercise (7-day average)",
   "unit": "min/day",
   "yellow": [
-   90,
+   25.5,
    null
   ],
-  "orange": [
-   60,
-   null
+  "orange": null,
+  "red": null,
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-13",
+  "plan_min": 30,
+  "missed_days": {
+   "orange": 2,
+   "source": "team-default"
+  },
+  "band_sources": {
+   "yellow": "sheet"
+  },
+  "gap_note": "Planned volume = 30 min/day (daily_targets.exercise_min); Watch below 85% = 25.5 min/day (7-day average). Warning = no exercise logged 2 days in a row (team default). No Act now: plan review only.",
+  "rule_id": "RULE-13",
+  "indicator_id": "13",
+  "ref_ids": [
+   "REF-01",
+   "REF-02",
+   "REF-03"
   ],
-  "red": [
-   30,
-   null
-  ],
-  "source": "PLACEHOLDER"
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: Missing 3 days of activity is not an acute medical emergency. | Treat adherence as rehabilitation plan review, not urgent surgery/cardiac treatment.",
+  "qa": {
+   "finding": "QA 2026-11-14: Missing 3 days of activity is not an acute medical emergency.",
+   "recommendation": "Treat adherence as rehabilitation plan review, not urgent surgery/cardiac treatment."
+  },
+  "actions": {
+   "watch": "Review the planned exercise program and equipment access.",
+   "act": "Notify medical/rehabilitation staff for inability to exercise due to injury or concerning symptoms."
+  },
+  "sheet": {
+   "baseline": "Pre-flight VO2max evaluation and 1-rep maximum (1RM) resistive loading profiles",
+   "nominal": "Aerobic: \u2265 30 min/day at 70\u201385% HRmax; Resistive: 100% prescribed ARED",
+   "watch": "Countermeasure compliance < 85% of planned volume",
+   "act": "Prescribed exercise missed for \u2265 3 consecutive days",
+   "rationale": "Musculoskeletal and aerobic deconditioning from mechanical unloading",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "radiation_total_msv": {
   "label": "Mission radiation dose",
   "unit": "mSv",
-  "yellow": [
-   null,
-   50
+  "yellow": null,
+  "orange": null,
+  "red": null,
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-16",
+  "gap_note": "Mission total is shown for context only; no Act now from a dose number (RULE-16).",
+  "rule_id": "RULE-16",
+  "indicator_id": "16",
+  "ref_ids": [
+   "REF-01",
+   "REF-02",
+   "REF-09"
   ],
-  "orange": [
-   null,
-   100
-  ],
-  "red": [
-   null,
-   150
-  ],
-  "source": "PLACEHOLDER"
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: 10 mSv/h should not be labelled ARS cutoff; mission limits depend on organ, duration, mission. | Use spacecraft radiation-alert and storm-shelter signals with mission-set limits, not a universal 10 mSv/h ARS rule.",
+  "qa": {
+   "finding": "QA 2026-11-14: 10 mSv/h should not be labelled ARS cutoff; mission limits depend on organ, duration, mission.",
+   "recommendation": "Use spacecraft radiation-alert and storm-shelter signals with mission-set limits, not a universal 10 mSv/h ARS rule."
+  },
+  "actions": {
+   "watch": "Verify the environmental alert and mission-set radiation constraints; review shielding/EVA status.",
+   "act": "Follow the spacecraft's authorized solar-particle-event shelter warning and suspend EVA as directed."
+  },
+  "sheet": {
+   "baseline": "Cumulative lifetime radiation exposure record maintained by NASA Radiation Health Officer",
+   "nominal": "Background in LEO: 0.3 \u2013 0.8 mSv/day (< 1.0 mSv/day nominal)",
+   "watch": "Mission radiation warning / rising dose relative to mission-specific limits; 1mSv/day DEMO ONLY",
+   "act": "Active spacecraft solar-particle-event or radiation shelter alarm (mission-defined); 10mSv/h is NOT an acute radiation syndrome diagnostic cutoff.",
+   "rationale": "Operational storm shelter trigger during solar particle events; distinct from clinical ARS which requires high absorbed doses (>0.7 Gy).",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "hr": {
   "label": "Heart rate",
   "unit": "bpm",
   "yellow": [
    50,
-   100
+   90
   ],
   "orange": [
-   45,
-   110
+   50,
+   100
   ],
   "red": [
    40,
@@ -282,7 +661,54 @@
   "keywords": [
    "heart rate"
   ],
-  "source": "PLACEHOLDER (live vitals strip)"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-01",
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "baseline": {
+   "metric": "hr_rest",
+   "rise": {
+    "yellow": 10
+   },
+   "fall": {
+    "yellow": 15
+   }
+  },
+  "baseline_sources": {
+   "rise": "team-default",
+   "fall": "sheet"
+  },
+  "red_for_s": 10,
+  "live_note": "Live heart rate (not only at rest): 50-59 bpm counts as nominal here (team default; the morning resting value uses 60). Act now needs 10 s in a row with a good signal.",
+  "exercise_act_above": 160,
+  "rule_id": "RULE-01",
+  "indicator_id": "01",
+  "ref_ids": [
+   "REF-01",
+   "REF-03"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: Resting HR <50/>90 and <40/>120 are stated as validated astronaut limits; not substantiated by general NASA standard. | Keep proposed baseline thresholds as DEMO ONLY; severe symptoms, consciousness and confirmed signal take priority over number.",
+  "qa": {
+   "finding": "QA 2026-11-14: Resting HR <50/>90 and <40/>120 are stated as validated astronaut limits; not substantiated by general NASA standard.",
+   "recommendation": "Keep proposed baseline thresholds as DEMO ONLY; severe symptoms, consciousness and confirmed signal take priority over number."
+  },
+  "actions": {
+   "watch": "Rest and repeat the pulse reading with good sensor contact. Check symptoms and record the trend.",
+   "act": "Stop strenuous work, summon the crew medical officer, and assess symptoms immediately."
+  },
+  "sheet": {
+   "baseline": "30-day pre-flight seated resting morning average HR (\u00b1 5 bpm)",
+   "nominal": "60 \u2013 100 bpm (resting adult astronaut norm)",
+   "watch": "Resting HR < 50 bpm or > 90 bpm (or \u00b115 bpm baseline)",
+   "act": "Resting HR < 40 bpm or > 120 bpm (or off-exercise > 160 bpm)",
+   "rationale": "Cardiovascular deconditioning, fluid shift, dehydration, or acute arrhythmogenic stress",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "irregular": {
   "label": "Irregular rhythm",
@@ -291,10 +717,7 @@
    null,
    0.5
   ],
-  "orange": [
-   null,
-   0.5
-  ],
+  "orange": null,
   "red": [
    null,
    0.5
@@ -302,7 +725,38 @@
   "keywords": [
    "irregular"
   ],
-  "source": "PLACEHOLDER (0 = regular, 1 = irregular)"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-05",
+  "requires_symptoms": true,
+  "band_sources": {
+   "yellow": "sheet",
+   "red": "sheet"
+  },
+  "gap_note": "Warning ('irregular flag repeated') is not separate yet: the daily data has no rhythm field and the live flag is either on or off. TODO(Yenna/Jion).",
+  "rule_id": "RULE-05",
+  "indicator_id": "05",
+  "ref_ids": [
+   "REF-01"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: PPG irregularity is screening, not ECG diagnosis; PVCs/min and VT labels require ECG. | Use irregular-pulse flag prompting repeat and clinician review; serious symptoms trigger urgent protocol.",
+  "qa": {
+   "finding": "QA 2026-11-14: PPG irregularity is screening, not ECG diagnosis; PVCs/min and VT labels require ECG.",
+   "recommendation": "Use irregular-pulse flag prompting repeat and clinician review; serious symptoms trigger urgent protocol."
+  },
+  "actions": {
+   "watch": "Repeat the measurement; notify the crew medical officer about recurrent irregularity; obtain ECG if available.",
+   "act": "For syncope, chest pain, severe breathlessness or sustained abnormal rhythm, activate the emergency response."
+  },
+  "sheet": {
+   "baseline": "Pre-flight 24-hour Holter ECG recording documenting normal sinus rhythm",
+   "nominal": "Normal Sinus Rhythm (NSR), HR 60\u2013100 bpm, < 1 PVC/hour",
+   "watch": "Isolated PVCs/PACs (> 5/min) or transient sinus pauses",
+   "act": "Sustained VT, rapid AFib, or frequent polymorphic PVCs",
+   "rationale": "Myocardial irritability, autonomic shifts, electrolyte imbalance, arrhythmogenic risk",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "signal_quality": {
   "label": "Signal quality",
@@ -326,17 +780,51 @@
   "unit": "ppm",
   "yellow": [
    null,
-   3000
+   2632
   ],
   "orange": [
    null,
-   4000
+   3947
   ],
-  "red": [
-   null,
-   6000
+  "red": null,
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-17",
+  "rule_id": "RULE-17",
+  "indicator_id": "17",
+  "ref_ids": [
+   "REF-02",
+   "REF-06"
   ],
-  "source": "PLACEHOLDER"
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: NASA 2026 Vol2 Rev F specifies 1-hour habitat average <=3 mmHg; 2/4 are not validated medical severity categories. | Label 2 mmHg as conservative engineering warning only; 3 mmHg 1-hour requirement, off-nominal response mission-specific.",
+  "qa": {
+   "finding": "QA 2026-11-14: NASA 2026 Vol2 Rev F specifies 1-hour habitat average <=3 mmHg; 2/4 are not validated medical severity categories.",
+   "recommendation": "Label 2 mmHg as conservative engineering warning only; 3 mmHg 1-hour requirement, off-nominal response mission-specific."
+  },
+  "actions": {
+   "watch": "Verify CO2 sensor, duration and local ventilation; notify life-support operators.",
+   "act": "Activate authorized environmental response for mission CO2 alarm or symptomatic crew; do not equate 4 mmHg with CO2 narcosis."
+  },
+  "sheet": {
+   "baseline": "Vehicle ECLSS baseline environmental limit specification (NASA-STD-3001 Vol 2)",
+   "nominal": "Cabin ppCO\u2082 < 2.0 mmHg (approx. < 2,600 ppm); nominal < 1.5 mmHg",
+   "watch": "Operational early warning at ppCO2 >=2 mmHg (DEMO CONSERVATIVE) or rising trend",
+   "act": "One-hour average cabin ppCO2 >3 mmHg violates NASA-STD-3001 Rev F nominal requirement [V2 6004]; environmental response per mission-specific procedures. Do not label 4 mmHg as CO2 narcosis.",
+   "rationale": "Operational environmental threshold to prevent mild hypercapnic symptoms (headache, SANS); clinical CO\u2082 narcosis occurs at much higher levels.",
+   "escalation": "Conditional; per rule branch and symptoms"
+  },
+  "inclusive": {
+   "yellow": [
+    "high"
+   ]
+  },
+  "derived_from": "co2_mmhg",
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "sheet"
+  },
+  "derived_note": "ppm = mmHg / 760 mmHg x 1,000,000 (ISS cabin pressure)."
  },
  "cabin_temp_c": {
   "label": "Cabin temperature",
@@ -381,18 +869,59 @@
   "label": "Body temperature",
   "unit": "\u00b0C",
   "yellow": [
-   36.0,
-   37.5
+   36.5,
+   37.4
   ],
   "orange": [
-   35.5,
-   38.0
+   36.0,
+   37.9
   ],
   "red": [
    35.0,
-   39.0
+   38.5
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-07",
+  "inclusive": {
+   "orange": [
+    "low"
+   ],
+   "red": [
+    "high"
+   ]
+  },
+  "band_sources": {
+   "yellow": "team-default",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "gap_note": "36.0-36.5 degC is Watch (team default). Nominal upper edge 37.4 (the sheet's nominal is 36.5-37.2 and Watch starts at 37.5).",
+  "rule_id": "RULE-07",
+  "indicator_id": "07",
+  "ref_ids": [
+   "REF-01",
+   "REF-02",
+   "REF-04"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: 'Space fever' does not mean all high readings are infection; sensor types differ. | Confirm method, site and exercise context; severe systemic symptoms trigger urgent assessment.",
+  "qa": {
+   "finding": "QA 2026-11-14: 'Space fever' does not mean all high readings are infection; sensor types differ.",
+   "recommendation": "Confirm method, site and exercise context; severe systemic symptoms trigger urgent assessment."
+  },
+  "actions": {
+   "watch": "Repeat measurement with the same device and method; assess exertion, symptoms and habitat temperature.",
+   "act": "Notify the medical officer for severe symptoms or confirmed dangerously abnormal temperature."
+  },
+  "sheet": {
+   "baseline": "14-day pre-flight circadian resting core temperature profile (24h cycles)",
+   "nominal": "36.5\u00b0C \u2013 37.2\u00b0C (circadian nadir ~36.2\u00b0C)",
+   "watch": "Core temp 37.5\u00b0C \u2013 37.9\u00b0C (elevation > 0.5\u00b0C over baseline)",
+   "act": "Core temp \u2265 38.5\u00b0C (101.3\u00b0F) or < 35.0\u00b0C (95.0\u00b0F)",
+   "rationale": "Elevated resting setpoint ('space fever'), impaired convective cooling, infection/sepsis",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "glucose_mmol": {
   "label": "Blood glucose",
@@ -402,14 +931,63 @@
    7.8
   ],
   "orange": [
-   3.5,
+   null,
    10.0
   ],
   "red": [
    3.0,
-   13.9
+   null
   ],
-  "source": "PLACEHOLDER"
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-08",
+  "sustained_days": {
+   "orange": 2
+  },
+  "bands_mg_dl": {
+   "yellow": [
+    70,
+    140
+   ],
+   "orange": [
+    null,
+    180
+   ],
+   "red": [
+    54,
+    null
+   ]
+  },
+  "mg_dl_per_mmol": 18.0,
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "gap_note": "Sheet numbers are mg/dL (RULE-08); the app stores mmol/L (mg/dL / 18). 140-180 mg/dL is Watch and 'repeated high' = 2 readings above 180 (team default). Fasting vs after-meal is not recorded.",
+  "rule_id": "RULE-08",
+  "indicator_id": "08",
+  "ref_ids": [
+   "REF-01"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: Updated <70 and <54 values align with ADA classes, but severity depends on symptoms and context; >250 alone does not prove DKA. | Use ADA low-glucose categories with correct measurement and urgent assessment for altered mental status; no automatic drug/dose.",
+  "qa": {
+   "finding": "QA 2026-11-14: Updated <70 and <54 values align with ADA classes, but severity depends on symptoms and context; >250 alone does not prove DKA.",
+   "recommendation": "Use ADA low-glucose categories with correct measurement and urgent assessment for altered mental status; no automatic drug/dose."
+  },
+  "actions": {
+   "watch": "Confirm the glucose reading and contact the crew medical officer; follow the approved low-glucose care procedure.",
+   "act": "If confused, unresponsive, seizure-like, or markedly low glucose, immediately summon help and use approved crew medical kit procedures."
+  },
+  "sheet": {
+   "baseline": "Pre-flight baseline fasting capillary glucose (average of 3 morning draws) and HbA1c",
+   "nominal": "Fasting: 70 \u2013 99 mg/dL; 2-hour postprandial: < 140 mg/dL",
+   "watch": "Glucose <70 and >=54 mg/dL (ADA Level 1); repeated high values require contextual assessment",
+   "act": "Glucose <54 mg/dL (ADA Level 2) or severe cognitive/physical impairment requiring assistance at ANY glucose level (Level 3); marked hyperglycemia plus serious symptoms needs immediate assessment.",
+   "rationale": "Differentiates Level 1 hypoglycemia (<70 mg/dL) from clinically significant hypoglycemia (<54 mg/dL).",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "pvt_median_ms": {
   "label": "Reaction time (median)",
@@ -423,7 +1001,34 @@
    345.8
   ],
   "red": null,
-  "source": "DRAFT, from PRET, Yenna reviews: CSA PRET dataset, version 4.0, ground study (n=145), Open Government Licence - Canada. Watch above the 90th percentile, Warning above the 97.5th; no Act now from the reaction test alone. See pvt_norms.json."
+  "source": "DRAFT, from PRET, Yenna reviews: CSA PRET dataset, version 4.0, ground study (n=145), Open Government Licence - Canada. Watch above the 90th percentile, Warning above the 97.5th; no Act now from the reaction test alone. See pvt_norms.json.",
+  "rule_id": "RULE-12",
+  "indicator_id": "12",
+  "ref_ids": [
+   "REF-01",
+   "REF-05",
+   "REF-06"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: PVT-B 3-minute cutoffs are not proven EVA safety limits; platform/device effects. | Use PVT-B matched scoring and personalized trend; proposed 15%/35% thresholds only simulated.",
+  "qa": {
+   "finding": "QA 2026-11-14: PVT-B 3-minute cutoffs are not proven EVA safety limits; platform/device effects.",
+   "recommendation": "Use PVT-B matched scoring and personalized trend; proposed 15%/35% thresholds only simulated."
+  },
+  "actions": {
+   "watch": "Repeat in standardized conditions; review fatigue and cabin environment.",
+   "act": "Pause safety-critical tasks if performance is markedly impaired; request crew assessment."
+  },
+  "sheet": {
+   "baseline": "Pre-flight standardized 3-minute PVT-B baseline mean response speed (1/RT) and lapse frequency",
+   "nominal": "Mean RT: 200 \u2013 250 ms; 0 \u2013 1 lapses (\u2265355 ms) per 3-minute trial",
+   "watch": "3-minute PVT-B decline from individual baseline (15% or >2 lapses only DEMO threshold)",
+   "act": "No validated medical emergency cutoff from PVT-B alone; stop critical tasks and assess when markedly impaired.",
+   "rationale": "Assesses sustained attention and vigilance fatigue; utilizes validated PVT-B 3-min protocol with \u2265355 ms lapse threshold.",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "pvt_lapse_rate_pct": {
   "label": "Reaction lapse rate (355 ms or slower)",
@@ -437,7 +1042,34 @@
    47.49
   ],
   "red": null,
-  "source": "DRAFT, from PRET, Yenna reviews: CSA PRET dataset, version 4.0, ground study (n=145), Open Government Licence - Canada. Watch above the 90th percentile, Warning above the 97.5th; no Act now from the reaction test alone. See pvt_norms.json."
+  "source": "DRAFT, from PRET, Yenna reviews: CSA PRET dataset, version 4.0, ground study (n=145), Open Government Licence - Canada. Watch above the 90th percentile, Warning above the 97.5th; no Act now from the reaction test alone. See pvt_norms.json.",
+  "rule_id": "RULE-12",
+  "indicator_id": "12",
+  "ref_ids": [
+   "REF-01",
+   "REF-05",
+   "REF-06"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: PVT-B 3-minute cutoffs are not proven EVA safety limits; platform/device effects. | Use PVT-B matched scoring and personalized trend; proposed 15%/35% thresholds only simulated.",
+  "qa": {
+   "finding": "QA 2026-11-14: PVT-B 3-minute cutoffs are not proven EVA safety limits; platform/device effects.",
+   "recommendation": "Use PVT-B matched scoring and personalized trend; proposed 15%/35% thresholds only simulated."
+  },
+  "actions": {
+   "watch": "Repeat in standardized conditions; review fatigue and cabin environment.",
+   "act": "Pause safety-critical tasks if performance is markedly impaired; request crew assessment."
+  },
+  "sheet": {
+   "baseline": "Pre-flight standardized 3-minute PVT-B baseline mean response speed (1/RT) and lapse frequency",
+   "nominal": "Mean RT: 200 \u2013 250 ms; 0 \u2013 1 lapses (\u2265355 ms) per 3-minute trial",
+   "watch": "3-minute PVT-B decline from individual baseline (15% or >2 lapses only DEMO threshold)",
+   "act": "No validated medical emergency cutoff from PVT-B alone; stop critical tasks and assess when markedly impaired.",
+   "rationale": "Assesses sustained attention and vigilance fatigue; utilizes validated PVT-B 3-min protocol with \u2265355 ms lapse threshold.",
+   "escalation": "Conditional; per rule branch and symptoms"
+  }
  },
  "red_flags": {
   "_how_to_read": "Red flags that can move an emergency protocol forward (see red_flag_routes in protocols). A flag is active when `metric` is below `below` or above `above` for at least `for_s` seconds, and the signal quality is at least `min_signal_quality` (so a slipped sensor is not read as a lost pulse). PLACEHOLDER numbers: Yenna reviews.",
@@ -451,7 +1083,7 @@
     "no pulse",
     "pulse lost"
    ],
-   "source": "PLACEHOLDER"
+   "source": "team-default"
   },
   "hr_very_low": {
    "label": "Heart rate very low",
@@ -594,5 +1226,170 @@
   "warning_above_percentile": 97.5,
   "act_now": null,
   "act_now_note": "None from the reaction test alone (Yenna's rule 12: pause safety-critical tasks, request crew assessment)."
+ },
+ "calories_pct": {
+  "label": "Calories eaten (of personal target)",
+  "unit": "%",
+  "yellow": [
+   80,
+   null
+  ],
+  "orange": [
+   65,
+   null
+  ],
+  "red": [
+   50,
+   null
+  ],
+  "sustained_days": {
+   "yellow": 2,
+   "orange": 3,
+   "red": 4
+  },
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "team-default",
+   "red": "sheet"
+  },
+  "no_data_note": "No calorie log or target in the app yet: shown in Learn only, never judged.",
+  "rule_id": "RULE-09",
+  "indicator_id": "09",
+  "ref_ids": [
+   "REF-01",
+   "REF-02"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": false,
+  "qa_note": "QA 2026-11-14: Fixed 2,500\u20133,200 kcal and 2.5L are not universal prescriptions; low intake alone not emergency. | Use astronaut-specific prescription; watch sustained deficits; urgent escalation depends on clinical dehydration/illness.",
+  "qa": {
+   "finding": "QA 2026-11-14: Fixed 2,500\u20133,200 kcal and 2.5L are not universal prescriptions; low intake alone not emergency.",
+   "recommendation": "Use astronaut-specific prescription; watch sustained deficits; urgent escalation depends on clinical dehydration/illness."
+  },
+  "actions": {
+   "watch": "Review intake and hydration against individual plan; inform nutrition/medical crew if deficit persists.",
+   "act": "Notify the medical officer if severe dehydration, inability to eat/drink, or concerning symptoms occur."
+  },
+  "sheet": {
+   "baseline": "NASA nutritional prescription based on BMR and individual body mass",
+   "nominal": "Caloric intake: 2,500 \u2013 3,200 kcal/day; Fluid: \u2265 2.5 L/day",
+   "watch": "Caloric intake < 80% target or fluid < 2.0 L/day for 2 days",
+   "act": "Caloric intake < 50% target for > 3 days or severe fluid deficit",
+   "rationale": "Chronic negative energy balance accelerating muscle wasting and bone loss",
+   "escalation": "Conditional; per rule branch and symptoms"
+  },
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-09"
+ },
+ "co2_mmhg": {
+  "label": "Cabin CO2",
+  "unit": "mmHg",
+  "yellow": [
+   null,
+   2.0
+  ],
+  "orange": [
+   null,
+   3.0
+  ],
+  "red": null,
+  "inclusive": {
+   "yellow": [
+    "high"
+   ]
+  },
+  "cabin_pressure_mmhg": 760,
+  "band_sources": {
+   "yellow": "sheet",
+   "orange": "sheet"
+  },
+  "gap_note": "Watch at 2.0 mmHg or more is a conservative engineering warning; Warning above 3.0 mmHg (NASA-STD-3001 Rev F [V2 6004] is a 1-hour average; the app compares single readings). Act now = mission CO2 alarm or crew symptoms, never a number. ppm = mmHg / cabin pressure x 1,000,000 (ISS 760 mmHg; Moon base and rover pressure: environments.json cabin_pressure_mmhg).",
+  "rule_id": "RULE-17",
+  "indicator_id": "17",
+  "ref_ids": [
+   "REF-02",
+   "REF-06"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "demo_only": true,
+  "qa_note": "QA 2026-11-14: NASA 2026 Vol2 Rev F specifies 1-hour habitat average <=3 mmHg; 2/4 are not validated medical severity categories. | Label 2 mmHg as conservative engineering warning only; 3 mmHg 1-hour requirement, off-nominal response mission-specific.",
+  "qa": {
+   "finding": "QA 2026-11-14: NASA 2026 Vol2 Rev F specifies 1-hour habitat average <=3 mmHg; 2/4 are not validated medical severity categories.",
+   "recommendation": "Label 2 mmHg as conservative engineering warning only; 3 mmHg 1-hour requirement, off-nominal response mission-specific."
+  },
+  "actions": {
+   "watch": "Verify CO2 sensor, duration and local ventilation; notify life-support operators.",
+   "act": "Activate authorized environmental response for mission CO2 alarm or symptomatic crew; do not equate 4 mmHg with CO2 narcosis."
+  },
+  "sheet": {
+   "baseline": "Vehicle ECLSS baseline environmental limit specification (NASA-STD-3001 Vol 2)",
+   "nominal": "Cabin ppCO\u2082 < 2.0 mmHg (approx. < 2,600 ppm); nominal < 1.5 mmHg",
+   "watch": "Operational early warning at ppCO2 >=2 mmHg (DEMO CONSERVATIVE) or rising trend",
+   "act": "One-hour average cabin ppCO2 >3 mmHg violates NASA-STD-3001 Rev F nominal requirement [V2 6004]; environmental response per mission-specific procedures. Do not label 4 mmHg as CO2 narcosis.",
+   "rationale": "Operational environmental threshold to prevent mild hypercapnic symptoms (headache, SANS); clinical CO\u2082 narcosis occurs at much higher levels.",
+   "escalation": "Conditional; per rule branch and symptoms"
+  },
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-17"
+ },
+ "radiation_msv": {
+  "label": "Radiation dose today",
+  "unit": "mSv/day",
+  "yellow": [
+   null,
+   1.0
+  ],
+  "orange": null,
+  "red": null,
+  "demo_only": true,
+  "quality_factor": 1.0,
+  "band_sources": {
+   "yellow": "sheet"
+  },
+  "gap_note": "1 mSv/day is a DEMO ONLY limit. The live chart shows absorbed dose (uGy/h); converted to dose equivalent with quality_factor (1.0 = team default; real space radiation has a higher factor). Act now only from a solar particle event / shelter alarm (DONKI), never from a dose number.",
+  "rule_id": "RULE-16",
+  "indicator_id": "16",
+  "ref_ids": [
+   "REF-01",
+   "REF-02",
+   "REF-09"
+  ],
+  "evidence_status": "Mixed / proposed",
+  "validation_status": "Not clinically validated",
+  "qa_note": "QA 2026-11-14: 10 mSv/h should not be labelled ARS cutoff; mission limits depend on organ, duration, mission. | Use spacecraft radiation-alert and storm-shelter signals with mission-set limits, not a universal 10 mSv/h ARS rule.",
+  "qa": {
+   "finding": "QA 2026-11-14: 10 mSv/h should not be labelled ARS cutoff; mission limits depend on organ, duration, mission.",
+   "recommendation": "Use spacecraft radiation-alert and storm-shelter signals with mission-set limits, not a universal 10 mSv/h ARS rule."
+  },
+  "actions": {
+   "watch": "Verify the environmental alert and mission-set radiation constraints; review shielding/EVA status.",
+   "act": "Follow the spacecraft's authorized solar-particle-event shelter warning and suspend EVA as directed."
+  },
+  "sheet": {
+   "baseline": "Cumulative lifetime radiation exposure record maintained by NASA Radiation Health Officer",
+   "nominal": "Background in LEO: 0.3 \u2013 0.8 mSv/day (< 1.0 mSv/day nominal)",
+   "watch": "Mission radiation warning / rising dose relative to mission-specific limits; 1mSv/day DEMO ONLY",
+   "act": "Active spacecraft solar-particle-event or radiation shelter alarm (mission-defined); 10mSv/h is NOT an acute radiation syndrome diagnostic cutoff.",
+   "rationale": "Operational storm shelter trigger during solar particle events; distinct from clinical ARS which requires high absorbed doses (>0.7 Gy).",
+   "escalation": "Conditional; per rule branch and symptoms"
+  },
+  "source": "Medical lead's sheet (proposed, not clinically validated), RULE-16"
+ },
+ "symptoms": {
+  "_how_to_read": "Red-flag symptoms the crew logs (Mood and symptoms log, daily check). Any of them = Act now. They also fulfil the Act-now rules marked requires_symptoms (e.g. RULE-05 irregular pulse WITH symptoms). A logged symptom counts for active_minutes.",
+  "red_flag": {
+   "chest_pain": "Chest pain or pressure",
+   "fainting": "Fainting or nearly fainting",
+   "severe_breathlessness": "Severe breathlessness",
+   "confusion": "Confusion"
+  },
+  "region": {
+   "chest_pain": "heart",
+   "fainting": "heart",
+   "severe_breathlessness": "lungs",
+   "confusion": "brain_mood"
+  },
+  "active_minutes": 60,
+  "source": "team-default"
  }
 }

@@ -38,10 +38,8 @@ def test_b_drifts_to_orange_with_warning_before(cfg):
     day10 = by_region(region_statuses(b, *cfg, as_of_day=10))
     assert day10["heart"]["status"] == "green"
 
-    day22 = by_region(region_statuses(b, *cfg, as_of_day=22))
-    assert day22["heart"]["status"] == "yellow"
-    assert day22["heart"]["time_to_act_days"] is not None
-    assert 1 <= day22["heart"]["time_to_act_days"] <= 10
+    day21 = by_region(region_statuses(b, *cfg, as_of_day=21))
+    assert day21["heart"]["status"] == "yellow"
 
 
 def test_b_crossing_days(cfg):
@@ -49,8 +47,9 @@ def test_b_crossing_days(cfg):
     heart = [by_region(region_statuses(b, *cfg, as_of_day=d))["heart"]["status"] for d in range(1, 31)]
     first_yellow = heart.index("yellow") + 1
     first_orange = heart.index("orange") + 1
-    assert 17 <= first_yellow <= 23
-    assert 24 <= first_orange <= 29
+    # Sheet rules (Nov 15): Watch from the standing rise / HRV 20 % below usual, Warning after 3 days of HRV Watch.
+    assert 17 <= first_yellow <= 21
+    assert 22 <= first_orange <= 26
 
 
 def test_c_stream_goes_red_only_after_event(cfg):

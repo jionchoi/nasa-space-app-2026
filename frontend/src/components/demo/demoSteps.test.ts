@@ -34,7 +34,7 @@ describe('demo script', () => {
       '4a': ['persona:B', 'env:mars'],
       '4b': ['planet:mars', 'env:rover:mars', 'picked:radiation'],
       '5': ['env:mars', 'picked:radiation'],
-      '6a': ['persona:C', 'env:mars', 'jump:170'],
+      '6a': ['persona:C', 'env:mars', 'jump:285'],
       '6b': ['persona:C', 'jump:440', 'nav:/emergency?protocol=chest_pain&trigger=crew'],
       '7': ['persona:A', 'env:mars', 'jump:0'],
     };

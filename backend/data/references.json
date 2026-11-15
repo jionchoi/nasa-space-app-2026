@@ -1,0 +1,319 @@
+{
+  "_status": "From the medical lead's workbook (Scientific References sheet). Do not edit by hand: re-run backend/scripts/import_medical.py. A reference without a URL keeps the sheet's note.",
+  "source_file": "data/medical/NASA_space_project_medical_research(Scientific References).csv",
+  "references": [
+    {
+      "id": "REF-01",
+      "indicators": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16"
+      ],
+      "authors": "NASA Office of the Chief Health and Medical Officer (OCHMO)",
+      "year": "2023",
+      "title": "NASA Spaceflight Human-System Standard Volume 1, Revision C: Crew Health (NASA-STD-3001 Vol 1)",
+      "type": "NASA Standard",
+      "findings": "Establishes Agency-level human health and medical care technical standards to optimize crew health and fitness across all mission phases.",
+      "values": "Defines permissible exposure limits, physiological monitoring standards, medical care levels, and ALARA radiation exposure criteria [V1 4029].",
+      "population": "Astronauts",
+      "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_1",
+      "url_note": null,
+      "verification": "Verified"
+    },
+    {
+      "id": "REF-02",
+      "indicators": [
+        "03",
+        "07",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "16",
+        "17"
+      ],
+      "authors": "NASA Office of the Chief Health and Medical Officer (OCHMO)",
+      "year": "2026",
+      "title": "NASA Spaceflight Human-System Standard Volume 2, Revision F: Human Factors, Habitability, and Environmental Health",
+      "type": "NASA Standard",
+      "findings": "Establishes engineering and environmental requirements for spacecraft habitability, life support, and crew interface design.",
+      "values": "[V2 6004] requires one-hour average habitable-volume ppCO2 <=3 mmHg. Off-nominal actions are mission-specific.",
+      "population": "Astronauts",
+      "url": "https://standards.nasa.gov/node/237",
+      "url_note": null,
+      "verification": "Updated to currently active revision; detailed sections require source audit"
+    },
+    {
+      "id": "REF-03",
+      "indicators": [
+        "01",
+        "04",
+        "06",
+        "13"
+      ],
+      "authors": "NASA Human Research Program (HRP)",
+      "year": "2021",
+      "title": "Human Cardiorespiratory and Orthostatic Intolerance Evidence Book",
+      "type": "NASA Evidence Report",
+      "findings": "Documents microgravity-induced cephalad fluid shifts, stroke volume reductions, baroreflex resetting, and post-flight orthostatic intolerance mechanisms.",
+      "values": "Post-flight stand test tachycardia (HR > 120 bpm) and orthostatic systolic blood pressure drops > 25 mmHg observed in ~65% of long-duration astronauts.",
+      "population": "Space Shuttle & ISS Astronauts",
+      "url": null,
+      "url_note": "",
+      "verification": "Needs citation/claim verification (missing direct source URL)"
+    },
+    {
+      "id": "REF-04",
+      "indicators": [
+        "7"
+      ],
+      "authors": "Stahn, A. C., Werner, A., Opatz, O., et al.",
+      "year": "2017",
+      "title": "Increased core body temperature in astronauts during long-duration space missions",
+      "type": "Peer-Reviewed Journal",
+      "findings": "Identifies persistent core temperature elevation in microgravity ('space fever') resulting from altered thermoregulation and convective heat dissipation.",
+      "values": "Resting core temperature increases by 1.0°C over 2.5 months on ISS, with delayed heat dissipation during physical exercise (>39.5°C).",
+      "population": "11 ISS Astronauts",
+      "url": null,
+      "url_note": "",
+      "verification": "Needs citation/claim verification (missing direct source URL)"
+    },
+    {
+      "id": "REF-05",
+      "indicators": [
+        "10",
+        "11",
+        "12"
+      ],
+      "authors": "Barger, L. K., Flynn-Evans, E. E., Kubey, A., et al.",
+      "year": "2014",
+      "title": "Prevalence of sleep deficiency and hypnotic use among astronauts before, during, and after spaceflight",
+      "type": "Peer-Reviewed Journal",
+      "findings": "Demonstrates pervasive sleep deficiency in spaceflight, documented by wrist actigraphy and sleep logs, with pervasive circadian desynchrony.",
+      "values": "In-flight sleep duration averaged < 6.0 hours per night; 75% of crew reported hypnotic medication usage during missions.",
+      "population": "85 Astronauts (Shuttle & ISS)",
+      "url": null,
+      "url_note": "",
+      "verification": "Needs citation/claim verification (missing direct source URL)"
+    },
+    {
+      "id": "REF-06",
+      "indicators": [
+        "12",
+        "17"
+      ],
+      "authors": "Basner, M., Dinges, D. F., Mollicone, D., et al.",
+      "year": "2020",
+      "title": "Cognitive performance in long-duration spaceflight and associations with environmental factors",
+      "type": "Peer-Reviewed Journal",
+      "findings": "Evaluates neurobehavioral performance on the Cognition test battery and PVT, linking operational fatigue and elevated cabin CO2 to cognitive lapses.",
+      "values": "PVT lapses increase significantly when sleep duration is <6h or cabin ppCO2 exceeds 2.0 mmHg; executive function shows speed-accuracy tradeoffs.",
+      "population": "24 Astronauts on ISS",
+      "url": null,
+      "url_note": "",
+      "verification": "Needs citation/claim verification (missing direct source URL)"
+    },
+    {
+      "id": "REF-07",
+      "indicators": [
+        "14"
+      ],
+      "authors": "Lang, T., LeBlanc, A., Evans, H., et al.",
+      "year": "2004",
+      "title": "Cortical and trabecular bone mineral loss from the spine and hip in long-duration spaceflight",
+      "type": "Peer-Reviewed Journal",
+      "findings": "Quantifies monthly bone mineral density decline and structural decay in weight-bearing bones due to skeletal mechanical unloading in microgravity.",
+      "values": "Trabecular bone loss averaged 1.0% to 1.5% per month in calcaneus, femoral neck, and spine; serum CTX elevated >50% above pre-flight baseline.",
+      "population": "16 ISS Crewmembers",
+      "url": "https://doi.org/10.1359/JBMR.040307",
+      "url_note": null,
+      "verification": "Bibliography corrected; verify any CTX threshold separately"
+    },
+    {
+      "id": "REF-08",
+      "indicators": [
+        "15"
+      ],
+      "authors": "Crucian, B. E., Choukèr, A., Simpson, R. J., et al.",
+      "year": "2018",
+      "title": "Immune system dysregulation during spaceflight: Potential countermeasures for deep space missions",
+      "type": "Peer-Reviewed Journal",
+      "findings": "Reviews comprehensive immunological alterations in astronauts, including peripheral blood leukopenia, cytokine shifts, and latent herpesvirus shedding.",
+      "values": "Pro-inflammatory cytokines (IL-6, TNF-alpha) elevated >30-50% during long-duration flight; EBV and VZV viral shedding detected in >50% of crew.",
+      "population": "ISS Crewmembers & Ground Analogs",
+      "url": "https://doi.org/10.3389/fimmu.2018.01437",
+      "url_note": null,
+      "verification": "Verified"
+    },
+    {
+      "id": "REF-09",
+      "indicators": [
+        "16"
+      ],
+      "authors": "National Council on Radiation Protection and Measurements (NCRP)",
+      "year": "2006",
+      "title": "NCRP Report No. 153: Information Needed to Make Radiation Protection Recommendations for Space Missions Beyond LEO",
+      "type": "National Standard",
+      "findings": "Establishes radiation biodosimetry guidelines, organ dose equivalents, and acute exposure thresholds for deep space and planetary exploration.",
+      "values": "Short-term 30-day limit of 250 mGy-Eq for blood-forming organs; career effective dose limit 600 mSv; alert threshold for SPE flux > 10 mSv/hr.",
+      "population": "Astronaut Cohorts & Radiation Models",
+      "url": null,
+      "url_note": "",
+      "verification": "Bibliographic year corrected; exposure limits must be checked against current NASA rules"
+    },
+    {
+      "id": "REF-10",
+      "indicators": [
+        "01",
+        "03",
+        "05",
+        "06"
+      ],
+      "authors": "American Heart Association",
+      "year": "2025",
+      "title": "Adult Basic Life Support: 2025 Guidelines",
+      "type": "Clinical Guideline",
+      "findings": "Assessment of unresponsive patients, emergency response, high-quality CPR, AED use",
+      "values": "CPR 100-120/min; 5-6cm; pulse check <=10sec for healthcare provider",
+      "population": "Adults",
+      "url": "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-basic-life-support/",
+      "url_note": null,
+      "verification": "Verified guideline; applicability to spaceflight requires mission review"
+    },
+    {
+      "id": "REF-11",
+      "indicators": [
+        "01",
+        "03",
+        "04",
+        "05"
+      ],
+      "authors": "American Heart Association / American Red Cross",
+      "year": "2024",
+      "title": "2024 First Aid Guidelines",
+      "type": "Clinical Guideline",
+      "findings": "Prompt emergency assessment for acute chest pain; recognize limitations of first aid and oximetry",
+      "values": "No astronaut-specific alert threshold",
+      "population": "General public",
+      "url": "https://cpr.heart.org/en/resuscitation-science/2024-first-aid-guidelines",
+      "url_note": null,
+      "verification": "Verified general first-aid guidance"
+    },
+    {
+      "id": "REF-12",
+      "indicators": [
+        "04"
+      ],
+      "authors": "American Heart Association",
+      "year": "2025",
+      "title": "When to Call 911 About High Blood Pressure",
+      "type": "Clinical Guidance",
+      "findings": "Extreme BP requires context of symptoms and repeated measurement",
+      "values": ">180/120 with concerning symptoms warrants urgent emergency response",
+      "population": "General adult",
+      "url": "https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings/when-to-call-911-for-high-blood-pressure",
+      "url_note": null,
+      "verification": "Verified; not a NASA threshold"
+    },
+    {
+      "id": "REF-13",
+      "indicators": [
+        "08"
+      ],
+      "authors": "American Diabetes Association",
+      "year": "2026",
+      "title": "Standards of Care in Diabetes—2026: Glycemic Goals and Hypoglycemia",
+      "type": "Clinical Guideline",
+      "findings": "Hypoglycemia levels 1, 2, 3",
+      "values": "<70; <54 mg/dL; severe impairment regardless of value",
+      "population": "General patients",
+      "url": "https://diabetesjournals.org/care/article/49/Supplement_1/S132/163927/6-Glycemic-Goals-Hypoglycemia-and-Hyperglycemic",
+      "url_note": null,
+      "verification": "Verified; spacecraft adaptation pending"
+    },
+    {
+      "id": "REF-14",
+      "indicators": [
+        "17"
+      ],
+      "authors": "NASA OCHMO",
+      "year": "2026",
+      "title": "NASA-STD-3001 Volume 2 Revision F",
+      "type": "NASA Standard",
+      "findings": "Nominal spacecraft CO2 level is a one-hour average requirement",
+      "values": "[V2 6004]: one-hour average ppCO2 <=3 mmHg",
+      "population": "Crew habitat",
+      "url": "https://standards.nasa.gov/node/237",
+      "url_note": null,
+      "verification": "Verified active revision; off-nominal thresholds require mission rules"
+    },
+    {
+      "id": "REF-15",
+      "indicators": [
+        "CPR"
+      ],
+      "authors": "Rehnberg et al.",
+      "year": "2011",
+      "title": "Evaluation of a Novel Basic Life Support Method in Simulated Microgravity",
+      "type": "Peer Reviewed",
+      "findings": "ER CPR method supported in short simulated microgravity test",
+      "values": "Not a clinical certification; short test (3 min)",
+      "population": "Simulated microgravity",
+      "url": "https://doi.org/10.3357/ASEM.2856.2011",
+      "url_note": null,
+      "verification": "Verified bibliographic identity and abstract"
+    },
+    {
+      "id": "REF-16",
+      "indicators": [
+        "CPR"
+      ],
+      "authors": "DGLRM / ESAM-SMG",
+      "year": "2020",
+      "title": "Cardiopulmonary resuscitation during spaceflight: a guideline for CPR in microgravity",
+      "type": "Peer Reviewed Guideline",
+      "findings": "Recommends ER as initial BLS; transition to restrained patient/ALS method",
+      "values": "Method depends on training and mission resources",
+      "population": "Spaceflight/simulated microgravity",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7607644/",
+      "url_note": null,
+      "verification": "Verified published guideline"
+    },
+    {
+      "id": "REF-17",
+      "indicators": [
+        "03"
+      ],
+      "authors": "FDA",
+      "year": "2025",
+      "title": "Pulse Oximeters",
+      "type": "Regulatory Guidance",
+      "findings": "Accuracy limitations from motion, skin temperature, perfusion, pigmentation",
+      "values": "No universal astronaut-specific threshold",
+      "population": "General",
+      "url": "https://www.fda.gov/medical-devices/products-and-medical-procedures/pulse-oximeters",
+      "url_note": null,
+      "verification": "Verified official guidance"
+    }
+  ],
+  "cited_source_codes": {
+    "AHA_BLS_2025": "REF-10",
+    "SPACE_CPR_2020": "REF-16",
+    "ER_2011": "REF-15",
+    "AHA_FIRST_AID_2024": "REF-11"
+  }
+}

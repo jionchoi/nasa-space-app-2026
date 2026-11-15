@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { mmss } from '../../lib/status';
-import type { ProtocolStep } from '../../types/contracts';
+import type { ProtocolStep, ReferencesConfig } from '../../types/contracts';
 import type { Answer } from './useEmergency';
 
 interface Props {
@@ -16,7 +16,13 @@ interface Props {
   finished: boolean;
   /** "Limited kit on the rover" notes for the equipment this step needs (empty with a full kit). */
   kitNotes?: string[];
+  /** Scientific References, to link the step's cited sources (REF IDs). */
+  references?: ReferencesConfig | null;
   onAnswer(value: Answer): void;
+  /** Follow a link on the step (CL10 -> chest-pain protocol). */
+  onLink?(to: string): void;
+  /** CPR steps (CL07, CL13): reopen the CPR guide. */
+  onOpenCpr?(): void;
   onTimerDone(): void;
   onNext(): void;
   onBack(): void;
@@ -54,7 +60,7 @@ export function StepView(p: Props) {
   return (
     <section aria-label={`Step ${step.n} of ${p.total}`} className={`flex min-h-0 flex-1 flex-col gap-5 ${step.red_flag ? 'rounded-panel border-2 border-alert/60 p-4' : ''}`}>
       <div className="flex flex-wrap items-center gap-3">
-        <span className="text-[13px] tracking-[0.12em] text-[#B8999C]">STEP {step.n} OF {p.total}</span>
+        <span className="text-[13px] tracking-[0.12em] text-[#B8999C]">{step.id ? `${step.id} · ` : ''}STEP {step.n} OF {p.total}</span>
         <span className="flex gap-1.5" aria-hidden>
           {Array.from({ length: p.total }, (_, k) => (
             <span key={k} className={`h-1.5 w-[26px] rounded-sm ${k < p.index ? 'bg-[#FF8A95]' : k === p.index ? 'bg-[#F2EEEE]' : 'bg-[#3A2226]'}`} />
@@ -63,8 +69,32 @@ export function StepView(p: Props) {
         {step.red_flag && <span className="rounded-full bg-alert px-3 py-0.5 text-sm font-bold text-white">This is a danger sign</span>}
       </div>
 
-      <p className="max-w-[900px] font-display text-[40px] font-bold leading-[1.15]">{step.text}</p>
-      {step.check && <p className="max-w-[820px] text-[22px] text-[#F5DE8A]">{step.check}</p>}
+      {step.urgency && (
+        <p className="self-start rounded-full border border-alert/60 bg-alert/10 px-3 py-1 text-sm font-semibold text-[#FFB3BB]">Urgency: {step.urgency}</p>
+      )}
+      {step.check && step.check === step.text
+        ? <p className="max-w-[900px] font-display text-[40px] font-bold leading-[1.15]">{step.check}</p>
+        : <>
+          <p className="max-w-[900px] font-display text-[40px] font-bold leading-[1.15]">{step.text}</p>
+          {step.check && <p className="max-w-[820px] text-[22px] text-[#F5DE8A]">{step.check}</p>}
+        </>}
+      {step.type === 'end' && <p className="text-lg text-[#F5DE8A]">End of this protocol path. The case is not closed automatically.</p>}
+      {step.links?.map((l) => (
+        <button key={l.to} type="button" onClick={() => p.onLink?.(l.to)} className="self-start rounded-2xl border-2 border-[#F2EEEE] px-5 py-3 text-lg font-bold hover:bg-white/10">{l.label}</button>
+      ))}
+      {p.onOpenCpr && <button type="button" onClick={p.onOpenCpr} className="self-start rounded-2xl bg-alert px-5 py-3 text-lg font-extrabold text-white">Open the CPR guide (metronome)</button>}
+      {!!step.refs?.length && (
+        <p className="text-sm text-[#B8999C]">
+          Sources: {step.refs.map((id, i) => {
+            const ref = p.references?.references.find((r) => r.id === id);
+            const code = step.sources?.[i];
+            const text = `${id}${code ? ` (${code})` : ''}`;
+            return <span key={id + i}>{i ? ' · ' : ''}{ref?.url
+              ? <a href={ref.url} target="_blank" rel="noreferrer" className="underline hover:text-white" title={ref.title}>{text}</a>
+              : <span title={ref?.title}>{text}</span>}</span>;
+          })}
+        </p>
+      )}
 
       {step.timer_s && <StepTimer key={step.n} seconds={step.timer_s} done={p.timerDone} onDone={p.onTimerDone} />}
 

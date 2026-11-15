@@ -42,6 +42,18 @@ def sources() -> dict:
     return store.load("sources.json")
 
 
+@router.get("/references")
+def references() -> dict:
+    """The medical lead's Scientific References (data/references.json, from scripts/import_medical.py)."""
+    return store.load("references.json")
+
+
+@router.get("/indicators")
+def indicators() -> dict:
+    """Master Health Indicator Catalog for the Learn pop-up (data/indicators.json, from scripts/import_medical.py)."""
+    return store.load("indicators.json")
+
+
 @router.get("/regions")
 def regions() -> dict:
     return store.regions()

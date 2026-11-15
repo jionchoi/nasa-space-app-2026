@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { postEvent } from '../api/client';
-import { CV_EMERGENCY_URL, triggerCrewAlarm } from '../lib/crewAlarm';
+import { clearCrewAlarm, CV_EMERGENCY_URL, triggerCrewAlarm } from '../lib/crewAlarm';
 import { useApp } from '../state/AppContext';
 import { minuteOfDay, missionDate, useRoutine } from '../state/RoutineContext';
 import { CameraError, startCamera, stopCamera } from './camera';
@@ -150,15 +150,22 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
           },
         }, who, latest.current.env);
       }
-      // Show or hide "Are you OK?" here and in every other open tab.
-      if (effect.kind === 'showCheckIn') { setCheckInDeadline(effect.deadline); sendCheckIn({ type: 'show', deadlineWallMs: toWallMs(effect.deadline) }); }
+      // The crew answered "I'm OK": the alarm raised with the check-in stops.
+      if (effect.kind === 'postEvent' && effect.eventType === 'ok_confirmed') clearCrewAlarm();
+      // Show or hide "Are you OK?" here and in every other open tab. The crew alarm sounds at the same moment and never
+      // waits for the check-in timer (medical lead, Integration & Safety: "crew alarm must not wait for response timer").
+      if (effect.kind === 'showCheckIn') {
+        setCheckInDeadline(effect.deadline);
+        sendCheckIn({ type: 'show', deadlineWallMs: toWallMs(effect.deadline) });
+        triggerCrewAlarm('Possible collapse: unresponsive detection', { source: 'cv', emergencyUrl: CV_EMERGENCY_URL, persona: who, personaName: name });
+      }
       if (effect.kind === 'hideCheckIn') { setCheckInDeadline(null); sendCheckIn({ type: 'hide' }); }
       if (effect.kind === 'alarm') {
         // A lost pulse (effect.cpr): the check-in is already skipped (hidden above); the Act now pop-up takes over
         // (it watches the pulse itself, camera or not) and its "Open emergency mode" leads to CPR. No crew alarm here.
         if (effect.cpr) continue;
-        // No answer to "Are you OK?": crew alarm, then the unresponsive protocol with "responds? NO" answered.
-        // The alarm says who it is about, so every tab shows the right name and can switch to them.
+        // No answer to "Are you OK?": the alarm keeps sounding and the collapse protocol opens at CL00. Nothing is
+        // pre-answered: the crew answers CL01, CL03 and CL05. The alarm says who it is about, so every tab shows the name.
         triggerCrewAlarm(`Unresponsive detection: ${effect.reason}`, { source: 'cv', emergencyUrl: CV_EMERGENCY_URL, persona: who, personaName: name });
         go(CV_EMERGENCY_URL);
       }

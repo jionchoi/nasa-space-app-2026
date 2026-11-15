@@ -52,7 +52,8 @@ def test_water_from_meals_feeds_hydration_and_missions(client):
     form(client, "A", "meal", {"meal_type": "breakfast", "size": "normal", "water_l": 0.4})
     daily = client.get("/api/persona/A/daily").json()
     assert daily[-1]["hydration_l"] == 0.4 and daily[-1].get("today")
-    assert region(client, "A", "metabolism")["status"] != "green"  # 0.4 L is below the watch level
+    # RULE-09: below 2.0 L counts only after 2 days in a row, so one low day stays nominal.
+    assert region(client, "A", "metabolism")["status"] == "green"
     missions = {m["id"]: m for m in client.get("/api/missions?persona=A").json()["missions"]}
     assert not missions["water"]["done"] and missions["water"]["detail"] == "0.4 of 2 L"
     form(client, "A", "meal", {"meal_type": "lunch", "water_l": 1.7})

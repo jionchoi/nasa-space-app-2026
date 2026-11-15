@@ -3,7 +3,7 @@ from app import db, store
 from app.models import Environment, Guidance, Measurements
 from app.rules.escalation import advice_text
 
-NOT_METRICS = ("red_flags", "daily_targets", "cv", "dose_estimates", "pvt", "plausible")
+NOT_METRICS = ("symptoms", "red_flags", "daily_targets", "cv", "dose_estimates", "pvt", "plausible")
 
 
 def frames(pid, start, count):
@@ -37,10 +37,11 @@ def test_bp_judged_from_thresholds_file(client, temp_data):
     heart = lambda r: next(x for x in r["after"] if x["region"] == "heart")  # noqa: E731
     high = check(client, bp_sys=165, bp_dia=95).json()
     rows = {c["metric"]: c for c in high["comparison"]}
-    assert rows["bp_sys"]["status"] == "orange" and rows["bp_dia"]["status"] == "orange"
+    # RULE-04: >= 160 systolic = Warning ("prompt review"); 95 diastolic is below the 100 Warning edge.
+    assert rows["bp_sys"]["status"] == "orange" and rows["bp_dia"]["status"] in ("green", "yellow")
     assert heart(high)["status"] == "orange"
     # Move the red limit in the file: the same reading is judged differently, no code change.
-    temp_data("thresholds.json", lambda t: t["bp_sys"].update(red=[80, 160]))
+    temp_data("thresholds.json", lambda t: t["bp_sys"].update(red=[80, 160], requires_symptoms=False))
     store.reset()
     again = {c["metric"]: c for c in check(client, bp_sys=165, bp_dia=95).json()["comparison"]}
     assert again["bp_sys"]["status"] == "red"

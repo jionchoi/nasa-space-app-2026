@@ -2,9 +2,10 @@
 // position, screen), so nothing is fumbled live. Steps only use what the app already does; they work with the
 // backend off too (public build): offline mocks, the offline DONKI replay and local drafts.
 import type { NavigateFunction } from 'react-router-dom';
-import { replayRadiation } from '../../api/client';
+import { postForm, replayRadiation } from '../../api/client';
 import { clearCrewAlarm } from '../../lib/crewAlarm';
 import { sendDemoCommand } from '../../lib/demo';
+import { clearSymptoms, logSymptoms } from '../../lib/symptoms';
 import { scenarioLabel } from '../../lib/locations';
 import type { Persona, RegionId } from '../../types/contracts';
 
@@ -36,11 +37,21 @@ export interface DemoStep {
 }
 
 const CHEST_PAIN = '/emergency?protocol=chest_pain&trigger=crew';
-const UNRESPONSIVE = '/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no';
+const UNRESPONSIVE = '/emergency?protocol=unresponsive&trigger=cv';
+/** A lost pulse opens the collapse protocol at CL00 with the red flag shown; the crew answers CL01, CL03, CL05. */
+const PULSE_LOST = '/emergency?protocol=unresponsive&trigger=alarm&flag=pulse_lost';
+
+/** The crew member reports chest pain (Mood and symptoms log): a red-flag symptom, Act now, and with the irregular pulse
+ *  RULE-05 fires too. Posted to the backend (alert) and kept in this browser (works with the backend off). */
+function logChestPain(persona: string) {
+  logSymptoms(['chest_pain'], persona);
+  void postForm(persona, 'symptoms', { symptoms: ['chest_pain'], notes: 'Demo: crew member reports chest pain' }).catch(() => undefined);
+}
 
 /** Common start of every step: no alarm, no solar replay, detection off (unless the step turns them on). */
 function reset(ctx: DemoContext, keep: { solar?: boolean; cv?: boolean } = {}) {
   clearCrewAlarm();
+  clearSymptoms();
   if (!keep.solar) void replayRadiation('stop');
   if (!keep.cv) ctx.cv.stop();
 }
@@ -111,18 +122,24 @@ export const DEMO_STEPS: DemoStep[] = [
   },
   {
     label: '6a', title: 'Acute event: vitals get worse',
-    note: 'Persona C: heart rate climbs, oxygen falls. Watch the vitals strip turn red.',
+    note: 'Persona C: heart rate climbs above 120 with an irregular pulse; the crew member logs chest pain. Act now says why: RULE-01 + RULE-05 (+ chest pain logged).',
     sources: [],
-    apply: (ctx) => { reset(ctx); show(ctx, { persona: 'C', env: 'mars', at: 170, path: '/' }); },
+    apply: (ctx) => {
+      reset(ctx);
+      show(ctx, { persona: 'C', env: 'mars', at: 285, path: '/' });
+      // Heart rate passes 120 at about 288 s and must hold 10 s; chest pain is logged at the same moment.
+      ctx.later(() => logChestPain('C'), 13000);
+    },
+    actions: [{ label: 'Log chest pain now', run: () => logChestPain('C') }],
   },
   {
-    label: '6b', title: 'Pulse lost: red flags, then CPR',
-    note: 'Emergency mode: red flags light up; when the pulse is lost the protocol jumps to CPR with the metronome.',
+    label: '6b', title: 'Pulse lost: red flag, the crew answers, then CPR',
+    note: 'Chest-pain protocol CP00. When the pulse is lost the red flag lights up; nothing jumps on its own. Open the collapse protocol: CL00, then the crew answers CL01, CL03 and CL05 (NO = CL07 CPR with the metronome).',
     sources: [],
     apply: (ctx) => { reset(ctx); show(ctx, { persona: 'C', env: 'mars', at: 440, path: CHEST_PAIN }); },
     actions: [{
-      label: 'Jump to CPR',
-      run: (ctx) => { ctx.navigate('/'); ctx.later(() => ctx.navigate(`${CHEST_PAIN}&goto=cpr`), 80); },
+      label: 'Open collapse protocol (CL00)',
+      run: (ctx) => { ctx.navigate('/'); ctx.later(() => ctx.navigate(PULSE_LOST), 80); },
     }],
   },
   {

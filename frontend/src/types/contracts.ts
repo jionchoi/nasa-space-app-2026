@@ -44,7 +44,8 @@ export interface RegionStatus {
 }
 
 /** "next", a step number, or "cpr". */
-export type StepRoute = number | 'next' | 'cpr';
+/** A route: a node ID ("CL03"; another protocol's node, e.g. "CP00", opens that protocol), "next", "cpr" or an old step number. */
+export type StepRoute = number | 'next' | 'cpr' | string;
 
 export interface ProtocolStep {
   n: number;
@@ -56,6 +57,17 @@ export interface ProtocolStep {
   timer_s: number | null;
   on_yes?: StepRoute | null;
   on_no?: StepRoute | null;
+  /** Medical lead's node protocols (Nov 15): node ID, step type, Next, urgency, cited sources (codes and REF IDs). */
+  id?: string;
+  type?: 'action' | 'decision' | 'end';
+  next?: StepRoute | null;
+  urgency?: string;
+  sources?: string[];
+  refs?: string[];
+  note?: string;
+  /** CPR guide (metronome and cycle timers) on this step (CL07, CL13). */
+  cpr?: boolean;
+  links?: { to: string; label: string }[];
   /** Equipment the step needs, e.g. ["oxygen"]. With a limited kit (the rover) the location's kit note is shown (Nov 14). */
   equipment?: string[];
 }
@@ -91,6 +103,63 @@ export interface ThresholdEntry {
   red?: Band | null;
   source?: string;
   keywords?: string[];
+  /** Band edges that count as inside the level, e.g. {"red": ["high"]} for ">= 38.5" (Nov 15). */
+  inclusive?: Partial<Record<'yellow' | 'orange' | 'red', ('low' | 'high')[]>>;
+  /** Act now (red) only with a red-flag symptom logged (RULE-04, RULE-05). */
+  requires_symptoms?: boolean;
+  /** Compare with the frozen pre-flight usual of `metric`: Watch above `rise` / below `fall` (live heart rate). */
+  baseline?: { metric?: string; rise?: { yellow?: number }; fall?: { yellow?: number }; drop_pct?: { yellow?: number }; drop?: { yellow?: number } };
+  baseline_sources?: Record<string, string>;
+  /** Which bands come from the medical lead's sheet ("sheet") and which are team defaults. */
+  band_sources?: Partial<Record<'yellow' | 'orange' | 'red', string>>;
+  red_for_s?: number;
+  // Medical lead's sheet (RULE-01..17), filled by backend/scripts/import_medical.py
+  rule_id?: string;
+  indicator_id?: string;
+  ref_ids?: string[];
+  evidence_status?: string;
+  validation_status?: string;
+  demo_only?: boolean;
+  qa_note?: string;
+  qa?: { finding: string; recommendation: string };
+  actions?: { watch: string; act: string };
+  sheet?: { baseline: string; nominal: string; watch: string; act: string; rationale: string; escalation: string };
+  gap_note?: string;
+  live_note?: string;
+  no_data_note?: string;
+  scale_factor?: number;
+  sustained_days?: Partial<Record<'yellow' | 'orange' | 'red', number>>;
+}
+
+/** thresholds.json "symptoms": red-flag symptoms (Act now; they fulfil requires_symptoms rules). Team default. */
+export interface SymptomsConfig {
+  red_flag: Record<string, string>;
+  region: Record<string, RegionId>;
+  active_minutes: number;
+  source?: string;
+}
+
+/** backend/data/references.json (medical lead's Scientific References). */
+export interface Reference {
+  id: string; indicators: string[]; authors: string; year: string; title: string; type: string; findings: string;
+  values: string; population: string; url: string | null; url_note: string | null; verification: string;
+}
+export interface ReferencesConfig { references: Reference[]; cited_source_codes: Record<string, string>; source_file?: string }
+
+/** backend/data/indicators.json (Master Health Indicator Catalog), shown in the Learn pop-up. */
+export type DataSourceType = 'Live' | 'Manual' | 'Simulation' | 'Mission device';
+export interface Indicator {
+  id: string; name: string; category: string; system: string; unit: string; method: string; how_to_measure: string[];
+  what: string; why_space: string; normal_range: string; space_effect: string; abnormal: string; baseline: string;
+  limitations: string; evidence: string; citation: string; url: string | null; research_status: string;
+  metrics: string[]; data_source: DataSourceType;
+}
+export interface IndicatorsConfig {
+  disclaimer: string;
+  indicators: Record<string, Indicator>;
+  metric_index: Record<string, string>;
+  data_source_types: Record<DataSourceType, string>;
+  switches: { simulation_enabled: boolean; clinical_auto_alert_enabled: boolean };
 }
 
 /** thresholds.json "red_flags": active when `metric` is below/above the limit for `for_s` seconds with a usable signal. */

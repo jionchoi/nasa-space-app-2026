@@ -1,10 +1,10 @@
 // What the Act now pop-up shows and why (pure, tested in actNow.test.ts). No numbers here: red ranges come from
 // thresholds.json, alerts from the backend rules, the lost pulse from cv/pulse.ts.
-import type { Alert, RegionId, RegionMeta } from '../types/contracts';
+import type { Alert, RegionId, RegionMeta, SymptomsConfig, Thresholds } from '../types/contracts';
 import { CV_PULSE_LOST_URL } from './crewAlarm';
-import { LIVE_VITALS } from './status';
+import { entryOf, LIVE_VITALS } from './status';
 
-export type ActNowKind = 'pulse_lost' | 'alert' | 'vitals';
+export type ActNowKind = 'pulse_lost' | 'symptom' | 'alert' | 'vitals';
 
 export interface ActNowInput {
   /** Backend alerts (any level, any source). */
@@ -16,6 +16,9 @@ export interface ActNowInput {
   /** cv/pulse.ts says the pulse is lost (clip on, no beats) and the crew has not acknowledged it. */
   pulseLost: boolean;
   regions: RegionMeta[];
+  /** Red-flag symptoms logged in the last hour that the crew has not acknowledged (thresholds.json "symptoms"). */
+  symptoms?: string[];
+  symptomsConfig?: SymptomsConfig | null;
 }
 
 export interface ActNowTrigger {
@@ -53,6 +56,11 @@ export function actNowTrigger(input: ActNowInput): ActNowTrigger | null {
   if (input.pulseLost) {
     return { kind: 'pulse_lost', region: regionOfVital(input.regions, 'hr'), open, emergencyUrl: CV_PULSE_LOST_URL };
   }
+  const symptom = input.symptoms?.[0];
+  if (symptom) {
+    return { kind: 'symptom', region: input.symptomsConfig?.region[symptom] ?? null, open,
+      emergencyUrl: symptom === 'chest_pain' ? '/emergency?protocol=chest_pain&trigger=crew' : '/emergency' };
+  }
   if (open.length) {
     const alert = open[0];
     return { kind: 'alert', region: alert.region ?? (alert.metric ? regionOfVital(input.regions, alert.metric) : null), alert, open, emergencyUrl: '/emergency' };
@@ -61,4 +69,18 @@ export function actNowTrigger(input: ActNowInput): ActNowTrigger | null {
     return { kind: 'vitals', region: input.redVitals[0] ? regionOfVital(input.regions, input.redVitals[0]) : null, open, emergencyUrl: '/emergency' };
   }
   return null;
+}
+
+/** Which of the medical lead's rules fired, e.g. "RULE-01 + RULE-05 + chest pain or pressure logged" (the "why" line).
+ *  Red vitals name their thresholds.json rule_id; a logged red-flag symptom is the team-default symptom rule. */
+export function firedRules(redVitals: string[], thresholds: Thresholds | null, symptoms: string[] = [],
+  cfg: SymptomsConfig | null = null): string {
+  const ids: string[] = [];
+  for (const key of redVitals) {
+    const id = entryOf(thresholds, key)?.rule_id;
+    if (id && !ids.includes(id)) ids.push(id);
+  }
+  ids.sort();
+  const words = symptoms.map((s) => `${(cfg?.red_flag[s] ?? s).toLowerCase()} logged`);
+  return [...ids, ...words].join(' + ');
 }

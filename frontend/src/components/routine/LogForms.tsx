@@ -1,4 +1,7 @@
 import { useState, type ReactNode } from 'react';
+import { logSymptoms, redFlagOnly, symptomsConfig } from '../../lib/symptoms';
+import { useApp } from '../../state/AppContext';
+import { useSignals } from '../../state/SignalContext';
 
 // Input checks catch typing mistakes; they are not medical ranges (those live in thresholds.json).
 export interface FormProps { onSave(data: Record<string, unknown>): Promise<string | null> }
@@ -122,8 +125,12 @@ export const SYMPTOMS: { id: string; label: string }[] = [
   { id: 'vision', label: 'Blurry vision' },
 ];
 
-/** v4 "Mood and symptoms": mood 1-10 and symptoms felt now. Saved as a "mood" form (display and timeline only). */
+/** v4 "Mood and symptoms": mood 1-10 and symptoms felt now. Saved as a "mood" form. The mood score is display and
+ *  timeline only (not a validated instrument); a red-flag symptom (thresholds.json "symptoms") is Act now. */
 export function MoodForm({ onSave }: FormProps) {
+  const { thresholds, persona } = useApp();
+  const demo = useSignals().mode === 'demo'; // no automatic alerts outside Demo mode (clinical_auto_alert_enabled = false)
+  const redFlags = Object.entries(symptomsConfig(thresholds)?.red_flag ?? {});
   const [mood, setMood] = useState<number | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
@@ -140,6 +147,17 @@ export function MoodForm({ onSave }: FormProps) {
           ))}
         </div>
       </fieldset>
+      {redFlags.length > 0 && (
+        <fieldset className="flex flex-col gap-1.5 rounded-lg border border-alert/40 p-2 text-sm">
+          <legend className="px-1 font-medium text-alert">Danger signs now (any of these = Act now)</legend>
+          {redFlags.map(([id, label]) => (
+            <label key={id} className="flex min-h-touch cursor-pointer items-center gap-2.5 rounded-lg px-1 hover:bg-raised/50">
+              <input type="checkbox" className="h-5 w-5 accent-[rgb(var(--c-alert))]" checked={symptoms.includes(id)} onChange={() => toggle(id)} />
+              {label}
+            </label>
+          ))}
+        </fieldset>
+      )}
       <fieldset className="flex flex-col gap-1.5 text-sm">
         <legend className="mb-1.5 font-medium">Symptoms now (optional)</legend>
         {SYMPTOMS.map((o) => (
@@ -150,8 +168,12 @@ export function MoodForm({ onSave }: FormProps) {
         ))}
       </fieldset>
       <Field label="Notes (optional)"><textarea className={`${input} font-sans`} rows={2} maxLength={300} value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
-      <p className="text-xs text-muted">Shown on your mission timeline. The daily check questions still set the Brain and mood status.</p>
-      <SaveRow busy={s.busy} message={s.message} onSave={() => (mood === null ? s.setMessage('Pick a mood from 1 to 10') : s.run({ mood, symptoms, notes }))} />
+      <p className="text-xs text-muted">Shown on your mission timeline. The 1-10 mood score is not a validated mood test; the daily check questions still set the Brain and mood status.</p>
+      <SaveRow busy={s.busy} message={s.message} onSave={() => {
+        if (mood === null) return s.setMessage('Pick a mood from 1 to 10');
+        s.run({ mood, symptoms, notes });
+        if (demo) logSymptoms(redFlagOnly(symptoms, symptomsConfig(thresholds)), persona);
+      }} />
     </div>
   );
 }

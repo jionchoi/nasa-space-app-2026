@@ -25,11 +25,12 @@ export interface CrewAlarmState extends CrewAlarmOptions {
 }
 
 export const DEFAULT_EMERGENCY_URL = '/emergency?protocol=unresponsive&trigger=alarm';
-/** What unresponsive detection passes: the "does the crew member respond?" step is already answered NO. */
-export const CV_EMERGENCY_URL = '/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no';
-/** A lost pulse (from the Act now pop-up): the unresponsive protocol with "responds? NO" answered. No goto=cpr:
- *  emergency mode sees the pulse_lost red flag and offers CPR with its 5 s countdown (Cancel possible). */
-export const CV_PULSE_LOST_URL = '/emergency?protocol=unresponsive&trigger=alarm&preanswer=responsive:no';
+/** Unresponsive detection (camera): the collapse protocol at CL00. Nothing is pre-answered: the crew answers CL01, CL03
+ *  and CL05 themselves (medical lead, Nov 15: human assessment > sensors). */
+export const CV_EMERGENCY_URL = '/emergency?protocol=unresponsive&trigger=cv';
+/** A lost pulse (from the Act now pop-up): the collapse protocol at CL00 with the pulse_lost red flag shown. No
+ *  pre-answer and no auto-route to CPR: CPR comes from the crew's answers (CL05 "definite pulse?" NO -> CL07). */
+export const CV_PULSE_LOST_URL = '/emergency?protocol=unresponsive&trigger=alarm&flag=pulse_lost';
 
 let state: CrewAlarmState | null = null;
 const listeners = new Set<() => void>();

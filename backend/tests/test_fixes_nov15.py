@@ -73,8 +73,7 @@ def test_pulse_lost_waits_four_seconds():
     assert store.thresholds()["cv"]["ppg"]["no_pulse_s"] == 4
 
 
-@pytest.mark.parametrize("protocol", ["unresponsive"])
-def test_pulse_lost_route_to_cpr_keeps_its_countdown(client, protocol):
-    routes = client.get(f"/api/protocols/{protocol}").json()["red_flag_routes"]
-    route = next(r for r in routes if r["flag"] == "pulse_lost")
-    assert route["goto"] == "cpr" and route.get("countdown_s", 5) == 5
+@pytest.mark.parametrize("protocol", ["unresponsive", "chest_pain"])
+def test_no_red_flag_auto_route_any_more(client, protocol):
+    """Superseded Nov 15 (medical lead): a lost pulse only lights the red flag; the crew answers CL01/CL03/CL05."""
+    assert client.get(f"/api/protocols/{protocol}").json()["red_flag_routes"] == []

@@ -195,10 +195,10 @@
     "kit_notes": {
       "_how_to_read": "Shown on an emergency protocol step that lists this equipment (step 'equipment'), when the location's medical_kit is 'limited'.",
       "default": "DRAFT: Limited kit on the rover. If this item is not on board, do what you can and start driving back to base.",
-      "oxygen": "DRAFT: Limited kit on the rover: there may be only a small oxygen bottle. Use it and start driving back to base.",
       "medical_kit": "DRAFT: Limited kit on the rover: some medicines may not be on board. Ask the flight surgeon what to use from the rover kit.",
       "restraint": "DRAFT: Limited kit on the rover: no medical restraint area. Strap them to a seat or lay them flat on the floor.",
-      "sensor": "DRAFT: Limited kit on the rover: if there is no finger sensor, check the pulse at the neck by hand."
+      "sensor": "DRAFT: Limited kit on the rover: if there is no finger sensor, check the pulse at the neck by hand.",
+      "aed": "DRAFT: Limited kit on the rover: there may be no defibrillator (AED). Keep doing CPR, call the crew and start driving back to base."
     },
     "schedule": [
       {

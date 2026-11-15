@@ -2,7 +2,7 @@
  {
   "id": "iss",
   "label": "ISS",
-  "subtitle": "Low Earth orbit · microgravity",
+  "subtitle": "Low Earth orbit \u00b7 microgravity",
   "delay_s": [
    0.0,
    2.0
@@ -51,7 +51,7 @@
  {
   "id": "moon",
   "label": "Moon base",
-  "subtitle": "Lunar surface · 1/6 g",
+  "subtitle": "Lunar surface \u00b7 1/6 g",
   "delay_s": [
    1.0,
    3.0
@@ -101,7 +101,7 @@
  {
   "id": "mars",
   "label": "Mars transit",
-  "subtitle": "Deep space · microgravity",
+  "subtitle": "Deep space \u00b7 microgravity",
   "delay_s": [
    180.0,
    1320.0
@@ -151,7 +151,7 @@
  {
   "id": "rover",
   "label": "Surface rover",
-  "subtitle": "Away from base · limited kit",
+  "subtitle": "Away from base \u00b7 limited kit",
   "delay_s": [
    1.0,
    3.0
@@ -196,7 +196,7 @@
   "planets": {
    "moon": {
     "label": "Moon",
-    "subtitle": "Lunar surface · 1/6 g · away from base",
+    "subtitle": "Lunar surface \u00b7 1/6 g \u00b7 away from base",
     "delay_s": [
      1.0,
      3.0
@@ -210,7 +210,7 @@
    },
    "mars": {
     "label": "Mars",
-    "subtitle": "Mars surface · 3/8 g · away from base",
+    "subtitle": "Mars surface \u00b7 3/8 g \u00b7 away from base",
     "delay_s": [
      180.0,
      1320.0
@@ -232,10 +232,10 @@
   "kit_notes": {
    "_how_to_read": "Shown on an emergency protocol step that lists this equipment (step 'equipment'), when the location's medical_kit is 'limited'.",
    "default": "DRAFT: Limited kit on the rover. If this item is not on board, do what you can and start driving back to base.",
-   "oxygen": "DRAFT: Limited kit on the rover: there may be only a small oxygen bottle. Use it and start driving back to base.",
    "medical_kit": "DRAFT: Limited kit on the rover: some medicines may not be on board. Ask the flight surgeon what to use from the rover kit.",
    "restraint": "DRAFT: Limited kit on the rover: no medical restraint area. Strap them to a seat or lay them flat on the floor.",
-   "sensor": "DRAFT: Limited kit on the rover: if there is no finger sensor, check the pulse at the neck by hand."
+   "sensor": "DRAFT: Limited kit on the rover: if there is no finger sensor, check the pulse at the neck by hand.",
+   "aed": "DRAFT: Limited kit on the rover: there may be no defibrillator (AED). Keep doing CPR, call the crew and start driving back to base."
   },
   "estimated_data": [],
   "draft": "DRAFT - Yenna reviews"

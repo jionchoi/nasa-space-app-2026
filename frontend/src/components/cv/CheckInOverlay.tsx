@@ -75,14 +75,14 @@ export function CheckInOverlay() {
   return (
     // A tap anywhere on the overlay is an answer, so a crew member who can barely move a hand still counts as OK.
     <div role="alertdialog" aria-modal="true" aria-label="Are you OK?" onPointerDown={respond}
-      className="fixed inset-0 z-[55] grid cursor-pointer place-items-center bg-bg/95 p-8 text-center backdrop-blur">
+      className="fixed inset-0 z-[65] grid cursor-pointer place-items-center bg-bg/95 p-8 text-center backdrop-blur">
       <div>
         <p className="text-sm uppercase tracking-[0.2em] text-watch">Unresponsive detection</p>
-        <h1 className="mt-3 text-6xl font-semibold tracking-tight">Are you OK?</h1>
-        <p className="mt-3 text-xl text-muted">Tap, speak or move your hand.</p>
+        <h1 className="mt-3 text-6xl font-semibold tracking-tight">Possible collapse. Are you okay?</h1>
+        <p className="mt-3 text-xl text-muted">Please respond: tap, speak or move your hand. The crew has already been alerted.</p>
         {/* The big countdown. When it reaches 0 the crew alarm goes off. */}
         <p className="mt-10 font-mono text-[9rem] leading-none text-alert" aria-live="assertive">{seconds}</p>
-        <p className="mt-2 text-sm text-muted">seconds until the crew is alerted</p>
+        <p className="mt-2 text-sm text-muted">seconds until emergency mode opens</p>
         <button className="btn btn-primary mt-10 h-14 px-10 text-lg" onClick={respond} autoFocus>I'm OK</button>
       </div>
     </div>

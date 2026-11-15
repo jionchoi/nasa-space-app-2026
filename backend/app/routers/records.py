@@ -126,6 +126,8 @@ def post_form(body: FormIn) -> dict:
         except ValidationError as exc:
             raise HTTPException(422, exc.errors(include_url=False, include_context=False)) from exc
     row_id = db.insert("forms", persona=body.persona, t=alerts.now_iso(), kind=body.kind, data=data)
+    if body.kind in ("mood", "symptoms"):
+        alerts.check_symptoms(body.persona, data.get("symptoms") or [])
     return {"ok": True, "id": row_id, "missions": daily_log.missions(body.persona)}
 
 

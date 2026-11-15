@@ -263,7 +263,6 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
           <Co2Pill />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <ModePicker />
           <Clock />
           <CameraButton />
           <MuteToggle />

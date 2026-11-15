@@ -20,26 +20,38 @@ def test_red_flags_are_defined_in_thresholds():
         assert isinstance(store.thresholds().get(flag.metric), dict), name  # a known metric
 
 
+ALL_NODES = {s["id"] for pid in PROTOCOLS for s in store.protocol(pid)["steps"]}
+CITED = {"AHA_BLS_2025": "REF-10", "SPACE_CPR_2020": "REF-16", "ER_2011": "REF-15", "AHA_FIRST_AID_2024": "REF-11"}
+
+
 @pytest.mark.parametrize("pid", PROTOCOLS)
-def test_protocol_routes_point_to_real_flags_and_steps(client, pid):
+def test_protocol_nodes_route_to_real_nodes_and_show_urgency_and_sources(client, pid):
+    """Nov 15: the medical lead's node protocols. Every YES / NO / Next points at a real node (CP01 NO -> CL00 opens the
+    collapse protocol); every step has its urgency and cited sources, mapped to REF IDs; no auto-routes."""
     protocol = Protocol.model_validate(client.get(f"/api/protocols/{pid}").json())
-    steps = {s.n for s in protocol.steps}
-    assert protocol.red_flag_routes, "each protocol has placeholder routes"
-    for route in protocol.red_flag_routes:
-        assert route.flag in red_flag_defs()
-        assert route.goto == "cpr" or route.goto in steps
-    for step in protocol.steps:  # YES/NO routing stays valid after renumbering
-        for target in (step.on_yes, step.on_no):
-            assert target in (None, "next", "cpr") or target in steps, (pid, step.n, target)
-    by_flag = {r.flag: r for r in protocol.red_flag_routes}
-    assert by_flag["pulse_lost"].goto == "cpr"
-    oxygen = next(s for s in protocol.steps if s.key == "oxygen")
-    assert by_flag["spo2_critical"].goto == oxygen.n
+    assert protocol.red_flag_routes == []
+    refs = {r["id"] for r in client.get("/api/references").json()["references"]}
+    for step in protocol.steps:
+        for target in (step.on_yes, step.on_no, step.next):
+            assert target is None or target in ALL_NODES, (pid, step.id, target)
+        if step.type == "decision":
+            assert step.on_yes and step.on_no and step.check, step.id
+        assert step.urgency and step.sources, step.id
+        assert step.refs == [CITED[c] for c in step.sources] and set(step.refs) <= refs, step.id
 
 
-def test_unresponsive_starts_with_the_responsive_question():
+def test_no_drugs_doses_oxygen_or_iv_in_the_protocols():
+    for pid in PROTOCOLS:
+        for step in store.protocol(pid)["steps"]:
+            assert "oxygen" not in step.get("equipment", []), step["id"]
+            assert not step["text"].lower().startswith("give oxygen"), step["id"]
+
+
+def test_collapse_protocol_starts_at_cl00_with_the_check_in():
     first = store.protocol("unresponsive")["steps"][0]
-    assert first["n"] == 1 and first["key"] == "responsive" and first["check"] and first["on_no"] == "next"
+    assert first["id"] == "CL00" and "Are you okay?" in first["text"] and first["next"] == "CL01"
+    by_id = {s["id"]: s for s in store.protocol("unresponsive")["steps"]}
+    assert [by_id[n]["type"] for n in ("CL01", "CL03", "CL05")] == ["decision"] * 3  # the crew answers these
 
 
 def test_emergency_log_saved_with_answers_and_messages(client):

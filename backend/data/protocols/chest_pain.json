@@ -1,17 +1,176 @@
 {
   "id": "chest_pain",
   "title": "Chest pain or pressure",
-  "draft": "DRAFT - Yenna reviews",
+  "draft": "From the medical lead's workbook: educational flow adapted from terrestrial guidance; protocol validation pending crew medical authority. The app prescribes no drugs, doses, oxygen or IV.",
+  "source_file": "data/medical/NASA_space_project_medical_research(Chest Pain Protocol).csv",
+  "start": "CP00",
   "steps": [
-    { "n": 1, "text": "Stay calm. Stop all activity. Help the crew member rest in a secure, comfortable position and loosen tight clothing.", "red_flag": false, "timer_s": null },
-    { "n": 2, "key": "awake", "text": "Check if they are awake.", "check": "Are they awake and answering you?", "red_flag": true, "timer_s": null, "on_yes": "next", "on_no": 8 },
-    { "n": 3, "equipment": ["sensor"], "text": "Clip the sensor on their finger. Keep the hand still for 30 seconds so the readings at the top settle.", "red_flag": false, "timer_s": 30 },
-    { "n": 4, "text": "Ask about the pain.", "check": "Is the pain strong, crushing, or spreading to the arm, jaw or back?", "red_flag": true, "timer_s": null, "on_yes": "next", "on_no": "next" },
-    { "n": 5, "text": "Look at them closely.", "check": "Are they short of breath, sweaty, or feeling faint?", "red_flag": true, "timer_s": null, "on_yes": "next", "on_no": "next" },
-    { "n": 6, "equipment": ["oxygen"], "key": "oxygen", "text": "Give oxygen: put the oxygen mask from the medical kit on them and set the flow the kit card shows. Watch the blood oxygen at the top.", "red_flag": false, "timer_s": 60 },
-    { "n": 7, "equipment": ["medical_kit"], "text": "Send the message to the flight surgeon now (panel below). Use the medical kit only as its card or the flight surgeon tells you. Keep them resting for 5 minutes.", "red_flag": false, "timer_s": 300 },
-    { "n": 8, "key": "breathing", "text": "Check their breathing: look, listen and feel for 10 seconds.", "check": "Are they breathing normally?", "red_flag": true, "timer_s": 10, "on_yes": "next", "on_no": "cpr" },
-    { "n": 9, "text": "Stay with them and keep watching the vitals. Do not leave them alone.", "check": "Have they stopped responding or stopped breathing?", "red_flag": true, "timer_s": null, "on_yes": "cpr", "on_no": "next" }
+    {
+      "n": 1,
+      "id": "CP00",
+      "type": "action",
+      "text": "New chest pain reported. STOP exercise/EVA preparation, stabilize/secure the crewmember, and summon the crew medical officer now. Start event log.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CP01",
+      "urgency": "Immediate crew notification",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "Do not wait for sensor confirmation; this is a training/demo protocol.",
+      "red_flag": true,
+      "timer_s": null
+    },
+    {
+      "n": 2,
+      "id": "CP01",
+      "type": "decision",
+      "text": "Is the crewmember responsive to voice or touch?",
+      "check": "Is the crewmember responsive to voice or touch?",
+      "on_yes": "CP02",
+      "on_no": "CL00",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Unresponsive -> collapse protocol.",
+      "red_flag": true,
+      "timer_s": null
+    },
+    {
+      "n": 3,
+      "id": "CP02",
+      "type": "decision",
+      "text": "Is the crewmember breathing normally?",
+      "check": "Is the crewmember breathing normally?",
+      "on_yes": "CP03",
+      "on_no": "CL00",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_BLS_2025"
+      ],
+      "refs": [
+        "REF-10"
+      ],
+      "note": "Gasping is not normal breathing.",
+      "red_flag": true,
+      "timer_s": null
+    },
+    {
+      "n": 4,
+      "id": "CP03",
+      "type": "decision",
+      "text": "Any red flags: crushing/pressure-type pain, pain radiating to arm/jaw/back, shortness of breath, cold sweat, fainting, severe weakness, or worsening/persistent discomfort?",
+      "check": "Any red flags: crushing/pressure-type pain, pain radiating to arm/jaw/back, shortness of breath, cold sweat, fainting, severe weakness, or worsening/persistent discomfort?",
+      "on_yes": "CP04",
+      "on_no": "CP05",
+      "next": null,
+      "urgency": "Immediate",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "No red flags does not exclude serious causes.",
+      "red_flag": true,
+      "timer_s": null
+    },
+    {
+      "n": 5,
+      "id": "CP04",
+      "type": "action",
+      "text": "HIGH PRIORITY: Continue immediate onboard medical assessment. Notify flight surgeon NOW through the earliest channel; do not delay onboard care for Earth response. Follow approved crew medical kit/ECG/atmosphere procedures and suspend EVA.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CP06",
+      "urgency": "Flight surgeon now + crew medical response",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "No drugs, doses, oxygen, IV or device-specific therapy prescribed by app.",
+      "red_flag": false,
+      "timer_s": null,
+      "equipment": [
+        "medical_kit"
+      ]
+    },
+    {
+      "n": 6,
+      "id": "CP05",
+      "type": "action",
+      "text": "New unexplained chest pain still requires crew medical evaluation now. Keep the crewmember resting and supported; pause critical duties. Assess vitals only with available validated instruments.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": "CP06",
+      "urgency": "Crew medical assessment now",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "Do not auto-clear because the pulse/SpO2 appears normal.",
+      "red_flag": false,
+      "timer_s": null,
+      "equipment": [
+        "sensor"
+      ]
+    },
+    {
+      "n": 7,
+      "id": "CP06",
+      "type": "decision",
+      "text": "Is pain ongoing, recurring, or worsening, OR have new red-flag symptoms appeared?",
+      "check": "Is pain ongoing, recurring, or worsening, OR have new red-flag symptoms appeared?",
+      "on_yes": "CP04",
+      "on_no": "CP07",
+      "next": null,
+      "urgency": "Immediate assessment",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "Crew retains responsibility for clinical evaluation.",
+      "red_flag": true,
+      "timer_s": null
+    },
+    {
+      "n": 8,
+      "id": "CP07",
+      "type": "end",
+      "text": "Pain has eased, but the case is NOT automatically cleared. Document timing and symptoms, continue crew medical evaluation and request flight-surgeon review as appropriate. EVA/critical-task return requires authorized clearance.",
+      "check": null,
+      "on_yes": null,
+      "on_no": null,
+      "next": null,
+      "urgency": "Crew assessment; further escalation per medical officer",
+      "sources": [
+        "AHA_FIRST_AID_2024"
+      ],
+      "refs": [
+        "REF-11"
+      ],
+      "note": "A resolved episode can still be clinically serious.",
+      "red_flag": false,
+      "timer_s": null
+    }
   ],
   "red_flags": [
     "Not awake or not answering",
@@ -20,8 +179,6 @@
     "Heart rate in the danger range (very fast or very slow)",
     "Irregular heart rhythm"
   ],
-  "red_flag_routes": [
-    { "flag": "pulse_lost", "goto": "cpr", "message": "Pulse lost", "_draft": "DRAFT - Yenna reviews" },
-    { "flag": "spo2_critical", "goto": 6, "message": "Blood oxygen critical", "_draft": "DRAFT - Yenna reviews" }
-  ]
+  "red_flag_routes": [],
+  "_note": "Sensors never answer a step or move the crew on: red flags only light up (Integration & Safety: human assessment > sensors). Old red_flag_routes (5 s auto-route to CPR) removed Nov 15."
 }

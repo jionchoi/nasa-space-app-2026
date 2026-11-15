@@ -6,7 +6,6 @@ import { getCpr, getProtocol } from '../api/client';
 import { EmergencyBar, EmergencyVitals } from '../components/emergency/EmergencyChrome';
 import { CprGuide } from '../components/emergency/CprGuide';
 import { buildDraft } from '../components/emergency/draft';
-import { AutoAdvanceBanner } from '../components/emergency/AutoAdvanceBanner';
 import { EndSummary } from '../components/emergency/EndSummary';
 import { EntryScreen } from '../components/emergency/EntryScreen';
 import { EventLog } from '../components/emergency/EventLog';
@@ -15,7 +14,9 @@ import { StepView } from '../components/emergency/StepView';
 import { SurgeonMessage } from '../components/emergency/SurgeonMessage';
 import { useDemoCommand } from '../lib/demo';
 import { useEmergency } from '../components/emergency/useEmergency';
-import { useRedFlagRoutes } from '../components/emergency/useRedFlagRoutes';
+import { useRedFlags } from '../components/emergency/useRedFlags';
+import { useReferences } from '../hooks/useMedical';
+import { useHealth } from '../state/HealthContext';
 import { useVitals } from '../hooks/useVitals';
 import { kitNotes } from '../lib/env';
 import { entryOf, fmt, liveStatus } from '../lib/status';
@@ -42,12 +43,19 @@ export default function Emergency() {
   const [ended, setEnded] = useState<number | null>(null);
   const { frames, latest } = useVitals(persona);
   const trigger = params.get('trigger');
-  const em = useEmergency(protocol, demo?trigger:'crew', demo?params.get('preanswer'):null, demo?params.get('goto'):null);
-  // The pulse monitor runs on every screen; a lost pulse counts as the pulse_lost red flag here (CPR after the countdown).
+  // Sensors never pre-answer a step (Nov 15): ?flag=pulse_lost only shows the red flag and logs it.
+  const em = useEmergency(protocol, demo ? trigger : 'crew', demo ? params.get('flag') : null, params.get('start'));
+  // The pulse monitor runs on every screen; a lost pulse lights the pulse_lost red flag here. It never moves the crew on.
   const { pulse } = useCv();
-  const flags = useRedFlagRoutes(protocol, frames, thresholds, em, ended === null, pulse.status);
+  const sensorFlags = useRedFlags(frames, thresholds, demo ? pulse.status : undefined);
+  // The flag the emergency was opened with (Act now: pulse lost) stays shown; it never answers a step.
+  const openedWith = demo ? params.get('flag') : null;
+  const flags = useMemo(() => ({ ...sensorFlags,
+    active: openedWith && !sensorFlags.active.includes(openedWith) ? [...sensorFlags.active, openedWith] : sensorFlags.active }), [sensorFlags, openedWith]);
+  const { liveOptions } = useHealth();
+  const references = useReferences();
   const [sentMessages, setSentMessages] = useState<Record<string, Message>>({});
-  const live = useMemo(() => liveStatus(latest, thresholds), [latest, thresholds]);
+  const live = useMemo(() => liveStatus(latest, thresholds, liveOptions), [latest, thresholds, liveOptions]);
   const wasRed = useRef<string[]>([]);
 
   useEffect(() => {
@@ -89,7 +97,15 @@ export default function Emergency() {
     const hits = litByFlags(protocol.red_flags, flagKey.split(','), flags.defs);
     if (hits.length) setLit((prev) => [...new Set([...prev, ...hits])]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flagKey, protocol]);
+  }, [flagKey, protocol, thresholds]); // thresholds (the flag keywords) can arrive after the protocol
+
+  // A route into the other protocol (CP01 NO -> CL00, CL10 -> CP00): open it at that node.
+  const handoff = em.handoff;
+  useEffect(() => {
+    if (!handoff) return;
+    setParams({ protocol: handoff.protocol, trigger: trigger ?? 'crew', start: handoff.node });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handoff]);
 
   // Demo mode: end without the confirm box (step 8). Above the early returns (hooks order)
   const endRef = useRef<(skip?: boolean) => void>(() => {});
@@ -150,20 +166,26 @@ export default function Emergency() {
 
       <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_380px]">
         <main className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-5 py-6 sm:px-9">
-          {flags.pending && (
-            <AutoAdvanceBanner key={`${flags.pending.route.flag}-${em.log.length}`} message={flags.pending.route.message}
-              target={flags.pending.target} seconds={flags.pending.seconds} onGo={flags.go} onCancel={flags.cancel} />
+          {flags.active.length > 0 && (
+            <p role="status" className="rounded-card border-2 border-alert bg-alert/15 px-4 py-3 text-lg font-semibold">
+              Red flag from the sensor: {flags.active.map((f) => flags.defs[f]?.label ?? f).join(', ')}. Check the crew member yourself and answer each step.
+            </p>
           )}
           {em.cpr ? (
-            <CprGuide config={cprConfig} latest={latest} onLog={(text) => em.addLog('cpr', text)} onBack={em.back}
-              onPulseBack={() => { em.addLog('cpr', 'Pulse is back: CPR stopped, back to the steps'); em.back(); }} />
+            <>
+              {em.step.cpr && <p className="max-w-[900px] text-lg font-semibold text-[#F5DE8A]">{em.step.id}: {em.step.text}</p>}
+              <CprGuide config={cprConfig} latest={latest} onLog={(text) => em.addLog('cpr', text)} onBack={em.back}
+                onPulseBack={() => { em.addLog('cpr', 'Pulse is back: CPR stopped, back to the steps'); em.back(); }} />
+            </>
           ) : (
             <StepView
               step={em.step} index={em.index} total={protocol.steps.length} answer={em.answer} timerDone={em.timerDone}
               canNext={em.canNext} canBack={em.canBack} finished={em.finished}
-              nextLabel={em.route === 'cpr' ? 'Start CPR' : em.index === protocol.steps.length - 1 ? 'Finish' : 'Done, next step'}
-              kitNotes={kitNotes(envInfo, em.step.equipment)}
-              onAnswer={em.giveAnswer} onTimerDone={em.finishTimer} onNext={em.next} onBack={em.back}
+              nextLabel={em.route === 'cpr' || (em.target?.kind === 'step' && protocol.steps[em.target.index]?.cpr) ? 'Start CPR'
+                : em.target?.kind === 'finished' ? 'Finish' : em.target?.kind === 'protocol' ? `Go to ${em.target.node}` : 'Done, next step'}
+              kitNotes={kitNotes(envInfo, em.step.equipment)} references={references}
+              onAnswer={em.giveAnswer} onTimerDone={em.finishTimer} onNext={em.next} onBack={em.back} onLink={em.follow}
+              onOpenCpr={em.step.cpr ? em.startCpr : undefined}
             />
           )}
         </main>

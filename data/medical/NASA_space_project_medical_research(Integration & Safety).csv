@@ -1,0 +1,16 @@
+﻿Topic,Current decision,Developer handoff / verification
+Scope,Research prototype only,Do not label clinical validated or safe for operational deployment.
+Jion JSON schema,Not provided in uploaded material,The exported JSON is a provisional schema; adapt exact field names after Jion provides interface.
+Emergency recognition,Human assessment > sensors,No isolated PPG loss or video limp flag diagnoses cardiac arrest.
+Collapse duration,UNDECIDED,"Jion and medical lead must agree candidate detector threshold, false-positive policy, crew-alert behavior."
+Collapse check-in,Possible collapse. Are you okay? Please respond.,Crew alarm must not wait for response timer in an actual emergency.
+Live red flag integration,UNDECIDED,"Agree with Jian: validated pulse signal-loss handling, SpO2 signal check, HR/rhythm flags."
+Medical kit,Crew medical kit procedures only,Never embed medications/doses/devices not actually onboard.
+Microgravity CPR,ER for initial BLS per 2020 aerospace guidelines,"Train rescuers; secure patient/rescuer; transition to restraint system, do not infer technique works identically across spacecraft."
+Earth communication,Asynchronous urgent contact,"Request flight surgeon immediately, but do not wait for Earth transmission/response to act on-board."
+Data source type,Tag each indicator,Live/Manual/Simulation/Mission device; original spreadsheet mixes the categories.
+FDA pulse oximetry,Sensor can be inaccurate,Assessment includes symptoms and signal quality; normal values do not rule out emergencies.
+Mission CO2 standard,2026 Rev F [V2 6004] one-hour average <=3 mmHg,"2 mmHg provisional watch, >3 one-hour noncompliance, off-nominal action mission-defined."
+Mood scale,Pending validated selection,Do not claim numeric 1–10 mood score clinically validated.
+Protocol validation,Pending crew medical authority,These are educational flow examples adapted from terrestrial guidance.
+Demo switches,simulation_enabled = true; clinical_auto_alert_enabled = false,No real clearance/decision automation until medical and engineering signoff.

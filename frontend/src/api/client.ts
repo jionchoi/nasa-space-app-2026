@@ -4,7 +4,7 @@ import { currentMode } from './mode';
 import type {
   Alert, CabinSummary, CheckRequest, CheckResult, CprConfig, DailyCheckRecord, DailyEntry, EmergencyLogIn,
   Delivery, EmergencyLog, Environment, MissionsResponse, EscalationConfig, Guidance, Labels, Measurements, Message, MessageIn, Persona, Protocol, Questionnaire, RadiationSummary,
-  CrewReference, PvtNorms, RadiationFeed, RegionsConfig, RegionStatus, SourcesConfig, Streak, Thresholds, UnresponsiveEvent,
+  CrewReference, IndicatorsConfig, PvtNorms, RadiationFeed, ReferencesConfig, RegionsConfig, RegionStatus, SourcesConfig, Streak, Thresholds, UnresponsiveEvent,
 } from '../types/contracts';
 import mockCheck from '../mock/checkResult.json';
 import mockCabin from '../mock/cabin.json';
@@ -26,6 +26,8 @@ import mockRadiation from '../mock/radiation.json';
 import mockRadiationFeeds from '../mock/radiationFeeds.json';
 import mockRegions from '../mock/regions.json';
 import mockSources from '../mock/sources.json';
+import mockReferences from '../mock/references.json';
+import mockIndicators from '../mock/indicators.json';
 import mockStatus from '../mock/status.json';
 import mockThresholds from '../mock/thresholds.json';
 import { offlineSolarEvent, startOfflineSolar, stopOfflineSolar, withOfflineSolar } from '../lib/solarOffline';
@@ -139,6 +141,9 @@ export const getPvtNorms = () => request<PvtNorms>('/api/pvt-norms', () => mockP
 export const getCrewReference = () =>
   request<CrewReference>('/api/crew-reference', () => mockCrewReference as unknown as CrewReference);
 export const getSources = () => request<SourcesConfig>('/api/sources', () => mockSources as unknown as SourcesConfig);
+/** Medical lead's Scientific References and Master Health Indicator Catalog (backend/scripts/import_medical.py). */
+export const getReferences = () => request<ReferencesConfig>('/api/references', () => mockReferences as unknown as ReferencesConfig);
+export const getIndicators = () => request<IndicatorsConfig>('/api/indicators', () => mockIndicators as unknown as IndicatorsConfig);
 export const getCabin = () => request<CabinSummary>('/api/cabin', () => mockCabin as unknown as CabinSummary);
 export const getDailyChecks = (persona: string) =>
   request<DailyCheckRecord[]>(`/api/daily-checks?persona=${persona}`, () => []);

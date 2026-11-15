@@ -92,7 +92,7 @@ export function MetricInfo({ entry, info, functionText, spaceNote, refs, dataSou
         Source:
         {placeholder ? (
           <span className="rounded-full border border-watch/40 px-2 py-0.5 text-watch" title="Not yet reviewed against a medical source">
-            Placeholder, medical review pending
+            Placeholder · Team default
           </span>
         ) : <span className="text-soft">{entry?.source}</span>}
       </div>

@@ -9,7 +9,8 @@ Status = Literal["green", "yellow", "orange", "red"]
 AlertLevel = Literal["yellow", "orange", "red"]
 AlertSource = Literal["rules", "vitals", "emergency", "cv"]
 AdviceLevel = Literal["self", "crew", "surgeon_next", "surgeon_now"]
-StepRoute = Union[int, Literal["next", "cpr"]]
+# A route: a node ID ("CL03", "CP00": another protocol's node opens that protocol), "next", "cpr", or an old step number.
+StepRoute = Union[int, Literal["next", "cpr"], str]
 Band = Optional[list[Optional[float]]]
 
 
@@ -44,15 +45,31 @@ class RegionStatus(BaseModel):
     metric_status: dict[str, Status] = {}
 
 
+class StepLink(BaseModel):
+    to: str
+    label: str
+
+
 class ProtocolStep(BaseModel):
+    """One node of the medical lead's protocol sheet (Collapse CL00-CL13, Chest pain CP00-CP07, Nov 15)."""
+    model_config = ConfigDict(extra="allow")
     n: int
-    key: Optional[str] = None  # stable name for a step, e.g. "responsive" (used by ?preanswer=responsive:no)
+    id: Optional[str] = None  # node ID, e.g. "CL03"
+    type: Optional[Literal["action", "decision", "end"]] = None
+    key: Optional[str] = None
     text: str
     check: Optional[str] = None
     red_flag: bool = False
     timer_s: Optional[int] = None
     on_yes: Optional[StepRoute] = None
     on_no: Optional[StepRoute] = None
+    next: Optional[StepRoute] = None
+    urgency: Optional[str] = None
+    sources: list[str] = []  # cited-source codes as in the sheet, e.g. "AHA_BLS_2025"
+    refs: list[str] = []  # the same as REF IDs (references.json)
+    note: Optional[str] = None  # engineer / clinical note (not shown to the crew)
+    cpr: bool = False  # CPR guide (metronome, cycle timers) on this step
+    links: list[StepLink] = []
     # Equipment the step needs, e.g. ["oxygen"]. With a limited kit (environments.json "medical_kit": "limited") the app
     # shows that location's kit_notes for it (added Nov 14).
     equipment: list[str] = []
@@ -289,16 +306,24 @@ class SelfCareForm(BaseModel):
 
 
 class MoodForm(BaseModel):
-    """v4 log drawer "Mood and symptoms": a 1-10 mood and the symptoms felt now (questionnaire symptom ids).
-    Display and timeline only: it does not change any status (the daily check questions still feed brain and mood)."""
+    """v4 log drawer "Mood and symptoms": a 1-10 mood (not a validated instrument) and the symptoms felt now
+    (questionnaire symptom ids plus the red-flag symptoms in thresholds.json "symptoms"). The mood score is display and
+    timeline only; a red-flag symptom is Act now (alerts.check_symptoms) and fulfils requires_symptoms rules."""
     mood: int = Field(ge=1, le=10)
     symptoms: list[str] = Field(default=[], max_length=10)
     notes: str = Field(default="", max_length=300)
 
 
+class SymptomForm(BaseModel):
+    """Symptoms felt now, without a mood score (demo step, quick log). Red-flag symptoms (thresholds.json "symptoms")
+    are Act now and fulfil requires_symptoms rules for active_minutes."""
+    symptoms: list[str] = Field(min_length=1, max_length=10)
+    notes: str = Field(default="", max_length=300)
+
+
 # Known form kinds are validated; other kinds are stored as given.
 FORM_MODELS = {"meal": MealForm, "exercise": ExerciseForm, "biomarkers": BiomarkerForm, "pvt": PvtResult,
-               "self_care": SelfCareForm, "mood": MoodForm}
+               "self_care": SelfCareForm, "mood": MoodForm, "symptoms": SymptomForm}
 
 
 class CheckRequest(BaseModel):

@@ -101,6 +101,7 @@ export function Sidebar() {
             <span className={`h-[7px] w-[7px] rounded-full ${usingMock ? 'bg-watch' : 'bg-ok'}`} aria-hidden />
             {usingMock ? 'Mock data: the backend on this laptop is not answering' : 'Runs on board · backend answering'}
           </span>
+          <span className="font-semibold text-watch">Research prototype · not clinically validated</span>
           <span>Runs on board · works offline · Mock data where labelled</span>
           <span className="text-muted/70">Admin (/admin) is hidden from crew</span>
         </footer>
