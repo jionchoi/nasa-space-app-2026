@@ -1,22 +1,24 @@
-import { Siren, X } from '@phosphor-icons/react';
-import { useEffect, useRef } from 'react';
+import { Siren, SpeakerSlash, X } from '@phosphor-icons/react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postEvent } from '../../api/client';
 import { clearCrewAlarm, DEFAULT_EMERGENCY_URL, useCrewAlarm } from '../../lib/crewAlarm';
+import { audioOut, useMuted } from '../../lib/sound';
 import { useApp } from '../../state/AppContext';
 
 const TONE = { high: 960, low: 640, step_s: 0.45, volume: 0.5 }; // two-tone siren, made with Web Audio (no files)
+/** Development builds only: the siren stops by itself after this long (the visual alarm stays until answered). */
+const DEV_SIREN_LIMIT_MS = 60_000;
 
-/** Loud repeating two-tone alarm until stopped. Browsers may block sound until the page has been clicked once. */
+/** Loud repeating two-tone alarm until stopped (or muted: it plays through the shared, mutable output).
+ *  Browsers may block sound until the page has been clicked once. */
 function useAlarmTone(on: boolean) {
-  const ctx = useRef<AudioContext | null>(null);
   useEffect(() => {
     if (!on) return;
-    const audio = (ctx.current ??= new AudioContext());
-    void audio.resume();
+    const { ctx: audio, out } = audioOut();
     const gain = audio.createGain();
     gain.gain.value = TONE.volume;
-    gain.connect(audio.destination);
+    gain.connect(out);
     const osc = audio.createOscillator();
     osc.type = 'square';
     osc.connect(gain);
@@ -27,11 +29,19 @@ function useAlarmTone(on: boolean) {
       const now = audio.currentTime;
       for (let i = 0; i < 400; i++) osc.frequency.setValueAtTime(i % 2 ? TONE.low : TONE.high, now + i * TONE.step_s);
     }, 150_000);
-    return () => {
+    let stopped = false;
+    const silence = () => {
+      if (stopped) return;
+      stopped = true;
       clearInterval(rearm);
       osc.stop();
       osc.disconnect();
       gain.disconnect();
+    };
+    const devLimit = import.meta.env.DEV ? setTimeout(silence, DEV_SIREN_LIMIT_MS) : undefined;
+    return () => {
+      clearTimeout(devLimit);
+      silence();
     };
   }, [on]);
 }
@@ -42,6 +52,7 @@ export function CrewAlarm() {
   const navigate = useNavigate();
   const { persona, setPersona, personaInfo, envInfo } = useApp();
   useAlarmTone(!!alarm);
+  const muted = useMuted();
   // The crew member the alarm is about (it may come from another tab showing someone else).
   const who = alarm?.persona ?? persona;
 
@@ -76,6 +87,11 @@ export function CrewAlarm() {
           CREW ALARM: crew member not responding, {location}
         </h1>
         <p className="text-2xl font-medium opacity-90">{name ? `${name} · ` : ''}{alarm.reason}</p>
+        {muted && (
+          <span className="flex items-center gap-2 rounded-full bg-bg/40 px-4 py-1.5 text-lg font-bold ring-2 ring-white/60">
+            <SpeakerSlash className="h-5 w-5" weight="bold" aria-hidden /> Muted (press M for sound)
+          </span>
+        )}
         <div className="flex gap-5">
           <button onClick={respond} autoFocus
             className="rounded-3xl bg-white px-14 py-7 text-4xl font-black text-alert shadow-2xl transition active:scale-[0.98] focus:outline-none focus-visible:ring-8 focus-visible:ring-white/50">

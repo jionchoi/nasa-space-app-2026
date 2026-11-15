@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { audioOut } from '../../lib/sound';
 import { fmt, mmss } from '../../lib/status';
 import type { CprConfig, VitalsFrame } from '../../types/contracts';
 
@@ -21,14 +22,14 @@ export function CprGuide({ config, latest, onLog, onBack }: Props) {
   const counter = useRef(0);
 
   const click = () => {
-    const ctx = audio.current;
-    if (!ctx) return;
+    if (!audio.current) return;
+    const { ctx, out } = audioOut();  // shared output: the global mute silences the metronome too
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.frequency.value = 1000;
     gain.gain.setValueAtTime(0.4, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
-    osc.connect(gain).connect(ctx.destination);
+    osc.connect(gain).connect(out);
     osc.start();
     osc.stop(ctx.currentTime + 0.07);
   };
@@ -61,14 +62,12 @@ export function CprGuide({ config, latest, onLog, onBack }: Props) {
     return () => clearInterval(id);
   }, [running, config]);
 
-  useEffect(() => () => { void audio.current?.close(); }, []);
 
   if (!config) return <section className="panel grid flex-1 place-items-center text-2xl text-muted">Loading CPR guide…</section>;
 
   const toggle = () => {
     if (!running) {
-      audio.current ??= new AudioContext();
-      void audio.current.resume();
+      audio.current = audioOut().ctx;  // started by this click, so the browser allows sound
       setSwitchLeft(config.switch_rescuer_s);
     }
     onLog(running ? `CPR stopped after ${cycles} cycles` : 'CPR started');

@@ -1,7 +1,8 @@
 // Full-screen "Are you OK?" shown when unresponsive detection suspects the crew member is not responding. Any tap,
 // any key, speaking, a purposeful hand movement (seen by the detector) or the "I'm OK" button answers it. If nobody answers before the countdown ends, the detector raises the crew alarm.
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { listenForVoice } from '../../cv/voice';
+import { audioOut } from '../../lib/sound';
 import { useCv } from '../../state/CvContext';
 
 // A soft repeating beep (not the alarm siren): one short note every second, made with Web Audio (no sound files).
@@ -9,12 +10,10 @@ const BEEP = { frequency: 880, length_s: 0.18, every_ms: 1000, volume: 0.25 };
 
 /** Plays the beep while `on` is true. Browsers may block sound until the page has been clicked once. */
 function useBeep(on: boolean) {
-  const audio = useRef<AudioContext | null>(null);
   useEffect(() => {
     if (!on) return;
-    // One audio context for the page, created the first time it is needed.
-    const ctx = (audio.current ??= new AudioContext());
-    void ctx.resume();
+    // The app's shared audio output (lib/sound.ts), so the global mute silences the beep too.
+    const { ctx, out } = audioOut();
     // One short note: a sine wave that fades out quickly so it sounds like a beep, not a click.
     const beep = () => {
       const osc = ctx.createOscillator();
@@ -22,7 +21,7 @@ function useBeep(on: boolean) {
       osc.frequency.value = BEEP.frequency;
       gain.gain.setValueAtTime(BEEP.volume, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + BEEP.length_s);
-      osc.connect(gain).connect(ctx.destination);
+      osc.connect(gain).connect(out);
       osc.start();
       osc.stop(ctx.currentTime + BEEP.length_s);
     };

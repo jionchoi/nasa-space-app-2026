@@ -34,8 +34,9 @@ const DOT_CLASS: Record<Tone, string> = { ok: 'bg-ok', watch: 'bg-watch', alert:
 
 /** Header button: turns camera detection on and off. */
 export function CameraToggle() {
-  const { phase, start, stop } = useCv();
-  const on = phase === 'loading' || phase === 'calibrating' || phase === 'running';
+  const { phase, enabled, start, stop } = useCv();
+  // On once switched on (even if the camera then failed: the pulse-only alarm still runs until switched off).
+  const on = enabled || phase === 'loading' || phase === 'calibrating' || phase === 'running';
   return (
     <button
       className={`btn h-9 gap-1.5 px-3 ${on ? 'ring-ok/40' : ''}`}

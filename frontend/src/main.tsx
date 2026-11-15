@@ -6,7 +6,10 @@ import { AlertsProvider } from './state/AlertsContext';
 import { AppProvider } from './state/AppContext';
 import { CvProvider } from './state/CvContext';
 import { RoutineProvider } from './state/RoutineContext';
+import { installMuteShortcut } from './lib/sound';
 import './index.css';
+
+installMuteShortcut();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

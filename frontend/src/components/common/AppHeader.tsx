@@ -7,6 +7,7 @@ import { CameraToggle } from '../cv/CameraMonitor';
 import { AlertsList } from '../dashboard/AlertsList';
 import { MissionClock } from '../routine/MissionClock';
 import { Brand, CrewPicker, LinkStatus, LocationSwitch } from './HeaderParts';
+import { MuteButton } from './MuteButton';
 import { OnboardIndicator, SourceChip } from './StatusIndicators';
 
 interface Props {
@@ -42,7 +43,7 @@ export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }:
         <Brand small />
         <span className="text-muted">Mission day <span className="font-mono text-text">{personaInfo?.mission_day ?? '–'}</span></span>
         <LinkStatus />
-        <div className="ml-auto flex items-center gap-3"><SourceChip /><OnboardIndicator /></div>
+        <div className="ml-auto flex items-center gap-3"><MuteButton small /><SourceChip /><OnboardIndicator /></div>
       </header>
     );
   }
@@ -61,6 +62,7 @@ export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }:
         <div className="flex-1" />
 
         <OnboardIndicator />
+        <MuteButton />
         <CameraToggle />
         {onOpenMessages && (
           <button type="button" className="flex h-11 items-center gap-1.5 rounded-control border border-line bg-raised/50 px-3 transition hover:bg-raised"
