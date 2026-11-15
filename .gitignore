@@ -28,3 +28,9 @@ backend/data/app.db-*
 .idea/
 .DS_Store
 Thumbs.db
+
+# integration packages, local recordings and research artifacts
+*.egg-info/
+output/
+artifacts/
+data/recordings/

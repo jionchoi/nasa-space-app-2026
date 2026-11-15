@@ -67,11 +67,9 @@ export function connectVitals(persona: string, onFrame: (frame: VitalsFrame) => 
     const sentStart = replayStart;
     if (sentStart !== null) query.set('start', String(sentStart));
     if (replaySpeed !== null) query.set('speed', String(replaySpeed));
-    let opened = false;
     const socket = new WebSocket(`${WS_URL}/ws/vitals?${query}`);
     ws = socket;
     socket.onopen = () => {
-      opened = true;
       if (replayStart === sentStart) replayStart = null;
       stopMock();
       setMock(false);
@@ -87,7 +85,7 @@ export function connectVitals(persona: string, onFrame: (frame: VitalsFrame) => 
     };
     socket.onclose = () => {
       if (closed) return;
-      if (!opened) startMock();
+      startMock();
       retry = setTimeout(open, 2000);
     };
   };

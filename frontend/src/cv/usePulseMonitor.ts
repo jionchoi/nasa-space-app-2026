@@ -1,6 +1,7 @@
 // Watches the live vitals for the pulse, ALL THE TIME (with or without the camera): pulse lost, clip off,
 // still hand and red flags (pulse.ts). Replaces useVitalsRed.
 import { useEffect, useRef, useState } from 'react';
+import { useSignals } from '../state/SignalContext';
 import { connectVitals } from '../api/client';
 import type { Thresholds } from '../types/contracts';
 import { normalAmplitude, pulseReading, type PulseSample } from './pulse';
@@ -17,12 +18,14 @@ const NO_DATA: PulseReading = {
 
 /** The latest pulse reading for this persona. Updates about once a second. */
 export function usePulseMonitor(persona: string, all: Thresholds | null, cv: CvThresholds | null): PulseReading {
+  const {mode}=useSignals();
   const [reading, setReading] = useState<PulseReading>(NO_DATA);
   // The newest numbers for the timer callbacks.
   const config = useRef({ all, cv });
   config.current = { all, cv };
 
   useEffect(() => {
+    if(mode!=='demo'){setReading(NO_DATA);return;}
     let samples: PulseSample[] = [];
     // This person's normal pulse wave height, updated only while the pulse is ok.
     let reference: number | null = null;
@@ -48,7 +51,7 @@ export function usePulseMonitor(persona: string, all: Thresholds | null, cv: CvT
       clearInterval(timer);
       connection.close();
     };
-  }, [persona]);
+  }, [persona,mode]);
 
   return reading;
 }

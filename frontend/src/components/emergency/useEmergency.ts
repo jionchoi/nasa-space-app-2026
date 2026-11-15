@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSignals } from '../../state/SignalContext';
 import { postEvent } from '../../api/client';
 import { useApp } from '../../state/AppContext';
 import type { Protocol, StepRoute } from '../../types/contracts';
@@ -28,6 +29,7 @@ function parsePreanswer(raw: string | null): { key: string; value: Answer } | nu
 /** Protocol walk-through state: current step, answers, timers, routing, red-flag jumps and the event log. */
 /** `goto`: "cpr" or a step number to open right after the pre-answer (unresponsive detection: pulse lost -> CPR). */
 export function useEmergency(protocol: Protocol | null, trigger: string | null, preanswer: string | null = null, goto: string | null = null) {
+  const {mode}=useSignals();
   const { persona } = useApp();
   const [log, setLog] = useState<LogEntry[]>([]);
   const [index, setIndex] = useState(0);
@@ -45,8 +47,8 @@ export function useEmergency(protocol: Protocol | null, trigger: string | null, 
     const entry = { t: new Date().toISOString(), kind, text };
     setLog((list) => [...list, entry]);
     // The event log is posted as "alarm" events; details travel in `signals`.
-    void postEvent({ t: entry.t, type: 'alarm', signals: { source: 'emergency', protocol: protocolId, kind, text } }, persona);
-  }, [protocolId, persona]);
+    if(mode==='demo')void postEvent({ t: entry.t, type: 'alarm', signals: { source: 'emergency', protocol: protocolId, kind, text } }, persona);
+  }, [protocolId, persona,mode]);
 
   /** Show the target of a route; `why` is added to the log line (e.g. "auto-advanced by red flag pulse_lost"). */
   const go = useCallback((p: Protocol, from: number, route: StepRoute, why?: string) => {

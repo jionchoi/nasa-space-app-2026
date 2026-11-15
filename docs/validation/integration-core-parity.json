@@ -1,0 +1,19 @@
+{
+  "ppg": [
+    {
+      "record": "01",
+      "exact_report_match": true,
+      "mae_bpm": 0.9367,
+      "valid_output_count": 471
+    },
+    {
+      "record": "02",
+      "exact_report_match": true,
+      "mae_bpm": 0.6183,
+      "valid_output_count": 471
+    }
+  ],
+  "bp_cpu_original_parity": true,
+  "bp_model_service_enabled": false,
+  "torch_imported": false
+}

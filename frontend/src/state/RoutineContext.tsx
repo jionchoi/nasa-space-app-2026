@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { getMissions, useUsingMock } from '../api/client';
 import type { LogKind, MissionsResponse, ScheduleItem } from '../types/contracts';
+import { useSignals } from './SignalContext';
 import { useApp } from './AppContext';
 
 interface RoutineState {
@@ -29,6 +30,7 @@ export const toMinutes = (hhmm: string) => { const [h, m] = hhmm.split(':').map(
 export const missionHHMM = (d: Date) => `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
 
 export function RoutineProvider({ children }: { children: ReactNode }) {
+  const {mode}=useSignals();
   const { persona, envInfo, checkDoneAt } = useApp();
   const usingMock = useUsingMock();
   const [missions, setMissions] = useState<MissionsResponse | null>(null);
@@ -36,7 +38,7 @@ export function RoutineProvider({ children }: { children: ReactNode }) {
   const [clockOffsetMs, setOffset] = useState(0);
   const schedule = useMemo(() => envInfo?.schedule ?? [], [envInfo]);
 
-  const refreshMissions = useCallback(() => { getMissions(persona).then(setMissions); }, [persona]);
+  const refreshMissions = useCallback(() => { if(mode==='demo')getMissions(persona).then(setMissions); }, [persona,mode]);
   useEffect(() => { refreshMissions(); }, [refreshMissions, checkDoneAt, usingMock]);
 
   const jumpToNextReminder = useCallback(() => {

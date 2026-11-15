@@ -5,6 +5,7 @@ import {
   DEFAULT_LABELS, getDailyChecks, getEnvironments, getEscalation, getGuidance, getHealth, getLabels, getMeasurements,
   getPersonas, getRegions, getStreak, getThresholds, postEmergencyLog, setReplay, useUsingMock,
 } from '../api/client';
+import { useSignals } from './SignalContext';
 import { envKey, envKeys as keysFor, pickForEnv, resolveEnv } from '../lib/env';
 import type {
   EmergencyLogIn, Environment, EscalationConfig, Guidance, Labels, Measurements, Persona, RegionId, RegionMeta, Status,
@@ -64,6 +65,7 @@ setReplay({ start: num('start'), speed: num('speed') });
 const isToday = (iso: string) => new Date(iso).toDateString() === new Date().toDateString();
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const {mode}=useSignals();
   const usingMock = useUsingMock();
   const [persona, setPersonaId] = useState(params.get('persona') ?? 'A');
   const [env, setEnvKey] = useState(params.get('env') ?? 'iss');
@@ -85,7 +87,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let live = true;
     const keep = <T,>(set: (v: T) => void) => (v: T) => { if (live) set(v); };
-    getPersonas().then(keep(setPersonas));
+    if(mode==='demo') getPersonas().then(keep(setPersonas));
     getEnvironments().then(keep(setEnvironments));
     getThresholds().then(keep(setThresholds));
     getMeasurements().then(keep(setMeasurements));
@@ -94,37 +96,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     getEscalation().then(keep(setEscalation));
     getLabels().then(keep(setLabels));
     return () => { live = false; };
-  }, [usingMock]);
+  }, [usingMock,mode]);
 
   // The "On-board" indicator: keep checking that the local backend answers (it never needs the internet).
   useEffect(() => {
+    if(mode!=='demo')return;
     const id = setInterval(() => { void getHealth(); }, HEALTH_EVERY_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [mode]);
 
-  const refreshStreak = useCallback(() => { getStreak(persona).then(setStreak); }, [persona]);
+  const refreshStreak = useCallback(() => { if(mode==='demo')getStreak(persona).then(setStreak); }, [persona,mode]);
 
   // Today's daily check and the streak come from the local database, so they survive a restart.
   useEffect(() => {
     let live = true;
     setCheckDoneAt(null);
     setPicked(null);
+    if(mode!=='demo')return;
     getDailyChecks(persona).then((rows) => {
       if (live && rows[0] && isToday(rows[0].t)) setCheckDoneAt(rows[0].t);
     });
     getStreak(persona).then((s) => { if (live) setStreak(s); });
     return () => { live = false; };
-  }, [persona, usingMock]);
+  }, [persona, usingMock,mode]);
 
   const addEmergency = useCallback((record: EmergencyRecord, log: Omit<EmergencyLogIn, 'persona'>) => {
     const data = { persona, ...log };
     setEmergencies((list) => [{ ...record, localId: `local-${Date.parse(record.endedAt)}`, data }, ...list]);
-    void postEmergencyLog(data);
-  }, [persona]);
+    if(mode==='demo') void postEmergencyLog(data);
+  }, [persona,mode]);
   const jumpTo = useCallback((seconds: number) => {
     setReplay({ start: seconds });
     setNonce((n) => n + 1);
-  }, []);
+  }, [mode]);
 
   // A location with planets (the rover) is sent as "rover:<planet>"; before environments load, keep the id as given.
   const setEnv = useCallback((id: string) => {

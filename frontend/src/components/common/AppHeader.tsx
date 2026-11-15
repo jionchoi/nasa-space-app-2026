@@ -1,3 +1,5 @@
+import { useSignals } from '../../state/SignalContext';
+import { ModePicker } from '../signals/SignalControls';
 import { EnvelopeSimple, Warning } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -31,6 +33,8 @@ function EmergencyButton() {
 
 /** The same header on every screen (dashboard v1 design). */
 export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }: Props) {
+  const {mode,session,error}=useSignals();
+  const demo=mode==='demo';
   const { personaInfo, setPicked } = useApp();
   const { alerts, ack } = useAlerts();
   const navigate = useNavigate();
@@ -40,8 +44,8 @@ export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }:
     return (
       <header className="flex h-12 shrink-0 items-center gap-4 rounded-card border border-line bg-header px-3 text-sm">
         <Brand small />
-        <span className="text-muted">Mission day <span className="font-mono text-text">{personaInfo?.mission_day ?? '–'}</span></span>
-        <LinkStatus />
+        <span className="text-muted">Mission day <span className="font-mono text-text">{demo ? personaInfo?.mission_day ?? '–' : '–'}</span></span>
+        {demo?<LinkStatus />:<span className="text-sm text-muted">Local measurements</span>}
         <div className="ml-auto flex items-center gap-3"><SourceChip /><OnboardIndicator /></div>
       </header>
     );
@@ -51,18 +55,19 @@ export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }:
     <header className="relative z-30 shrink-0 border-b border-line bg-header">
       <div className="flex flex-wrap items-center gap-2.5 px-5 py-3">
         <Brand />
-        <CrewPicker />
+        {demo?<CrewPicker />:<span className="border-l border-line pl-4 text-sm">{session?.subject_id??'No crew session'}</span>}
+        <ModePicker/>
         <LocationSwitch />
         <div className="flex flex-col gap-0.5">
-          <LinkStatus />
-          <span className="flex items-center gap-2"><MissionClock /><SourceChip /></span>
+          {demo?<LinkStatus />:<span className="text-sm text-muted">Local measurements</span>}
+          <span className="flex items-center gap-2">{demo&&<MissionClock />}<SourceChip /></span>
         </div>
 
         <div className="flex-1" />
 
         <OnboardIndicator />
-        <CameraToggle />
-        {onOpenMessages && (
+        {demo?<CameraToggle />:<span className="text-xs text-muted">Camera detection · demo only</span>}
+        {demo && onOpenMessages && (
           <button type="button" className="flex h-11 items-center gap-1.5 rounded-control border border-line bg-raised/50 px-3 transition hover:bg-raised"
             onClick={onOpenMessages} aria-label={`Messages to the flight surgeon: ${draftCount} drafts`}>
             <EnvelopeSimple className="h-4 w-4" aria-hidden /> Messages
@@ -71,8 +76,9 @@ export function AppHeader({ compact, onOpenMessages, draftCount = 0, children }:
             </span>
           </button>
         )}
-        <AlertsList alerts={alerts} onAck={ack} onOpen={(link) => navigate(link)}
-          onView={(region) => { setPicked(region); if (pathname !== '/') navigate('/'); }} />
+        {demo && <AlertsList alerts={alerts} onAck={ack} onOpen={(link) => navigate(link)}
+          onView={(region) => { setPicked(region); if (pathname !== '/') navigate('/'); }} />}
+        {error&&<span role="alert" className="text-sm text-watch">{error}</span>}
         <EmergencyButton />
       </div>
       {children}

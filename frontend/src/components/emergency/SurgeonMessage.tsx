@@ -1,3 +1,4 @@
+import { useSignals } from '../../state/SignalContext';
 import { useState } from 'react';
 import { mockDelivery, postMessage, replyMessage } from '../../api/client';
 import { undraft } from '../../lib/env';
@@ -15,6 +16,7 @@ interface Props {
 /** Draft built from the log, a Send button, and the delivery status for the current environment.
  *  Uses the shared messaging service (POST /api/messages) and DeliveryStatus, like the dashboard's drawer. */
 export function SurgeonMessage({ draft, onLog, onSent }: Props) {
+  const {mode}=useSignals();
   const { persona, env, envInfo, escalation } = useApp();
   const [sent, setSent] = useState<Message | null>(null);
 
@@ -44,6 +46,7 @@ export function SurgeonMessage({ draft, onLog, onSent }: Props) {
     onSent?.(next);
   };
 
+  if(mode!=='demo')return <section className="rounded-panel border border-line bg-panel p-3 text-sm text-muted">Local protocol log · simulated flight-surgeon messaging is available in demo mode.</section>;
   return (
     <section className="panel grid shrink-0 grid-cols-[1fr_340px] gap-4 p-3" aria-label="Flight surgeon message">
       <div className="min-w-0">

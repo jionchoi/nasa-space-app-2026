@@ -1,11 +1,14 @@
+import { useSignals } from '../../state/SignalContext';
 import { CloudSlash, Flask } from '@phosphor-icons/react';
 import { useUsingMock } from '../../api/client';
 import { useApp } from '../../state/AppContext';
 
 /** "Simulated data" (when the persona is simulated) and "Offline: mock data" (when the backend is off). */
 export function DataBadges() {
+  const {mode,session}=useSignals();
   const { personaInfo } = useApp();
   const usingMock = useUsingMock();
+  if(mode!=='demo')return <span className="badge text-muted">{session?.source??'No data'} · {mode}</span>;
   return (
     <>
       {personaInfo?.simulated && (

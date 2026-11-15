@@ -1,7 +1,7 @@
 """Region status, personas and the daily check."""
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from .. import alerts, cabin, daily_log, db, radiation, store
 from ..models import CheckRequest, CheckResult, RegionStatus
@@ -61,11 +61,14 @@ def run_check(req: CheckRequest, env: str = "iss") -> dict:
     persona = store.persona(req.persona)
     thresholds, questionnaire = store.thresholds(), store.questionnaire()
 
-    persona["daily"] = [d for d in persona["daily"] if not d.get("today")]  # redo replaces today's entry
+    try:
+        vitals = check_rules.summarize(
+            [f.model_dump() for f in req.seated_frames], [f.model_dump() for f in req.stand_frames],
+            questionnaire["measurement"], check_rules.min_quality(thresholds))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))
+    persona["daily"] = [d for d in persona["daily"] if not d.get("today")]
     before = _statuses(persona)
-    vitals = check_rules.summarize(
-        [f.model_dump() for f in req.seated_frames], [f.model_dump() for f in req.stand_frames],
-        questionnaire["measurement"], check_rules.min_quality(thresholds))
     extra = {"temp_c": req.temp_c, "glucose_mmol": req.glucose_mmol, "bp_sys": req.bp_sys, "bp_dia": req.bp_dia}
     if req.pvt:
         extra.update(pvt_median_ms=req.pvt.median_ms, pvt_lapses=req.pvt.lapses)

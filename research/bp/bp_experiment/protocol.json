@@ -1,0 +1,30 @@
+{
+  "protocol_version": "cpu_bp_pilot_v1",
+  "seed": 20261115,
+  "source": "VitalDB official FHIR API; original recordings, not PulseDB",
+  "subjects_target": 96,
+  "train_subjects": 60,
+  "validation_subjects": 18,
+  "test_subjects": 18,
+  "minutes_per_case": 20,
+  "maximum_windows_per_subject": 120,
+  "minimum_windows_per_subject": 24,
+  "sample_rate_hz": 125,
+  "samples_per_window": 1024,
+  "overlap": false,
+  "input_channels": ["ECG", "PPG"],
+  "labels": "Median systolic peaks and median intervening diastolic troughs from simultaneous ART; no ART-derived input features",
+  "selection": "Fixed-seed shuffled case IDs; first eligible unique patients with all three tracks and sufficient quality windows. No selection on prediction errors.",
+  "split": "Patient-disjoint, assigned before training, uncalibrated test; no test-subject BP supplied to inference",
+  "training": {"max_epochs": 100, "patience": 15, "batch_size": 64, "learning_rate": 0.001, "cpu_threads": 2},
+  "adoption_gate": {
+    "test_sbp_mae_mmHg_max": 10.0,
+    "test_dbp_mae_mmHg_max": 7.0,
+    "minimum_relative_improvement_over_train_mean_each_target": 0.1,
+    "parameters_max": 1000000,
+    "artifact_bytes_max": 4194304,
+    "cpu_end_to_end_p95_ms_max": 1000.0,
+    "minimum_test_subjects": 15
+  },
+  "scope": "Pilot engineering gate, not clinical certification or astronaut/flight-hardware validation. No live-service activation on failure."
+}

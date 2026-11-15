@@ -1,4 +1,9 @@
-"""PPG signal processing. Owner: Jian.
+"""Deprecated demo window adapter. Real PPG uses app.signals + crewsense_signals.ppg.
+
+The old window-at-a-time interface cannot preserve the NASA causal filter or PRV history.
+Use /api/v2/signal-sessions and /ws/v2/ingest for actual measurements.
+
+Original demo extension point. Owner: Jian.
 
 compute_vitals() is the only function the rest of the app calls. It must return a dict
 shaped like the VitalsFrame contract (docs/contracts.md).

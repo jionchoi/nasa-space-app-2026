@@ -3,6 +3,8 @@ import { useApp } from '../../state/AppContext';
 import { USUAL_FIELD, usualValue } from '../../lib/metrics';
 import { entryOf, fmt, LIVE_VITALS, liveStatus, STATUS_CLASS } from '../../lib/status';
 import type { DailyEntry, Thresholds, VitalsFrame } from '../../types/contracts';
+import { useSignals } from '../../state/SignalContext';
+import { SignalVitals } from '../signals/SignalVitals';
 import { VitalCard } from './VitalCard';
 
 interface Props {
@@ -16,11 +18,13 @@ interface Props {
 
 /** "Live vitals": heart rate, HRV, blood oxygen and breathing rate as 4 large cards, each with a 60-second sparkline. */
 export function VitalsStrip({ frames, thresholds, daily = [], compact }: Props) {
+  const {mode}=useSignals();
   const latest = frames[frames.length - 1];
   const live = liveStatus(latest, thresholds);
   const source = latest?.source === 'sensor' ? 'finger sensor' : 'replayed recording';
   const { personaInfo, jumpTo } = useApp();
 
+  if (mode!=='demo') return <SignalVitals compact={compact}/>;
   return (
     <section aria-label="Live vitals" className="relative">
       <div className={`flex flex-wrap items-center gap-3 ${compact ? 'mb-2' : 'mb-3'}`}>
