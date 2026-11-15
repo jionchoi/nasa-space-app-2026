@@ -1,0 +1,30 @@
+{
+  "brain_mood": {
+    "function": "Your brain controls your thoughts, sleep, reflexes, and feelings.",
+    "space_effect": "Isolation and schedule changes can disrupt sleep and increase stress [REF-01]. Fluid shifting to your head can also affect your vision and mental sharpness [REF-02]."
+  },
+  "heart": {
+    "function": "Your heart pumps blood to deliver oxygen and energy to your body.",
+    "space_effect": "Zero gravity makes your heart work less, which can reduce its size and strength over time [REF-03]. Returning to gravity can make you feel dizzy because your heart has to work harder to pump blood up to your head [REF-04]."
+  },
+  "lungs": {
+    "function": "Your lungs bring in oxygen and remove carbon dioxide.",
+    "space_effect": "Dust, floating particles, and high cabin CO2 can irritate your breathing [REF-05]. Fluid shifts can also slightly change how air moves in your lungs [REF-06]."
+  },
+  "immune": {
+    "function": "Your immune system fights off germs and keeps you from getting sick.",
+    "space_effect": "Spaceflight stress, radiation, and altered sleep can weaken your immune system [REF-07]. This makes it easier for dormant viruses to wake up or for you to catch a cold [REF-08]."
+  },
+  "metabolism": {
+    "function": "Your metabolism turns food into energy and manages your body temperature.",
+    "space_effect": "Spaceflight changes how your body uses sugar and stores fat [REF-09]. You might lose your appetite, making it hard to maintain your body mass [REF-10]."
+  },
+  "bones_muscles": {
+    "function": "Your bones and muscles give you strength, structure, and the ability to move.",
+    "space_effect": "Without gravity loading your body, muscles shrink and bones lose density very quickly [REF-11]. Daily heavy exercise is required to prevent major bone and muscle loss [REF-12]."
+  },
+  "radiation": {
+    "function": "Your body's cells constantly repair themselves from daily wear and tear.",
+    "space_effect": "Space radiation damages your DNA faster than your cells can fix it [REF-13]. High doses increase your lifetime risk of illness and can cause immediate fatigue or nausea [REF-14]."
+  }
+}

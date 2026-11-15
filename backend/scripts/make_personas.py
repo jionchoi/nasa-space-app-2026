@@ -32,11 +32,18 @@ HEALTHY_DAILY = {
     "exercise_min": (125, 125, 8.0, 110, 140, 0),
     "radiation_msv": (0.6, 0.6, 0.05, 0.45, 0.75, 2),
 }
-# Reaction test (psychomotor vigilance style). Drawn with a separate random stream so adding them does not
-# change the other daily values. Same tuple format as above. PLACEHOLDER: Yenna reviews.
+# Reaction test (psychomotor vigilance style), from the CSA PRET ground study (data/pvt_norms.json): persona A stays
+# near the PRET median, persona B drifts to the 90th percentile over 30 days. Drawn with a separate random stream so
+# these do not change the other daily values. Same tuple format as above.
+NORMS = json.loads((Path(__file__).resolve().parents[1] / "data" / "pvt_norms.json").read_text(encoding="utf-8"))
+RT, LR = NORMS["percentiles"]["median_rt_ms"], NORMS["percentiles"]["lapse_rate_pct"]
 HEALTHY_PVT = {
-    "pvt_median_ms": (255, 255, 12, 225, 290, 0),
-    "pvt_lapses": (0.6, 0.6, 0.6, 0, 2, 0),
+    "pvt_median_ms": (RT["p50"], RT["p50"], 8, RT["p50"] - 25, RT["p50"] + 25, 0),
+    "pvt_lapse_rate_pct": (LR["p50"], LR["p50"], 2.5, 0, LR["p50"] + 8, 1),
+}
+DRIFT_PVT = {  # persona B: from the PRET median to the 90th percentile by day 30
+    "pvt_median_ms": (RT["p50"], RT["p90"], 4, RT["p50"] - 20, RT["p90"] + 10, 0),
+    "pvt_lapse_rate_pct": (LR["p50"], LR["p90"], 1.5, 0, LR["p90"] + 4, 1),
 }
 # Blood pressure from the daily check (added Nov 14), mmHg. Own random stream, same reason as above. PLACEHOLDER.
 HEALTHY_BP = {
@@ -73,7 +80,7 @@ PHYSIOLOGY = {
             "exercise_min": (125, 70, 4.0, 50, 140, 0),
         },
         "solar_event": {"day": 18, "msv": 5.2},
-        "pvt": {"pvt_median_ms": (250, 345, 6, 230, 380, 0), "pvt_lapses": (0.3, 6.0, 0.5, 0, 9, 0)},  # slower over time
+        "pvt": DRIFT_PVT,  # slower over time, to the PRET 90th percentile
         "bp": {"bp_sys": (117, 126, 2.0, 108, 134, 0), "bp_dia": (75, 81, 1.5, 68, 88, 0)},  # drifts slightly upward
         "body_mass_start_kg": 81.2,
         "phases": [{"until": STREAM_S, "hr": 74, "rmssd": 30, "spo2": 97, "rr": 15}],
@@ -99,7 +106,7 @@ PHYSIOLOGY = {
 }
 STREAM_NOISE = {"hr": 1.2, "rmssd": 2.0, "spo2": 0.35, "rr": 0.5}
 FIELD_ORDER = ["day", "hr_rest", "hrv_rmssd", "spo2", "rr", "stand_hr_rise", "sleep_h", "mood", "stress",
-               "symptoms", "hydration_l", "exercise_min", "radiation_msv", "pvt_median_ms", "pvt_lapses",
+               "symptoms", "hydration_l", "exercise_min", "radiation_msv", "pvt_median_ms", "pvt_lapse_rate_pct",
                "bp_sys", "bp_dia"]
 
 

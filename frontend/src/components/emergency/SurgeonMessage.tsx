@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { mockDelivery, postMessage, replyMessage } from '../../api/client';
+import { useDemo, useDemoCommand } from '../../lib/demo';
 import { undraft } from '../../lib/env';
 import { useApp } from '../../state/AppContext';
 import type { Message } from '../../types/contracts';
@@ -17,6 +18,7 @@ interface Props {
 export function SurgeonMessage({ draft, onLog, onSent }: Props) {
   const { persona, env, envInfo, escalation } = useApp();
   const [sent, setSent] = useState<Message | null>(null);
+  const { active: demo } = useDemo();
 
   const send = async () => {
     onLog(`Message sent to the flight surgeon (${envInfo?.label ?? env})`);
@@ -34,6 +36,9 @@ export function SurgeonMessage({ draft, onLog, onSent }: Props) {
     onSent?.(local);
   };
 
+  // Demo mode (step 8): send the message as if the crew pressed Send.
+  useDemoCommand(['sendSurgeonMessage'], () => { void send(); });
+
   const simulateReply = async () => {
     if (!sent) return;
     onLog('Flight surgeon reply received (simulated for the demo)');
@@ -45,17 +50,17 @@ export function SurgeonMessage({ draft, onLog, onSent }: Props) {
   };
 
   return (
-    <section className="panel grid shrink-0 grid-cols-[1fr_340px] gap-4 p-3" aria-label="Flight surgeon message">
-      <div className="min-w-0">
-        <div className="label mb-1">Message to the flight surgeon ({sent ? 'sent copy' : 'draft, updates by itself'})</div>
-        <pre className="h-28 overflow-y-auto whitespace-pre-wrap rounded-md border border-line bg-bg p-2 font-mono text-[13px] leading-snug">
-          {sent ? sent.text : draft}
-        </pre>
-      </div>
-      <div className="flex flex-col gap-2">
-        <button className="btn btn-primary py-2.5 text-xl font-bold" onClick={send}>{sent ? 'Send update' : 'Send'}</button>
-        {sent ? <DeliveryStatus message={sent} onSimulateReply={simulateReply} /> : <p className="text-sm text-muted">{undraft(envInfo?.advice_note)}</p>}
-      </div>
+    <section className="flex shrink-0 flex-col gap-2 border-t border-[#2A1416] pt-3" aria-label="Flight surgeon message">
+      <span className="text-xs font-bold tracking-[0.12em] text-[#B8999C]">FLIGHT SURGEON</span>
+      <span className="text-[11px] text-info">✦ Auto-drafted from vitals + log{sent ? ' · sent copy' : ' · updates by itself'}</span>
+      <pre className="max-h-[130px] overflow-y-auto whitespace-pre-wrap rounded-lg border border-[#2A1416] bg-[#160B0D] p-2.5 font-sans text-xs leading-relaxed text-[#E8DADB]">
+        {sent ? sent.text : draft}
+      </pre>
+      <span className="flex flex-wrap items-center gap-2.5">
+        <button type="button" className="h-11 rounded-full bg-[#F2EEEE] px-5 font-extrabold text-[#0A0506]" onClick={send}>{sent ? 'Send update' : 'Send now'}</button>
+        {!sent && <span className="text-xs text-[#B8999C]">{undraft(envInfo?.advice_note)}</span>}
+      </span>
+      {sent && <DeliveryStatus message={sent} onSimulateReply={demo ? simulateReply : undefined} />}
     </section>
   );
 }

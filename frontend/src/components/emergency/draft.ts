@@ -1,3 +1,4 @@
+import { ASTRONAUT_NAME } from '../../lib/locations';
 import { entryOf, fmt, LIVE_VITALS } from '../../lib/status';
 import type { Persona, Protocol, Thresholds, VitalsFrame } from '../../types/contracts';
 import { logTime } from './EventLog';
@@ -28,7 +29,7 @@ export function buildDraft(d: DraftInput): string {
     const step = d.protocol.steps.find((s) => s.n === Number(n));
     return `  Step ${n}: ${step?.check} ${value.toUpperCase()}`;
   });
-  const who = d.persona ? `${d.persona.name}${d.persona.simulated ? ' (simulated data)' : ''}` : 'unknown';
+  const who = `${ASTRONAUT_NAME}${d.persona?.simulated ? ' (simulated data)' : ''}`;
 
   return [
     `URGENT: ${d.protocol.title}`,

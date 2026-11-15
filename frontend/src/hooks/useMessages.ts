@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  draftForAlert, editMessage, getMessages, mockDelivery, replyMessage, sendMessage, useUsingMock,
+  draftForAlert, editMessage, getMessages, mockDelivery, postMessage, replyMessage, sendMessage, useUsingMock,
 } from '../api/client';
 import { useApp } from '../state/AppContext';
 import type { Alert, Message } from '../types/contracts';
@@ -64,8 +64,24 @@ export function useMessages() {
     return created.id;
   }, [usingMock, env, persona]);
 
+  /** A new message (the Inbox's auto-drafted summary when no alert draft exists): saved, then sent. Returns its id. */
+  const compose = useCallback(async (text: string): Promise<string> => {
+    const created = usingMock ? null : await postMessage({ persona, env, text, status: 'draft' });
+    if (created) {
+      const sent = await sendMessage(created.id, env, text);
+      setMessages((l) => upsert(l, sent ?? created));
+      return created.id;
+    }
+    const t = new Date().toISOString();
+    const d = mockDelivery(env);
+    const local: Message = { id: `local-msg-${Date.parse(t)}`, persona, t, env, text, status: 'sent', delay_s: d.delay_s, alert_id: null,
+      region: null, source: 'manual', sent_at: t, reply: null, replied_at: null, updated_at: t, status_text: d.status_text };
+    setMessages((l) => [local, ...l]);
+    return local.id;
+  }, [usingMock, persona, env]);
+
   const drafts = useMemo(() => messages.filter((m) => m.status === 'draft'), [messages]);
-  return { messages, drafts, edit, send, reply, draftFor };
+  return { messages, drafts, edit, send, reply, draftFor, compose };
 }
 
 export type MessagesApi = ReturnType<typeof useMessages>;

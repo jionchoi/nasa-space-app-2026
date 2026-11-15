@@ -6,44 +6,43 @@ interface Props {
 }
 
 const CHOICES = [
-  { id: 'chest_pain', label: 'Chest pain or pressure' },
-  { id: 'unresponsive', label: 'Crew member not responding' },
+  { id: 'chest_pain', label: 'Chest pain', sub: 'Pain or pressure in the chest', note: '' },
+  { id: 'unresponsive', label: 'Not responding', sub: 'Not waking, not answering', note: 'Also opened by the camera, with "Responsive: no" already answered.' },
 ];
 // Placeholder list: these protocols are not written yet.
 const OTHER = ['Heavy bleeding', 'Choking', 'Burn', 'Seizure'];
 
+/** Emergency protocol picker (Emergency-v4): three big cards. "Something else" lists the placeholders. */
 export function EntryScreen({ onPick, onExit }: Props) {
   const [other, setOther] = useState(false);
   return (
-    <div className="flex h-full min-h-[80vh] flex-col items-center justify-center gap-8 p-8">
-      <h1 className="text-7xl font-bold">What's happening?</h1>
-      <div className="grid w-full max-w-5xl gap-5">
+    <div className="flex flex-col gap-5 px-5 py-7 text-[#F2EEEE] sm:px-9">
+      <span className="text-[13px] tracking-[0.12em] text-[#B8999C]">WHAT IS HAPPENING?</span>
+      <div className="grid gap-4 md:grid-cols-3">
         {CHOICES.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => onPick(c.id)}
-            className="rounded-2xl border-4 border-alert bg-alert/15 px-8 py-9 text-5xl font-bold text-text transition hover:bg-alert hover:text-bg focus:outline-none focus-visible:ring-4 focus-visible:ring-text"
-          >
-            {c.label}
+          <button key={c.id} type="button" onClick={() => onPick(c.id)}
+            className="flex min-h-[200px] flex-col items-start gap-1.5 rounded-[18px] border border-[#5A2A30] bg-[#1A0A0D] px-6 py-7 text-left transition hover:border-alert hover:bg-alert/15">
+            <span className="font-display text-[26px] font-bold">{c.label}</span>
+            <span className="text-sm text-[#D9A9AE]">{c.sub}</span>
+            {c.note && <span className="text-[11px] text-[#8A6E71]">{c.note}</span>}
           </button>
         ))}
-        <button
-          onClick={() => setOther((v) => !v)}
-          aria-expanded={other}
-          className="rounded-2xl border-4 border-line bg-panel px-8 py-7 text-4xl font-semibold transition hover:border-info"
-        >
-          Something else
+        <button type="button" onClick={() => setOther((v) => !v)} aria-expanded={other}
+          className="flex min-h-[200px] flex-col items-start gap-1.5 rounded-[18px] border border-dashed border-[#3A2226] px-6 py-7 text-left transition hover:border-[#5A2A30]">
+          <span className="font-display text-[26px] font-bold">Something else</span>
+          <span className="text-sm text-[#D9A9AE]">Bleeding, choking, burn, seizure…</span>
+          <span className="text-[11px] text-[#8A6E71]">Protocols coming (placeholder)</span>
         </button>
-        {other && (
-          <div className="panel p-5 text-2xl">
-            <p className="mb-3 text-muted">PLACEHOLDER: these protocols are not written yet. Call your crew and the flight surgeon.</p>
-            <ul className="grid grid-cols-2 gap-3">
-              {OTHER.map((name) => <li key={name} className="rounded-lg border border-line px-4 py-3 text-muted">{name} (coming soon)</li>)}
-            </ul>
-          </div>
-        )}
       </div>
-      <button className="btn px-6 py-2 text-xl" onClick={onExit}>Back to dashboard</button>
+      {other && (
+        <div className="rounded-card border border-[#3A2226] p-4">
+          <p className="mb-3 text-[#D9A9AE]">PLACEHOLDER: these protocols are not written yet. Call your crew and the flight surgeon.</p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {OTHER.map((name) => <li key={name} className="rounded-lg border border-[#3A2226] px-4 py-3 text-[#B8999C]">{name} (coming soon)</li>)}
+          </ul>
+        </div>
+      )}
+      <button type="button" className="h-11 self-start rounded-full border border-[#3A2226] px-5 text-[#B8999C] hover:bg-white/5" onClick={onExit}>‹ Back to dashboard</button>
     </div>
   );
 }

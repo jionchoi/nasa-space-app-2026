@@ -51,7 +51,7 @@ export interface Signals {
   stillHand: number;
   /** Everything above combined, 0-1 (weights in thresholds.json "cv"). */
   unresponsiveScore: number;
-  /** Moon base only: the hips dropped fast and the body then stayed still. Always false elsewhere. */
+  /** Gravity only (cv.fall.environments): the hips dropped fast and the body then stayed still. Always false elsewhere. */
   fallDetected: boolean;
 }
 
@@ -171,6 +171,6 @@ export interface CvThresholds {
     pulse_lost_red_flag: string; good_quality: number; flat_ratio: number; no_pulse_s: number; clip_off_quality: number;
     baseline_jump_ratio: number; clean_quality: number; still_hand_s: number; stale_after_s: number;
   };
-  /** Moon base only: fall signal. */
+  /** Gravity only (Moon base, rover on the Moon or Mars): fall signal. */
   fall?: { environments: string[]; hip_drop_speed: number; still_after_s: number; still_motion: number };
 }

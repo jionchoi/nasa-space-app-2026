@@ -51,6 +51,9 @@ flowchart LR
 - **Neutral body posture (NBP).** With the muscles relaxed, the body settles by itself into a typical shape: arms float
   up in front to around chest or shoulder height with the elbows bent, shoulders raised, knees and hips bent, head
   tilted slightly forward. NASA described it from Skylab and Shuttle crews and put it in its design standards.
+  **Our posture score uses the arms only** (elbow bend, wrist height, upper arm raised, wrist in front): the legs and
+  hips are usually out of a desk or wall camera's view, and the head tilt is too small to measure reliably from a
+  2D picture. The bent knees and hips of NBP are therefore not checked.
 - **No purposeful movement.** The hands stop working: no typing, no reaching for handrails, no small corrections.
 - **The body may still move.** Nothing holds it in place, so it can drift or rotate slowly and smoothly (air flow,
   the last push). Movement in the picture is therefore NOT a sign of being awake; movement of the hands relative to
@@ -73,7 +76,7 @@ Sources (Yenna: please check section numbers before we quote them to judges):
 | 1 | `src/cv/types.ts` | `Frame`, `Signals`, `PulseReading`, `DetectorState`, `Effect`, `CvThresholds`, with units in comments. |
 | 2 | `src/cv/torso.ts` | `torsoFrame()` (origin, x along the shoulders, y toward the hips or away from the nose) and `toTorso()`. Everything else builds on this. |
 | 3 | `src/cv/posture.ts` | The 4 NBP checks per arm, the calibration baseline, and how the score is "the step from your working posture toward NBP". |
-| 4 | `src/cv/signals.ts` | `limbMotion` (two comparison gaps, fastest limb point), `bodyDrift` (straight-line fit), eye counters, the Moon-only fall block, `computeSignals`. |
+| 4 | `src/cv/signals.ts` | `limbMotion` (two comparison gaps, fastest limb point), `bodyDrift` (straight-line fit), eye counters, the gravity-only fall block, `computeSignals`. |
 | 5 | `src/cv/pulse.ts` | Clip off vs pulse lost vs still hand, from the live vitals. |
 | 6 | `src/cv/*.test.ts` + `testFrames.ts` | Fake bodies built in torso coordinates and rotated 0/90/180 degrees; fake vitals. |
 | 7 | `src/cv/detector.ts` | The state machine; the pulse-lost rule at the top of `update()`. |
@@ -94,7 +97,7 @@ hips are out of view), unit = one shoulder width (sw). In these coordinates the 
 | `eyesClosedSeconds` | Both eyes closed without a break | full after `window_s` (5 s) |
 | `secondsSinceBlink` (+ blinks/min) | Eyes open with no blink (a fixed stare) | full after `stare_after_s` (20 s); low weight |
 | `stillHand` (from PPG) | Unusually clean pulse signal for 60 s: the hand with the clip is not moving | yes; low weight |
-| `fallDetected` | Moon base only: hips drop fast in the picture, then stillness | jumps straight to SUSPECTED |
+| `fallDetected` | Gravity only (Moon base, rover on the Moon, rover on Mars): hips drop fast in the picture, then stillness | jumps straight to SUSPECTED |
 
 `unresponsiveScore = 0.3 limb stillness + 0.25 NBP + 0.25 eyes + 0.1 drift + 0.05 stare + 0.05 still hand` (weights in
 the file). At or above `unresponsive_threshold` (0.7) the timer runs.
@@ -140,13 +143,13 @@ The "normal" amplitude is learned only while the pulse is OK, so a long flat str
 |---|---|---|---|
 | any except ALARM | pulse lost (not already in emergency mode) | ALARM | post `alarm`, hide overlay, crew alarm, open protocol **straight to CPR** (`goto=cpr`) |
 | MONITORING | camera off, sleep hours, paused screen (daily check, emergency) or nobody present | MONITORING (timer reset) | none |
-| MONITORING | fall detected (Moon base only) | SUSPECTED | post `unresponsive_suspected` |
+| MONITORING | fall detected (gravity only: Moon base, rover on the Moon or Mars) | SUSPECTED | post `unresponsive_suspected` |
 | MONITORING | score < 0.7 | MONITORING (timer reset) | none |
 | MONITORING | score ≥ 0.7 for 25 s (10 s with red vitals) | SUSPECTED | post `unresponsive_suspected` |
 | SUSPECTED | next update | CHECK_IN | post `checkin_started`, show "Are you OK? Tap, speak or move your hand." (15 s) |
 | CHECK_IN | tap, key, voice or "I'm OK" | COOLDOWN | post `ok_confirmed`, hide overlay |
 | CHECK_IN | limb motion ≥ 0.4 sw/s (a purposeful hand movement; body drift does not count) | COOLDOWN | same |
-| CHECK_IN | 15 s, no answer | ALARM | post `alarm`, crew alarm, open `/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no` |
+| CHECK_IN | 15 s, no answer | ALARM | post `alarm` (the backend also creates an Act now alert, heart, source `cv`, with a drafted message), crew alarm, open `/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no` |
 | COOLDOWN / ALARM | 120 s passed | MONITORING | post `monitoring_resumed` |
 
 The protocol (DRAFT, Yenna reviews) follows the microgravity order: 1 respond? (answered NO) → 2 stop the drift (hold
@@ -169,8 +172,16 @@ with "restrain the patient". While CPR is open, no other red flag may move the c
 - **Pure functions and an effects list.** All rules take numbers and return numbers (tested in milliseconds with fake
   bodies and clocks); only the hook touches the camera, the network and the screen.
 - **Browser, on-device.** Frames never leave the page, no video is stored, it works with the backend off.
-- **Falls only on the Moon.** 1/6 g still lets people fall; that one signal uses the picture's "down" (camera mounted
-  upright) and is switched off everywhere else.
+- **Falls only where there is gravity.** The Moon base, the rover on the Moon (1/6 g) and the rover on Mars (0.38 g)
+  still let people fall; that one signal uses the picture's "down" (camera mounted upright) and is switched off on
+  the ISS and in Mars transit. The list is `thresholds.json` `cv.fall.environments` (env keys: `moon`, `rover:moon`,
+  `rover:mars`).
+- **Arms only for the posture.** Legs and hips are usually out of a desk camera's view, so the NBP score checks the
+  arms and nothing else (see section 2).
+- **An alarm reaches the whole crew.** The detector's `alarm` event (signals `source: "cv"`) makes the backend create
+  an Act now alert (region heart, source `cv`) with a drafted message to the flight surgeon. It shows in the alerts
+  list and the messages drawer, and every open screen gets it on `/ws/alerts`. The crew alarm screen's and the
+  emergency log's own `alarm` events do not create a second alert.
 
 ## 8. Questions a judge might ask
 
@@ -216,6 +227,7 @@ Put agreed numbers in `backend/data/thresholds.json` and run `python scripts/exp
 
 **Known limits:** a background browser tab slows the camera loop (the pulse check keeps running). The face must be in
 view for "present"; a crew member who floats fully out of view only counts once the check-in is already showing. The
-2D camera sees depth poorly, so the "wrist in front" NBP check has a quarter of the arm score at most. Blinks can be
+2D camera sees depth poorly, so the "wrist in front" NBP check has a quarter of the arm score at most. The posture
+score uses the arms only (legs are usually out of view). Blinks can be
 missed at 10 frames a second, which is why staring has a low weight. Voice detection is loudness only (any word or
 sound counts) and needs microphone permission; tapping always works.

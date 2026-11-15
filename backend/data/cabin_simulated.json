@@ -1,0 +1,584 @@
+{
+ "_status": "SIMULATED cabin environment for the demo. Not measured. Typical-range placeholder values.",
+ "simulated": true,
+ "source": "SIMULATED (shape and range only; see docs/resources.md)",
+ "step_min": 15,
+ "points": [
+  {
+   "minute": 0,
+   "co2_ppm": 2140,
+   "temp_c": 22.0,
+   "noise_dba": 50.5
+  },
+  {
+   "minute": 15,
+   "co2_ppm": 2300,
+   "temp_c": 22.1,
+   "noise_dba": 51.8
+  },
+  {
+   "minute": 30,
+   "co2_ppm": 2180,
+   "temp_c": 22.0,
+   "noise_dba": 51.8
+  },
+  {
+   "minute": 45,
+   "co2_ppm": 2180,
+   "temp_c": 22.1,
+   "noise_dba": 52.4
+  },
+  {
+   "minute": 60,
+   "co2_ppm": 2200,
+   "temp_c": 22.0,
+   "noise_dba": 52.1
+  },
+  {
+   "minute": 75,
+   "co2_ppm": 2160,
+   "temp_c": 22.0,
+   "noise_dba": 52.4
+  },
+  {
+   "minute": 90,
+   "co2_ppm": 2190,
+   "temp_c": 21.9,
+   "noise_dba": 51.6
+  },
+  {
+   "minute": 105,
+   "co2_ppm": 2250,
+   "temp_c": 22.0,
+   "noise_dba": 51.9
+  },
+  {
+   "minute": 120,
+   "co2_ppm": 2250,
+   "temp_c": 22.2,
+   "noise_dba": 51.4
+  },
+  {
+   "minute": 135,
+   "co2_ppm": 2300,
+   "temp_c": 21.9,
+   "noise_dba": 52.2
+  },
+  {
+   "minute": 150,
+   "co2_ppm": 2120,
+   "temp_c": 22.1,
+   "noise_dba": 52.7
+  },
+  {
+   "minute": 165,
+   "co2_ppm": 2280,
+   "temp_c": 21.9,
+   "noise_dba": 52.6
+  },
+  {
+   "minute": 180,
+   "co2_ppm": 2170,
+   "temp_c": 22.0,
+   "noise_dba": 52.4
+  },
+  {
+   "minute": 195,
+   "co2_ppm": 2270,
+   "temp_c": 22.0,
+   "noise_dba": 51.5
+  },
+  {
+   "minute": 210,
+   "co2_ppm": 2150,
+   "temp_c": 22.2,
+   "noise_dba": 52.5
+  },
+  {
+   "minute": 225,
+   "co2_ppm": 2270,
+   "temp_c": 22.2,
+   "noise_dba": 51.4
+  },
+  {
+   "minute": 240,
+   "co2_ppm": 2400,
+   "temp_c": 22.3,
+   "noise_dba": 53.4
+  },
+  {
+   "minute": 255,
+   "co2_ppm": 2290,
+   "temp_c": 22.0,
+   "noise_dba": 53.0
+  },
+  {
+   "minute": 270,
+   "co2_ppm": 2210,
+   "temp_c": 22.0,
+   "noise_dba": 52.0
+  },
+  {
+   "minute": 285,
+   "co2_ppm": 2270,
+   "temp_c": 22.2,
+   "noise_dba": 51.8
+  },
+  {
+   "minute": 300,
+   "co2_ppm": 2200,
+   "temp_c": 22.0,
+   "noise_dba": 51.6
+  },
+  {
+   "minute": 315,
+   "co2_ppm": 2180,
+   "temp_c": 22.0,
+   "noise_dba": 53.5
+  },
+  {
+   "minute": 330,
+   "co2_ppm": 2270,
+   "temp_c": 22.1,
+   "noise_dba": 51.6
+  },
+  {
+   "minute": 345,
+   "co2_ppm": 2340,
+   "temp_c": 21.9,
+   "noise_dba": 52.2
+  },
+  {
+   "minute": 360,
+   "co2_ppm": 2520,
+   "temp_c": 22.1,
+   "noise_dba": 53.8
+  },
+  {
+   "minute": 375,
+   "co2_ppm": 2430,
+   "temp_c": 22.2,
+   "noise_dba": 52.6
+  },
+  {
+   "minute": 390,
+   "co2_ppm": 2530,
+   "temp_c": 22.2,
+   "noise_dba": 54.6
+  },
+  {
+   "minute": 405,
+   "co2_ppm": 2440,
+   "temp_c": 22.3,
+   "noise_dba": 54.0
+  },
+  {
+   "minute": 420,
+   "co2_ppm": 2570,
+   "temp_c": 22.2,
+   "noise_dba": 53.4
+  },
+  {
+   "minute": 435,
+   "co2_ppm": 2590,
+   "temp_c": 22.3,
+   "noise_dba": 54.8
+  },
+  {
+   "minute": 450,
+   "co2_ppm": 2700,
+   "temp_c": 22.2,
+   "noise_dba": 53.1
+  },
+  {
+   "minute": 465,
+   "co2_ppm": 2640,
+   "temp_c": 22.5,
+   "noise_dba": 56.6
+  },
+  {
+   "minute": 480,
+   "co2_ppm": 2780,
+   "temp_c": 22.5,
+   "noise_dba": 54.5
+  },
+  {
+   "minute": 495,
+   "co2_ppm": 2810,
+   "temp_c": 22.4,
+   "noise_dba": 55.8
+  },
+  {
+   "minute": 510,
+   "co2_ppm": 3020,
+   "temp_c": 22.6,
+   "noise_dba": 57.3
+  },
+  {
+   "minute": 525,
+   "co2_ppm": 3050,
+   "temp_c": 22.7,
+   "noise_dba": 57.1
+  },
+  {
+   "minute": 540,
+   "co2_ppm": 3140,
+   "temp_c": 22.9,
+   "noise_dba": 56.4
+  },
+  {
+   "minute": 555,
+   "co2_ppm": 3020,
+   "temp_c": 22.9,
+   "noise_dba": 57.0
+  },
+  {
+   "minute": 570,
+   "co2_ppm": 3250,
+   "temp_c": 23.1,
+   "noise_dba": 57.0
+  },
+  {
+   "minute": 585,
+   "co2_ppm": 3360,
+   "temp_c": 23.0,
+   "noise_dba": 58.5
+  },
+  {
+   "minute": 600,
+   "co2_ppm": 3440,
+   "temp_c": 22.9,
+   "noise_dba": 57.9
+  },
+  {
+   "minute": 615,
+   "co2_ppm": 3480,
+   "temp_c": 23.1,
+   "noise_dba": 59.8
+  },
+  {
+   "minute": 630,
+   "co2_ppm": 3450,
+   "temp_c": 23.2,
+   "noise_dba": 58.7
+  },
+  {
+   "minute": 645,
+   "co2_ppm": 3380,
+   "temp_c": 22.9,
+   "noise_dba": 58.1
+  },
+  {
+   "minute": 660,
+   "co2_ppm": 3520,
+   "temp_c": 22.9,
+   "noise_dba": 58.7
+  },
+  {
+   "minute": 675,
+   "co2_ppm": 3610,
+   "temp_c": 23.2,
+   "noise_dba": 60.5
+  },
+  {
+   "minute": 690,
+   "co2_ppm": 3380,
+   "temp_c": 22.8,
+   "noise_dba": 60.2
+  },
+  {
+   "minute": 705,
+   "co2_ppm": 3320,
+   "temp_c": 23.1,
+   "noise_dba": 59.0
+  },
+  {
+   "minute": 720,
+   "co2_ppm": 3330,
+   "temp_c": 23.2,
+   "noise_dba": 59.9
+  },
+  {
+   "minute": 735,
+   "co2_ppm": 3400,
+   "temp_c": 23.0,
+   "noise_dba": 58.6
+  },
+  {
+   "minute": 750,
+   "co2_ppm": 3250,
+   "temp_c": 22.9,
+   "noise_dba": 58.2
+  },
+  {
+   "minute": 765,
+   "co2_ppm": 3240,
+   "temp_c": 23.0,
+   "noise_dba": 57.0
+  },
+  {
+   "minute": 780,
+   "co2_ppm": 3240,
+   "temp_c": 22.7,
+   "noise_dba": 58.4
+  },
+  {
+   "minute": 795,
+   "co2_ppm": 3320,
+   "temp_c": 23.0,
+   "noise_dba": 60.3
+  },
+  {
+   "minute": 810,
+   "co2_ppm": 3350,
+   "temp_c": 22.8,
+   "noise_dba": 60.2
+  },
+  {
+   "minute": 825,
+   "co2_ppm": 3260,
+   "temp_c": 23.0,
+   "noise_dba": 58.8
+  },
+  {
+   "minute": 840,
+   "co2_ppm": 3320,
+   "temp_c": 23.2,
+   "noise_dba": 58.9
+  },
+  {
+   "minute": 855,
+   "co2_ppm": 3510,
+   "temp_c": 23.0,
+   "noise_dba": 60.1
+  },
+  {
+   "minute": 870,
+   "co2_ppm": 3520,
+   "temp_c": 23.0,
+   "noise_dba": 60.8
+  },
+  {
+   "minute": 885,
+   "co2_ppm": 3690,
+   "temp_c": 23.3,
+   "noise_dba": 62.0
+  },
+  {
+   "minute": 900,
+   "co2_ppm": 3940,
+   "temp_c": 23.5,
+   "noise_dba": 61.9
+  },
+  {
+   "minute": 915,
+   "co2_ppm": 3960,
+   "temp_c": 23.6,
+   "noise_dba": 61.9
+  },
+  {
+   "minute": 930,
+   "co2_ppm": 4200,
+   "temp_c": 23.7,
+   "noise_dba": 58.0
+  },
+  {
+   "minute": 945,
+   "co2_ppm": 4310,
+   "temp_c": 23.8,
+   "noise_dba": 60.7
+  },
+  {
+   "minute": 960,
+   "co2_ppm": 4410,
+   "temp_c": 23.9,
+   "noise_dba": 61.2
+  },
+  {
+   "minute": 975,
+   "co2_ppm": 4300,
+   "temp_c": 23.7,
+   "noise_dba": 61.3
+  },
+  {
+   "minute": 990,
+   "co2_ppm": 4410,
+   "temp_c": 23.9,
+   "noise_dba": 61.1
+  },
+  {
+   "minute": 1005,
+   "co2_ppm": 4390,
+   "temp_c": 23.9,
+   "noise_dba": 61.1
+  },
+  {
+   "minute": 1020,
+   "co2_ppm": 4280,
+   "temp_c": 23.9,
+   "noise_dba": 60.6
+  },
+  {
+   "minute": 1035,
+   "co2_ppm": 4180,
+   "temp_c": 23.7,
+   "noise_dba": 61.1
+  },
+  {
+   "minute": 1050,
+   "co2_ppm": 3910,
+   "temp_c": 23.5,
+   "noise_dba": 61.7
+  },
+  {
+   "minute": 1065,
+   "co2_ppm": 3680,
+   "temp_c": 23.3,
+   "noise_dba": 60.7
+  },
+  {
+   "minute": 1080,
+   "co2_ppm": 3500,
+   "temp_c": 23.1,
+   "noise_dba": 58.2
+  },
+  {
+   "minute": 1095,
+   "co2_ppm": 3260,
+   "temp_c": 22.8,
+   "noise_dba": 57.8
+  },
+  {
+   "minute": 1110,
+   "co2_ppm": 3090,
+   "temp_c": 22.7,
+   "noise_dba": 57.5
+  },
+  {
+   "minute": 1125,
+   "co2_ppm": 2930,
+   "temp_c": 22.6,
+   "noise_dba": 55.6
+  },
+  {
+   "minute": 1140,
+   "co2_ppm": 2700,
+   "temp_c": 22.5,
+   "noise_dba": 55.1
+  },
+  {
+   "minute": 1155,
+   "co2_ppm": 2760,
+   "temp_c": 22.5,
+   "noise_dba": 55.7
+  },
+  {
+   "minute": 1170,
+   "co2_ppm": 2680,
+   "temp_c": 22.2,
+   "noise_dba": 54.4
+  },
+  {
+   "minute": 1185,
+   "co2_ppm": 2490,
+   "temp_c": 22.3,
+   "noise_dba": 55.0
+  },
+  {
+   "minute": 1200,
+   "co2_ppm": 2550,
+   "temp_c": 22.2,
+   "noise_dba": 53.5
+  },
+  {
+   "minute": 1215,
+   "co2_ppm": 2240,
+   "temp_c": 22.0,
+   "noise_dba": 53.2
+  },
+  {
+   "minute": 1230,
+   "co2_ppm": 2270,
+   "temp_c": 21.9,
+   "noise_dba": 52.3
+  },
+  {
+   "minute": 1245,
+   "co2_ppm": 2280,
+   "temp_c": 22.1,
+   "noise_dba": 52.2
+  },
+  {
+   "minute": 1260,
+   "co2_ppm": 2210,
+   "temp_c": 22.0,
+   "noise_dba": 52.3
+  },
+  {
+   "minute": 1275,
+   "co2_ppm": 2140,
+   "temp_c": 22.1,
+   "noise_dba": 53.9
+  },
+  {
+   "minute": 1290,
+   "co2_ppm": 2270,
+   "temp_c": 21.9,
+   "noise_dba": 52.1
+  },
+  {
+   "minute": 1305,
+   "co2_ppm": 2080,
+   "temp_c": 21.8,
+   "noise_dba": 52.6
+  },
+  {
+   "minute": 1320,
+   "co2_ppm": 2210,
+   "temp_c": 21.9,
+   "noise_dba": 50.4
+  },
+  {
+   "minute": 1335,
+   "co2_ppm": 2110,
+   "temp_c": 22.0,
+   "noise_dba": 52.0
+  },
+  {
+   "minute": 1350,
+   "co2_ppm": 2250,
+   "temp_c": 22.2,
+   "noise_dba": 51.7
+  },
+  {
+   "minute": 1365,
+   "co2_ppm": 2230,
+   "temp_c": 22.0,
+   "noise_dba": 51.6
+  },
+  {
+   "minute": 1380,
+   "co2_ppm": 2180,
+   "temp_c": 22.1,
+   "noise_dba": 51.2
+  },
+  {
+   "minute": 1395,
+   "co2_ppm": 2280,
+   "temp_c": 22.1,
+   "noise_dba": 52.0
+  },
+  {
+   "minute": 1410,
+   "co2_ppm": 2220,
+   "temp_c": 21.9,
+   "noise_dba": 53.9
+  },
+  {
+   "minute": 1425,
+   "co2_ppm": 2270,
+   "temp_c": 22.0,
+   "noise_dba": 52.0
+  }
+ ]
+}

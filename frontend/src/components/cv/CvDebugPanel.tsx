@@ -76,7 +76,7 @@ export function CvDebugPanel() {
           <Row label="Eyes closed for" value={`${fmt(s?.eyesClosedSeconds, 1)} s`} hot={!!s && s.eyesClosedSeconds > 0} />
           <Row label="No blink for / blinks per min" value={`${fmt(s?.secondsSinceBlink, 0)} s / ${s?.blinksPerMinute ?? '–'}`} />
           <Row label="Unresponsive score" value={`${fmt(s?.unresponsiveScore)} / ≥ ${t?.unresponsive_threshold}`} hot={!!s && !!t && s.unresponsiveScore >= t.unresponsive_threshold} />
-          <Row label="Fall (Moon only)" value={live.fallEnabled ? (s?.fallDetected ? 'yes' : 'no') : 'off here'} />
+          <Row label="Fall (gravity only)" value={live.fallEnabled ? (s?.fallDetected ? 'yes' : 'no') : 'off here'} />
           <Row label="Calibration left / fps" value={`${phase === 'calibrating' ? `${fmt(live.calibrationLeftS, 1)} s` : '–'} / ${live.fps}`} />
         </dl>
       </div>

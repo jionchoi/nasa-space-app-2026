@@ -1,0 +1,5 @@
+# Tools for the data scripts in backend/scripts/ (not needed to run the app).
+# pip install -r scripts/requirements-data.txt
+requests      # fetch_pret.py: CSA PRET open data listing and downloads
+truststore    # fetch_pret.py: verify HTTPS with the OS certificate store (the CSA server fails with certifi's bundle)
+pyreadstat    # read SPSS .sav files (PRET PVT n=160.sav); use output_format="dict" so pandas is not needed

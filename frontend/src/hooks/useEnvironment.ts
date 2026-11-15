@@ -15,7 +15,7 @@ export function useRadiation(persona: string, env: string) {
   return data;
 }
 
-/** Simulated cabin environment (CO2, temperature, noise), polled every 30 s. */
+/** Cabin environment (real ISS telemetry replay, or the simulated fallback), polled every 30 s. */
 export function useCabin() {
   const [data, setData] = useState<CabinSummary | null>(null);
   useEffect(() => {

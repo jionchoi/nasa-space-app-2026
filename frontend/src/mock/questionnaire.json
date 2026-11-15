@@ -210,7 +210,10 @@
    2,
    10
   ],
-  "lapse_ms": 500,
-  "no_response_ms": 3000
+  "lapse_ms": 355,
+  "no_response_ms": 3000,
+  "hit_max_ms": 500,
+  "false_start_ms": 100,
+  "_changes": "Nov 14 (Jion, for Yenna): lapse_ms 500 -> 355 (PVT-B style, lapse = RT >= 355 ms, same rule as the PRET norms). Median = median of hits (100-499 ms, like PRET); lapse rate = lapses / targets x 100; a press under 100 ms counts as a false start. The 1-minute demo is not compared with anything."
  }
 }

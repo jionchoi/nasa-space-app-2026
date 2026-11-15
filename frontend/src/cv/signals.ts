@@ -162,8 +162,9 @@ export function isPresent(frame: Frame | undefined): boolean {
 }
 
 // ---------------------------------------------------------------------------------------------------------
-// MOON BASE ONLY. With 1/6 g people can still fall there, and the camera is mounted upright, so this signal
-// (and only this one) uses the picture's "down". It is switched off in microgravity (ISS, Mars transit).
+// GRAVITY ONLY (thresholds.json cv.fall.environments: Moon base, rover on the Moon, rover on Mars). With 1/6 g or
+// 0.38 g people can still fall, and the camera there is mounted upright, so this signal (and only this one) uses the
+// picture's "down". It is switched off in microgravity (ISS, Mars transit).
 // ---------------------------------------------------------------------------------------------------------
 
 /** Average speed of the head, shoulders and wrists in the picture (sw/s): "the body lies still" after a fall. */
@@ -183,10 +184,10 @@ function imageMotion(frames: Frame[]): number {
   return speeds.length ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
 }
 
-/** Height of the middle of the hips in the picture (bigger y = lower down; Moon base camera mounted upright). */
+/** Height of the middle of the hips in the picture (bigger y = lower down; camera mounted upright where there is gravity). */
 const hipY = (pose: Landmark[]) => midpoint(pose[LEFT_HIP], pose[RIGHT_HIP]).y;
 
-/** Moon base fall: the hips moved down faster than hip_drop_speed (sw/s), then the body stayed still for still_after_s. */
+/** Fall (gravity only): the hips moved down faster than hip_drop_speed (sw/s), then the body stayed still for still_after_s. */
 export function fallDetected(frames: Frame[], fall: NonNullable<CvThresholds['fall']>): boolean {
   const withBody = frames.filter((frame) => frame.pose);
   // The newest pair of frames where the hips dropped fast; `landed` is the frame after the drop.
@@ -220,7 +221,7 @@ export interface SignalInputs {
   /** From the PPG: unusually clean signal for a long time (hand not moving). */
   stillHand: boolean;
   thresholds: CvThresholds;
-  /** True only in environments listed in thresholds.json cv.fall.environments (Moon base). */
+  /** True only in environments listed in thresholds.json cv.fall.environments (where there is gravity). */
   fallEnabled: boolean;
 }
 

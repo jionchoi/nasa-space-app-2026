@@ -1,0 +1,429 @@
+{
+ "_how_to_read": "Every data source, shown on the /sources page and in the README Data table. status: real | simulated | estimated. use: replay (played on screen), test (checks our code), thresholds (sets status limits), reference (shown or cited, not judged). 'TO FILL IN' marks a value a team member still has to add. Keep in step with docs/resources.md. used_for_review: who still has to confirm the 'used for' text.",
+ "uses": {
+  "replay": "played on screen",
+  "test": "checks our code",
+  "thresholds": "sets status limits",
+  "reference": "shown or cited, not judged"
+ },
+ "sources": [
+  {
+   "id": "radlab_dostel1",
+   "status": "real",
+   "title": "ISS radiation dose rate (DOSTEL1)",
+   "badge": "NASA OSDR RadLab: ISS module (DOSTEL1)",
+   "provider": "NASA Open Science Data Repository (OSDR), RadLab",
+   "what": "Absorbed dose rate from the DOSTEL1 detector in the ISS Columbus module, one reading every 100 s, Feb 27 to Oct 29, 2024. The app replays the latest 30 days in a loop.",
+   "used_for": [
+    "Radiation card at the ISS: dose-rate chart with South Atlantic Anomaly spikes, today's dose, 30-day dose"
+   ],
+   "locations": [
+    "ISS"
+   ],
+   "units": "\u00b5Gy/h (absorbed dose rate)",
+   "unit_source": "Not in the CSV header. RadLab API docs use '2 uGy/hour' for absorbed_dose_rate>2.",
+   "file": "backend/data/space_weather/dose_iss.json",
+   "converter": "backend/scripts/import_nasa_env.py",
+   "urls": [
+    "https://visualization.osdr.nasa.gov/radlab/",
+    "https://visualization.osdr.nasa.gov/radlab/api/?spacecraft=&module=&instrument=&timestamp=&format=csv&timestamp%3E=2024-02-27T04:35&timestamp%3C=2024-11-02T00:01&instrument_id=DosTel1&absorbed_dose_rate=&"
+   ],
+   "name": "NASA RadLab: DOSTEL1 (ISS)",
+   "agency": "NASA (with DLR, DOSTEL1 instrument)",
+   "use": [
+    "replay"
+   ],
+   "owner": "Jion"
+  },
+  {
+   "id": "radlab_msl_rad",
+   "status": "real",
+   "title": "Mars surface radiation dose rate (Curiosity RAD)",
+   "badge": "NASA OSDR RadLab: Mars surface (Curiosity RAD)",
+   "provider": "NASA Open Science Data Repository (OSDR), RadLab",
+   "what": "Absorbed dose rate from the Radiation Assessment Detector on the Curiosity rover, Gale crater, Jan 27, 2017 to Jul 24, 2021. The app replays the latest 30 days in a loop.",
+   "used_for": [
+    "Radiation card for the surface rover on Mars"
+   ],
+   "locations": [
+    "Surface rover (Mars)"
+   ],
+   "units": "\u00b5Gy/h (absorbed dose rate)",
+   "unit_source": "Not in the CSV header. RadLab API docs use '2 uGy/hour' for absorbed_dose_rate>2.",
+   "file": "backend/data/space_weather/dose_mars_surface.json",
+   "converter": "backend/scripts/import_nasa_env.py",
+   "urls": [
+    "https://visualization.osdr.nasa.gov/radlab/",
+    "https://visualization.osdr.nasa.gov/radlab/api/?spacecraft=&module=&instrument=&timestamp=&format=csv&timestamp%3E=2017-01-27T02:49&timestamp%3C=2021-07-24T13:01&instrument_id=MSL-RAD-Surface&absorbed_dose_rate=&"
+   ],
+   "name": "NASA RadLab: Curiosity RAD (Mars surface)",
+   "agency": "NASA",
+   "use": [
+    "replay"
+   ],
+   "owner": "Jion"
+  },
+  {
+   "id": "dose_estimates",
+   "status": "estimated",
+   "title": "Dose rate on the Moon and on the way to Mars (DRAFT)",
+   "badge": "Estimated from published data",
+   "provider": "Published papers (Yenna reviews)",
+   "what": "A steady average dose rate where we have no real readings yet: Moon surface (Chang'e-4 LND) and deep space on the way to Mars (Curiosity RAD cruise).",
+   "used_for": [
+    "Radiation card at the Moon base, surface rover (Moon) and Mars transit"
+   ],
+   "locations": [
+    "Moon base",
+    "Surface rover (Moon)",
+    "Mars transit"
+   ],
+   "units": "\u00b5Gy/h (absorbed dose rate)",
+   "file": "backend/data/thresholds.json (dose_estimates)",
+   "draft": true,
+   "urls": [],
+   "name": "Dose estimates from published papers",
+   "agency": "Published papers (CNSA Chang'e-4 LND, NASA Curiosity RAD cruise)",
+   "use": [
+    "replay"
+   ],
+   "owner": "Yenna",
+   "status_note": "Constant DRAFT value where we have no RadLab file. No lunar RadLab file (LRO CRaTER) yet."
+  },
+  {
+   "id": "eda_cabin",
+   "status": "real",
+   "title": "ISS cabin air (CO2, temperature, humidity)",
+   "badge": "NASA OSDR: ISS cabin telemetry (RR-23 / SpaceX-21)",
+   "provider": "NASA Open Science Data Repository (OSDR), Environmental Data App (EDA)",
+   "what": "Cabin telemetry from mission RR-23 (Rodent Research-23), flown on SpaceX-21: about 30 days from Dec 9, 2020 to Jan 8, 2021, the stretch where CO2, temperature and humidity were all recorded. Averaged to 15 minutes and replayed in a loop.",
+   "used_for": [
+    "Cabin air card",
+    "Lungs region (cabin CO2)",
+    "CO2 note on headache and poor sleep"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "location_note": "A Moon base, a rover or a ship to Mars keeps its cabin air at similar CO2 and temperature levels, so the ISS readings are shown at every location.",
+   "units": "CO2 ppm, temperature \u00b0C, relative humidity %",
+   "unit_source": "CSV header (CO2_ppm_ISS, Temp_degC_ISS, RH_percent_ISS)",
+   "file": "backend/data/cabin.json",
+   "converter": "backend/scripts/import_nasa_env.py",
+   "urls": [
+    "https://visualization.osdr.nasa.gov/eda",
+    "https://osdr.nasa.gov/bio/repo/data/missions/SpaceX-21"
+   ],
+   "name": "NASA Environmental Data App (EDA): ISS cabin telemetry",
+   "agency": "NASA",
+   "use": [
+    "replay"
+   ],
+   "owner": "Jion"
+  },
+  {
+   "id": "donki",
+   "status": "real",
+   "title": "Solar particle event (NASA DONKI)",
+   "badge": "Timing from real NASA DONKI event 2024-05-10T13:35:00-SEP-001; dose simulated",
+   "provider": "NASA Space Weather Database Of Notifications, Knowledge, Information (DONKI), via the CCMC",
+   "what": "Real solar energetic particle event 2024-05-10T13:35:00-SEP-001 (May 2024 solar storm), seen by GOES-P SEISS >10 MeV, with its 14 linked flares and CMEs. Taken from the saved file of 14 SEP events (May 1 to 31, 2024). Event id, time and link are real; the dose curve is simulated (\"dose simulated; timing from real DONKI event\"). The replay runs at every location; the same curve is multiplied by a DRAFT factor per location: ISS 1x, Mars surface 3x, Moon base and Moon rover 5x, Mars transit 10x.",
+   "used_for": [
+    "'Replay solar event' demo control (/admin)",
+    "Solar event alert and 'go to shelter' advice",
+    "Radiation region turns Act now during the event"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "file": "backend/data/space_weather/event.json (from donki_2024-05-01_2024-05-31.json)",
+   "converter": "backend/scripts/fetch_donki.py --from-file",
+   "urls": [
+    "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30677/-1",
+    "https://api.nasa.gov/DONKI",
+    "https://kauai.ccmc.gsfc.nasa.gov/DONKI/"
+   ],
+   "units": "mSv/h (simulated dose rate), mSv (dose from the event)",
+   "draft": true,
+   "name": "NASA DONKI: solar particle event",
+   "agency": "NASA (CCMC)",
+   "use": [
+    "replay"
+   ],
+   "owner": "Jion",
+   "status_note": "Event id, time and link are real; the dose curve during the event is simulated."
+  },
+  {
+   "id": "osd575",
+   "status": "real",
+   "title": "Real crew blood values (Inspiration4)",
+   "badge": "Real crew reference: NASA OSDR OSD-575, Inspiration4 (4 civilian crew, 3-day flight)",
+   "provider": "NASA Open Science Data Repository (OSDR), study OSD-575 (SpaceX Inspiration4)",
+   "what": "Serum comprehensive metabolic panel of the 4 civilian Inspiration4 crew (3-day flight, 2021) at 7 timepoints, 92 days before launch to 194 days after return. We show glucose, sodium and potassium as they are in the file, with the file's units and the lab's reference range: the last test before flight (L-3) and the first after (R+1). Reference only: no status colours and no interpretation. Glucose is converted only to follow the mmol/L / mg/dL toggle.",
+   "used_for": [
+    "Daily check glucose step: 'Real crew reference' line",
+    "Metabolism region: 'Real crew reference' line and a Learn-tab table (glucose, sodium, potassium)"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "units": "Glucose mg/dL, sodium and potassium mmol/L (as in the file)",
+   "file": "backend/data/crew_reference_osd575.json (from data/raw/nasa/osd575/LSDS-8_Comprehensive_Metabolic_Panel_CMP.upload_SUBMITTED.csv)",
+   "converter": "backend/scripts/import_osd575.py",
+   "urls": [
+    "https://osdr.nasa.gov/bio/repo/data/studies/OSD-575"
+   ],
+   "name": "NASA OSDR OSD-575: Inspiration4 blood panel",
+   "agency": "NASA (OSDR); SpaceX Inspiration4 crew",
+   "use": [
+    "reference"
+   ],
+   "owner": "Jion",
+   "licence": "CC0"
+  },
+  {
+   "id": "pret_pvt",
+   "status": "real",
+   "title": "Reaction test reference group (CSA PRET)",
+   "badge": "Compared with 145 people tested for the Canadian Space Agency (PRET, ground study; lapse >= 355 ms)",
+   "provider": "Canadian Space Agency open data: Performance Readiness Evaluation and Training Tool (PRET), version 4.0",
+   "what": "Psychomotor Vigilance Test raw data from the PRET Phase 3 ground study (Carleton University for the CSA): 159 people, one 10-minute session each (2-10 s gaps, counter up to 500 ms). We recomputed each person's median reaction time of hits and lapse rate (lapse = 355 ms or slower) with our own rules, left out 14 sessions (false starts over 10 %, misses over 20 %, or task misunderstanding), and use the other 145: median RT 50th / 90th / 97.5th percentile 264 / 318.4 / 345.8 ms, lapse rate 8.43 / 30.16 / 47.49 %. Ground study, not astronauts; their test was 10 minutes, ours is 3.",
+   "used_for": [
+    "Reaction test result: 'faster than Y% of the CSA reference group'",
+    "Brain and mood region: Watch above the 90th percentile, Warning above the 97.5th (DRAFT, Yenna reviews)",
+    "Personas A and B reaction-test values"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "units": "ms (median reaction time), % (lapse rate)",
+   "file": "backend/data/pvt_norms.json (from data/raw/pret/, git-ignored)",
+   "converter": "backend/scripts/fetch_pret.py, backend/scripts/pret_pvt_stats.py --write",
+   "draft": true,
+   "urls": [
+    "https://donnees-data.asc-csa.gc.ca/users/OpenData_DonneesOuvertes/pub/PRET/",
+    "https://open.canada.ca/en/open-government-licence-canada"
+   ],
+   "name": "CSA PRET: reaction test reference group",
+   "agency": "Canadian Space Agency (CSA)",
+   "use": [
+    "thresholds",
+    "reference"
+   ],
+   "owner": "Jion (rules: Yenna)",
+   "licence": "Open Government Licence - Canada"
+  },
+  {
+   "id": "physionet_bidmc",
+   "name": "PhysioNet BIDMC PPG and Respiration Dataset",
+   "agency": "PhysioNet (MIT LCP); recordings from Beth Israel Deaconess Medical Center",
+   "status": "real",
+   "use": [
+    "test"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Jian",
+   "title": "PhysioNet BIDMC PPG and Respiration",
+   "badge": "PhysioNet BIDMC (Earth recordings, used to test our PPG code)",
+   "provider": "PhysioNet",
+   "what": "Real fingertip PPG with reference ECG and breathing signals, recorded from hospital patients on Earth. Jian uses it to test our PPG code (heart rate, breathing rate) against the reference signals. Not shown on screen.",
+   "used_for": [
+    "Testing compute_vitals(): heart rate and breathing rate from PPG"
+   ],
+   "validation": {
+    "label": "Validation result (Jian)",
+    "value": "TO FILL IN"
+   },
+   "urls": [
+    "https://physionet.org/content/bidmc/1.0.0/"
+   ],
+   "used_for_review": "Jian to confirm"
+  },
+  {
+   "id": "physionet_challenge_2015",
+   "name": "PhysioNet/CinC Challenge 2015 (false ICU alarms)",
+   "agency": "PhysioNet and Computing in Cardiology",
+   "status": "real",
+   "use": [
+    "test"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Jian",
+   "title": "PhysioNet/CinC Challenge 2015",
+   "badge": "PhysioNet Challenge 2015 (Earth recordings, used to test alarms)",
+   "provider": "PhysioNet",
+   "what": "Real bedside recordings (ECG, PPG, blood pressure) around ICU arrhythmia alarms, each marked true or false. Jian uses it to test our irregular-rhythm and lost-pulse alarms. Not shown on screen.",
+   "used_for": [
+    "Testing the irregular rhythm flag and the lost-pulse alarm"
+   ],
+   "validation": {
+    "label": "Validation result (Jian)",
+    "value": "TO FILL IN"
+   },
+   "urls": [
+    "https://physionet.org/content/challenge-2015/1.0.0/"
+   ],
+   "used_for_review": "Jian to confirm"
+  },
+  {
+   "id": "nasa_hrp",
+   "name": "NASA Human Research Program: hazards and risks pages",
+   "agency": "NASA (Human Research Program)",
+   "status": "real",
+   "use": [
+    "reference"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Yenna",
+   "title": "NASA HRP hazards and risks",
+   "badge": "NASA Human Research Program",
+   "provider": "NASA",
+   "what": "NASA's public pages on the five hazards of human spaceflight and the human system risks. Background for the 'Why this happens in space' text in the Learn tab (REF ids pending in docs/medical/references.csv).",
+   "used_for": [
+    "Learn tab: why each body area changes in space"
+   ],
+   "draft": true,
+   "urls": [
+    "https://www.nasa.gov/hrp/hazards/",
+    "https://www.nasa.gov/hrp/risks/"
+   ],
+   "used_for_review": "Yenna to confirm"
+  },
+  {
+   "id": "nasa_standard_measures",
+   "name": "NASA Spaceflight Standard Measures paper",
+   "agency": "NASA",
+   "status": "real",
+   "use": [
+    "reference"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Yenna",
+   "title": "NASA Standard Measures",
+   "badge": "NASA Standard Measures",
+   "provider": "NASA",
+   "what": "Paper describing NASA's standard set of measures collected from every crew member. Reference for choosing what the daily check measures.",
+   "used_for": [
+    "Choosing the daily check measurements"
+   ],
+   "draft": true,
+   "urls": [
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC12612093/"
+   ],
+   "used_for_review": "Yenna to confirm"
+  },
+  {
+   "id": "csa_deep_space_healthcare",
+   "name": "CSA report: Canadian Healthcare in Deep Space",
+   "agency": "Canadian Space Agency (CSA)",
+   "status": "real",
+   "use": [
+    "reference"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Yenna",
+   "title": "Canadian Healthcare in Deep Space (CSA)",
+   "badge": "CSA: Canadian Healthcare in Deep Space",
+   "provider": "Canadian Space Agency",
+   "what": "CSA report on medical care far from Earth, when crews cannot rely on quick help from the ground. Reference for the idea of a co-pilot that guides crew who are not doctors, and for the escalation ladder with delayed contact.",
+   "used_for": [
+    "Escalation advice with communication delay",
+    "Why the app guides non-doctors"
+   ],
+   "draft": true,
+   "urls": [
+    "https://asc-csa.gc.ca/eng/publications/canadian-healthcare-in-deep-space.asp"
+   ],
+   "used_for_review": "Yenna to confirm"
+  },
+  {
+   "id": "personas",
+   "name": "Simulated crew members A, B, C",
+   "agency": "Our team (simulated)",
+   "status": "simulated",
+   "use": [
+    "replay"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Jion (numbers: Yenna)",
+   "title": "Simulated crew members",
+   "badge": "Simulated",
+   "provider": "backend/scripts/make_personas.py",
+   "what": "Daily values and a 10-minute vitals recording for three made-up crew members: A healthy, B slow drift, C acute event (the emergency demo). Reaction-test values follow the CSA PRET norms.",
+   "used_for": [
+    "Body map, trends, live vitals replay, emergency demo"
+   ],
+   "file": "backend/data/personas/",
+   "converter": "backend/scripts/make_personas.py",
+   "urls": []
+  },
+  {
+   "id": "cabin_simulated",
+   "name": "Simulated cabin profile (fallback)",
+   "agency": "Our team (simulated)",
+   "status": "simulated",
+   "use": [
+    "replay"
+   ],
+   "locations": [
+    "ISS",
+    "Moon base",
+    "Mars transit",
+    "Surface rover"
+   ],
+   "owner": "Jion",
+   "title": "Simulated cabin profile",
+   "badge": "Simulated",
+   "provider": "backend/scripts/make_cabin.py",
+   "what": "A made-up 24-hour CO2, temperature and noise profile. Used only if the real ISS cabin file is missing.",
+   "used_for": [
+    "Cabin air card (fallback only)"
+   ],
+   "file": "backend/data/cabin_simulated.json",
+   "converter": "backend/scripts/make_cabin.py",
+   "urls": []
+  }
+ ]
+}

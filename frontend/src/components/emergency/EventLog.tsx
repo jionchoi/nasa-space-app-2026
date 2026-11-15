@@ -19,9 +19,9 @@ export function EventLog({ log, className = '' }: { log: LogEntry[]; className?:
     void end.current?.scrollIntoView({ block: 'nearest' }); // some browsers return a Promise here
   }, [log.length]);
   return (
-    <section className={`panel flex min-h-0 flex-col ${className}`} aria-label="Event log">
-      <div className="label border-b border-line px-3 py-2">Event log ({log.length})</div>
-      <ol className="min-h-0 flex-1 overflow-y-auto px-3 py-2 text-[15px] leading-snug">
+    <section className={`flex min-h-0 flex-col border-t border-[#2A1416] pt-3 ${className}`} aria-label="Event log">
+      <div className="text-xs font-bold tracking-[0.12em] text-[#B8999C]">EVENT LOG · AUTOMATIC ({log.length})</div>
+      <ol className="min-h-0 flex-1 overflow-y-auto py-2 text-[13px] leading-snug">
         {log.map((e, i) => (
           <li key={i} className="flex gap-2 py-0.5">
             <span className="shrink-0 font-mono text-xs leading-5 text-muted">{logTime(e.t)}</span>

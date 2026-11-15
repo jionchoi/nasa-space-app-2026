@@ -18,13 +18,100 @@ How to measure, why we check and the equipment are in `measurements.json` (Chang
 Environment (`environments.json`): `{ "id": "mars", "label": "Mars transit", "delay_s": [180, 1320], "advice_note": "..." }`
 (the surface rover adds optional `planet`, `planets`, `distance_to_base`, `medical_kit`, `kit_notes`, `estimated_data`: see Changes, Nov 14).
 
-UnresponsiveEvent (frontend → backend POST `/api/events`; was CollapseEvent):
-`{ "t": ISO8601, "type": "unresponsive_suspected|checkin_started|ok_confirmed|alarm|monitoring_resumed", "signals": { "limb_motion": 0.01, "nbp": 0.9, "eyes_closed_s": 24, "pulse": "ok" } }`
+UnresponsiveEvent (frontend → backend POST `/api/events?persona=&env=`; was CollapseEvent):
+`{ "t": ISO8601, "type": "unresponsive_suspected|checkin_started|ok_confirmed|alarm|monitoring_resumed", "signals": { "source": "cv", "limb_motion": 0.01, "body_drift": 0.02, "nbp": 0.9, "eyes_closed_s": 24, "score": 0.85, "pulse": "ok|lost|clip_off|no_data", "from": "CHECK_IN", "to": "ALARM", "reason": "...", "text": "..." } }`
+Other senders use the same event: `source: "crew_alarm"` (`origin`, `reason`, `text`) and `source: "emergency"`
+(`protocol`, `kind`, `text`). An `alarm` with `source: "cv"` also creates an alert (red = Act now, region heart,
+source cv) with a drafted message; the response is `{ "ok": true, "alert_id": "..." | null }`.
 
 ## Changes
 
+### Nov 15, 2026 (v4 UI redesign; all additions optional, nothing removed)
+
+- **Environment: optional `subtitle`** (also on each `planets` entry), e.g. `"Low Earth orbit · microgravity"`. Shown under
+  the location name in the v4 sidebar.
+- **regions.json `lungs.context_metrics`** adds `cabin_temp_c` and `cabin_rh_pct` (context only, never used for status).
+  thresholds.json gets a label-only `cabin_rh_pct` entry (no bands, PLACEHOLDER) and measurements.json a TODO(Yenna) entry.
+- **cpr.json: optional `rate_range_per_min`** `[100, 120]`: limits for the CPR metronome rate stepper.
+- **Forms: new validated kind `mood`** `{ "mood": 1-10, "symptoms": ["headache", ...], "notes": "" }` (log drawer
+  "Mood and symptoms"). Display and timeline only; it does not change any status.
+- **New endpoints (optional "Polish wording" in the Inbox):** `GET /api/assist/status` -> `{ "available": bool }`
+  (true only with `ANTHROPIC_API_KEY` set on the backend and the internet reachable; the key is never returned) and
+  `POST /api/assist/polish` `{ "text" }` -> `{ "text", "model" }`, or 503 when unavailable. The app never needs it.
+- **Frontend only:** the Inbox's message to the flight surgeon is built from a rule-based template
+  (`frontend/src/lib/surgeonDraft.ts`) and sent through the existing `POST /api/messages` + `/send`.
+
 - **ProtocolStep: added `on_yes` and `on_no`** (optional). They say where a YES / NO answer to `check` goes:
   `"next"`, a step number, or `"cpr"` (opens the CPR guide). Missing means `"next"`.
+
+### Nov 14, 2026 (real NASA OSDR data: RadLab dose rate by location, EDA ISS cabin telemetry)
+
+All additions; no existing field was removed except `estimated_data` on the rover (now unused, still accepted).
+- **Environment `radiation_feed`** `{ "file": "space_weather/dose_<loc>.json", "estimate": "<dose_estimates key>" }` on
+  `iss`, `moon`, `mars` and on each rover planet (`planets.moon.radiation_feed`, `planets.mars.radiation_feed`). A location
+  only reads its own file: ISS readings are never shown under another location.
+- **Dose file** (`data/space_weather/dose_iss.json`, `dose_mars_surface.json`; `dose_moon.json` / `dose_mars_transit.json`
+  if added), written by `scripts/import_nasa_env.py`: `{ "kind": "real", "location", "place", "badge", "note",
+  "instrument", "instrument_id", "spacecraft", "module", "quantity", "units": { "dose_rate": "µGy/h", "accumulated_dose":
+  "µGy", "daily_mgy" }, "unit_source", "source", "source_url", "portal", "raw_file", "raw_span", "window": { "start",
+  "end", "days" }, "step_s", "filled_bins", "daily_mgy": [..], "points": [{ "t", "dose_rate", "accumulated_dose" }] }`.
+- **thresholds.json `dose_estimates`** (DRAFT, Yenna): `{ "unit": "µGy/h", "moon_surface" | "mars_transit" |
+  "mars_surface": { "label", "dose_rate", "source" } }`. Not a metric (no bands).
+- **Radiation** `GET /api/radiation` adds `"mission_dose_simulated": true` and `"feed": null | { "kind": "real|estimated",
+  "badge", "place", "note", "instrument", "source", "source_url", "unit", "unit_source", "quantity", "draft",
+  "replay_label", "window", "measured_at", "dose_rate_now", "today_mgy", "daily_mgy": [30], "total_30d_mgy",
+  "last_24h": [{ "t", "dose_rate" }] }`. `feed` is null when the location has neither a file nor an estimate (old
+  simulated persona dose only). The DONKI `event` is unchanged and applies at every location.
+- **Cabin** `data/cabin.json` is now real ISS telemetry `{ "kind": "real", "badge", "mission", "source_urls", "units",
+  "window", "replay_note", "location_note", "step_min": 15, "points": [{ "t", "co2_ppm", "temp_c", "rh_pct" }] }`; the
+  old simulated profile moved to `data/cabin_simulated.json` (fallback). `GET /api/cabin` adds `kind`, `badge`,
+  `mission`, `source_urls`, `units`, `replay_note`, `location_note`, `fields`; points may have `rh_pct` and
+  `measured_at`, and `noise_dba` only with the simulated fallback. `status` only has the fields present.
+- **Solar event per location**: `event.json` adds `dose_note` ("dose simulated; timing from real DONKI event"),
+  `dose_curve_note`, `location_scale` `{ "iss": 1, "moon": 5, "rover:moon": 5, "mars": 10, "rover:mars": 3, "default": 1 }`
+  (DRAFT, looked up like the advice texts) and `location_reason` (same keys, plain-words text). The `dose_curve` is now
+  the ISS reference (peak about 0.15 mSv/h). `GET /api/radiation` `event` adds `location_scale`, `location_reason`,
+  `dose_note`; `dose_rate_msv_h` and `event_dose_msv` are for the `env` asked for. `GET /api/status?env=` uses the same
+  dose in the radiation reason. The replay itself is global (all locations at once).
+- **Yenna's medical text** (`docs/medical/`, merged by `backend/scripts/merge_medical.py`): regions add
+  `space_effect` (with `[REF-xx]` ids; replaces `spaceflight_note` on screen, which is kept as a fallback) and `refs`
+  `{ "REF-01": { "status": "ok|pending", "citation" } }`. measurements.json entries may add `equipment` (string) and
+  `app_fix` (why the text was changed to match the app); `draft` marks placeholders. guidance.json items no longer
+  carry a `draft` key; the DRAFT tag comes from a "DRAFT:" prefix in her text.
+- **Sources** entries add `name`, `agency`, `use` (`replay|test|thresholds|reference`), `status_note`, `owner`,
+  `licence`, `validation` `{ "label", "value" }` and `url_note`; the file adds `uses` (what each use means). "TO FILL IN"
+  marks a value a team member still has to add. The README "Data" table is generated from this file (between the
+  `<!-- sources-table -->` markers).
+- **UnresponsiveEvent signals match what the frontend sends** (backend `EventSignals`): `source` (`cv` |
+  `crew_alarm` | `emergency`), `limb_motion`, `body_drift`, `nbp`, `eyes_closed_s`, `score`, `pulse` (`ok` | `lost` |
+  `clip_off` | `no_data`), `from`, `to`, `reason`, `text`, `origin`, `protocol`, `kind`. The old `motion` and
+  `posture` fields are gone (nothing sent them). Unknown extra fields are still accepted. `POST /api/events` takes
+  `env` too; a camera `alarm` (`source: "cv"`) creates an Act now alert (region heart, source `cv`, link to the
+  unresponsive protocol) and a drafted flight-surgeon message for that location.
+- **Fall detection where there is gravity**: `thresholds.json` `cv.fall.environments` is `["moon", "rover:moon",
+  "rover:mars"]` (was `["moon"]`); ISS and Mars transit stay microgravity-only.
+- **Crew reference** `GET /api/crew-reference` -> `backend/data/crew_reference_osd575.json` `{ "source", "dataset",
+  "licence": "CC0", "url", "file", "crew": [{ "id", "sex" }], "timepoints", "timepoint_note", "display": { "pre_flight",
+  "post_flight" }, "mgdl_per_mmol", "analytes": { "glucose" | "sodium" | "potassium": { "name", "label", "units",
+  "range": [min, max], "values": { "<crew id>": { "<timepoint>": "<value as in the file>" } } } } }`. Reference only;
+  not read by any status rule.
+- **RegionStatus adds `metric_status`** `{ "<metric>": "green|yellow|orange|red" }` (additive): the status of each of the
+  region's metrics that has a value today, judged by the backend (bands plus the personal reaction-time rule). The
+  dashboard's "All metrics" list colours its dots from this (cabin rows from `GET /api/cabin` `status`); the browser no
+  longer judges daily metrics against thresholds.json itself.
+- **Reaction test (PRET norms)**: new metric `pvt_lapse_rate_pct` (%) replaces `pvt_lapses` in regions, thresholds,
+  measurements and persona daily entries. `PvtResult` adds `lapse_rate_pct` (filled from lapses / n if missing);
+  `median_ms` is the median of hits. A `version: "demo"` result is stored but never feeds the daily values or status.
+  questionnaire.json `pvt`: `lapse_ms` 355 (was 500), new `hit_max_ms` 500 and `false_start_ms` 100. thresholds.json:
+  bands on `pvt_median_ms` / `pvt_lapse_rate_pct` = PRET 90th (yellow) / 97.5th (orange) percentiles, no red; new
+  `"pvt"` rules table `{ "norms_file", "baseline_slower_pct": 15, "min_baseline_days": 7, "watch_above_percentile",
+  "warning_above_percentile", "act_now": null, "act_now_note" }`. `GET /api/pvt-norms` -> `backend/data/pvt_norms.json`
+  `{ "source", "licence", "licence_url", "url", "test", "lapse_rule", "lapse_ms", "metrics", "exclusion_rule",
+  "excluded": [{ "subject", "reason" }], "n", "n_sessions", "percentiles": { "median_rt_ms" | "lapse_rate_pct":
+  { "p50", "p90", "p97_5" } }, "distribution": { "median_rt_ms": [...], "lapse_rate_pct": [...] } }`.
+- **Sources** `GET /api/sources` -> `data/sources.json` `{ "sources": [{ "id", "status": "real|estimated|simulated",
+  "title", "badge", "provider", "what", "used_for", "locations", "units", "unit_source", "location_note", "file",
+  "converter", "draft", "urls" }] }`. Frontend page `/sources`.
 
 ### Nov 14, 2026 (challenge gaps: blood pressure, guidance, measurements, surface rover)
 
@@ -233,3 +320,4 @@ Microgravity rework: an unconscious astronaut floats instead of collapsing, so t
 | GET / POST | `/api/emergency-logs`, `/api/messages`, `/api/forms` | stored records |
 | GET | `/api/daily-checks`, `/api/streaks/{persona}` | stored records |
 | GET / POST | `/api/admin/summary`, `/api/admin/reset` | admin (hidden `/admin` page) |
+| GET / POST | `/api/assist/status`, `/api/assist/polish` | optional "Polish wording" (backend key only; hidden when unavailable) |

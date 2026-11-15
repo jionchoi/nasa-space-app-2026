@@ -38,6 +38,9 @@ export interface RegionStatus {
   time_to_act_days: number | null;
   reason: string;
   advice_level: AdviceLevel;
+  /** Per-metric status judged by the backend (bands plus the personal reaction-time rule). The "All metrics" list
+   *  uses these; the browser does not judge daily metrics itself. */
+  metric_status?: Partial<Record<string, Status>>;
 }
 
 /** "next", a step number, or "cpr". */
@@ -109,12 +112,22 @@ export type Thresholds = Record<string, ThresholdEntry | RedFlagTable | CvThresh
 export interface ScheduleItem { id: string; time: string; text: string; action: string; mission: string }
 
 /** A planet a location can be on (the surface rover): sets the Earth delay; advice texts come from `advice_as`. */
-export interface Planet { label: string; delay_s: [number, number]; advice_as: string; advice_note?: string }
+export interface Planet {
+  label: string; delay_s: [number, number]; advice_as: string; advice_note?: string;
+  /** v4 sidebar line under the location name. */
+  subtitle?: string;
+  /** {"file": real RadLab replay} or {"estimate": thresholds key}: decides the REAL / EST radiation tag. */
+  radiation_feed?: Record<string, string>;
+}
 
 /** environments.json */
 export interface Environment {
   id: string;
   label: string;
+  /** v4 sidebar line under the location name, e.g. "Low Earth orbit · microgravity". */
+  subtitle?: string;
+  /** {"file": real RadLab replay} or {"estimate": thresholds key}: decides the REAL / EST radiation tag. */
+  radiation_feed?: Record<string, string>;
   delay_s: [number, number];
   advice_note: string;
   schedule?: ScheduleItem[];
@@ -225,8 +238,14 @@ export interface RadiationEvent {
   started_at: string;
   ends_at: string;
   remaining_s: number;
+  /** For the location asked for (ISS reference x location_scale). */
   dose_rate_msv_h: number;
   event_dose_msv: number;
+  /** How much stronger than on the ISS (event.json location_scale, DRAFT) and why, in plain words. */
+  location_scale?: number;
+  location_reason?: string;
+  /** "dose simulated; timing from real DONKI event" */
+  dose_note?: string;
   alert: string;
   advice: string;
   simulated_dose: true;
@@ -245,16 +264,59 @@ export interface RadiationSummary {
   event: RadiationEvent | null;
   event_available: boolean;
   fallback_spike_used: boolean;
+  /** The mSv mission total comes from the persona file (simulated). */
+  mission_dose_simulated?: boolean;
+  /** Dose rate at this location: real NASA RadLab replay, DRAFT estimate, or null (old simulated dose only). */
+  feed?: RadiationFeed | null;
 }
 
-export interface CabinPoint { t: string; minute: number; co2_ppm: number; temp_c: number; noise_dba: number }
+/** GET /api/radiation `feed` (backend app/radiation_feed.py). Absorbed dose rate in µGy/h. */
+export interface RadiationFeed {
+  kind: 'real' | 'estimated';
+  /** On-screen source badge, e.g. "NASA OSDR RadLab: ISS module (DOSTEL1)" or "Estimated from published data". */
+  badge: string;
+  place: string | null;
+  note: string | null;
+  instrument: string | null;
+  source: string | null;
+  source_url: string | null;
+  unit: string;
+  unit_source?: string | null;
+  quantity?: string | null;
+  draft?: boolean;
+  /** "30 days of real data, repeated" (real feeds only). */
+  replay_label: string | null;
+  window?: { start: string; end: string; days: number };
+  /** Original timestamp of the reading shown now. */
+  measured_at?: string;
+  dose_rate_now: number;
+  /** mGy since midnight (real feeds only). */
+  today_mgy: number | null;
+  daily_mgy: number[];
+  total_30d_mgy: number;
+  last_24h: { t: string; dose_rate: number }[];
+}
 
-/** GET /api/cabin (SIMULATED profile) */
+/** One cabin reading. Real ISS telemetry has humidity (no noise); the simulated fallback has noise. */
+export interface CabinPoint { t: string; minute: number; co2_ppm: number; temp_c: number; noise_dba?: number; rh_pct?: number; measured_at?: string }
+export type CabinField = 'co2_ppm' | 'temp_c' | 'noise_dba' | 'rh_pct';
+
+/** GET /api/cabin: real ISS telemetry replay (cabin.json) or the simulated fallback */
 export interface CabinSummary {
   simulated: boolean;
+  kind?: 'real' | 'simulated';
+  /** On-screen source badge, e.g. "NASA OSDR: ISS cabin telemetry (RR-23 / SpaceX-21)". */
+  badge?: string;
+  mission?: string | null;
+  source_urls?: string[];
+  units?: Record<string, string> | null;
+  replay_note?: string | null;
+  /** Why the ISS readings are shown at every location (Learn tab). */
+  location_note?: string | null;
+  fields?: CabinField[];
   source: string;
   now: CabinPoint;
-  status: { co2_ppm: Status; temp_c: Status; noise_dba: Status };
+  status: Partial<Record<CabinField, Status>>;
   last_24h: CabinPoint[];
   co2_high_hours_24h: number;
   co2_watch_ppm: number | null;
@@ -268,7 +330,15 @@ export interface UnresponsiveEvent {
   t: string;
   /** Unresponsive detection posts one per state change (renamed from CollapseEvent on Nov 13). */
   type: 'unresponsive_suspected' | 'checkin_started' | 'ok_confirmed' | 'alarm' | 'monitoring_resumed';
-  signals: { motion?: number; eyes_closed_s?: number; posture?: string; [extra: string]: unknown };
+  /** Same fields as backend EventSignals (models.py). source "cv" = detector, "crew_alarm" = alarm screen,
+   *  "emergency" = emergency log entry. A "cv" alarm also creates a backend alert (Act now, heart). */
+  signals: {
+    source?: 'cv' | 'crew_alarm' | 'emergency';
+    limb_motion?: number; body_drift?: number; nbp?: number; eyes_closed_s?: number; score?: number;
+    pulse?: 'ok' | 'lost' | 'clip_off' | 'no_data';
+    from?: string; to?: string; reason?: string; text?: string; origin?: string; protocol?: string; kind?: string;
+    [extra: string]: unknown;
+  };
 }
 
 export interface DailyEntry {
@@ -316,7 +386,11 @@ export interface RegionMeta {
   context_metrics?: string[];
   key_metric: string;
   live_metrics: string[];
+  /** Old placeholder; `space_effect` (Yenna's text, with [REF-xx] ids) replaces it when present. */
   spaceflight_note: string;
+  space_effect?: string;
+  /** Status of each REF id in space_effect (docs/medical/references.csv): "pending" shows "(source pending)". */
+  refs?: Record<string, { status: 'ok' | 'pending'; citation?: string }>;
 }
 export interface RegionsConfig { regions: RegionMeta[] }
 
@@ -399,14 +473,39 @@ export interface PvtConfig {
   duration_s: number;
   demo_duration_s: number;
   gap_s: [number, number];
+  /** A lapse is a reaction time >= lapse_ms (355 since Nov 14). */
   lapse_ms: number;
   no_response_ms: number;
+  /** Hits are reactions from false_start_ms up to (not including) hit_max_ms; the median is taken over hits. */
+  hit_max_ms?: number;
+  false_start_ms?: number;
+}
+
+/** GET /api/pvt-norms (backend/data/pvt_norms.json): CSA PRET v4.0 ground-study reference group. */
+export interface PvtNorms {
+  source: string;
+  licence: string;
+  licence_url: string;
+  url: string;
+  test: string;
+  lapse_rule: string;
+  lapse_ms: number;
+  metrics: Record<string, string>;
+  exclusion_rule: string;
+  excluded: { subject: number; reason: string }[];
+  n: number;
+  n_sessions: number;
+  percentiles: { median_rt_ms: Record<string, number>; lapse_rate_pct: Record<string, number> };
+  distribution: { median_rt_ms: number[]; lapse_rate_pct: number[] };
 }
 
 /** Reaction-time test result (psychomotor vigilance style). */
 export interface PvtResult {
+  /** Median of hits (ms). */
   median_ms: number;
   lapses: number;
+  /** lapses / n x 100 */
+  lapse_rate_pct?: number;
   false_starts: number;
   n: number;
   duration_s: number;
@@ -421,10 +520,12 @@ export interface MissionsResponse {
   streak: Streak;
 }
 
-export type LogKind = 'meal' | 'exercise' | 'biomarkers';
+export type LogKind = 'meal' | 'exercise' | 'biomarkers' | 'mood';
 
 export interface CprConfig {
   rate_per_min: number;
+  /** Allowed range for the rate stepper (v4), e.g. [100, 120]. */
+  rate_range_per_min?: [number, number];
   compressions: number;
   breaths: number;
   breaths_pause_s: number;
@@ -463,4 +564,54 @@ export interface CheckResult {
   changed: { region: RegionId; from: Status; to: Status }[];
   advice: { level: AdviceLevel; text: string };
   notes: string[];
+}
+
+/** GET /api/sources (backend/data/sources.json): the /sources page. */
+export interface DataSource {
+  id: string;
+  status: 'real' | 'estimated' | 'simulated';
+  /** Short name (README table and /sources); `title` is the older field. */
+  name?: string;
+  agency?: string;
+  /** replay | test | thresholds | reference */
+  use?: string[];
+  status_note?: string;
+  owner?: string;
+  licence?: string;
+  /** e.g. Jian's validation result; "TO FILL IN" until it is added. */
+  validation?: { label: string; value: string };
+  /** Who still has to confirm the "used for" text, e.g. "Yenna to confirm". */
+  used_for_review?: string;
+  /** Shown when a link or citation is still missing ("TO FILL IN: ..."). */
+  url_note?: string;
+  title: string;
+  badge: string;
+  provider: string;
+  what: string;
+  used_for: string[];
+  locations: string[];
+  units?: string;
+  unit_source?: string;
+  location_note?: string;
+  file?: string;
+  converter?: string;
+  draft?: boolean;
+  urls: string[];
+}
+export interface SourcesConfig { sources: DataSource[]; uses?: Record<string, string> }
+
+/** GET /api/crew-reference (backend/data/crew_reference_osd575.json): NASA OSDR OSD-575, Inspiration4. Values are the
+ *  file's strings; shown as reference only (no status colours). */
+export interface CrewReference {
+  source: string;
+  dataset: string;
+  licence: string;
+  url: string;
+  file: string;
+  crew: { id: string; sex: string }[];
+  timepoints: string[];
+  timepoint_note: string;
+  display: { pre_flight: string; post_flight: string };
+  mgdl_per_mmol: number;
+  analytes: Record<string, { name: string; label: string; units: string; range: [string, string]; values: Record<string, Record<string, string>> }>;
 }

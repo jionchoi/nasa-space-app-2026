@@ -1,15 +1,17 @@
 """Radiation: daily dose, mission total and the replay of a real NASA DONKI solar particle event.
 
-The event (data/space_weather/event.json, built once by scripts/fetch_donki.py) has real ids, times and links;
-the dose-rate curve is SIMULATED. A demo control starts the replay; while it runs, the radiation region is "red"
-(Act now), an alert says to go to the shielded area, and the advice depends on the environment.
+The event (data/space_weather/event.json, built by scripts/fetch_donki.py) has real ids, times and links;
+the dose-rate curve is SIMULATED ("dose simulated; timing from real DONKI event"). A demo control starts the replay for
+every location at once; while it runs, the radiation region is "red" (Act now), an alert says to go to the shielded
+area, and the advice depends on the environment. The curve is the ISS reference; `location_scale` in event.json makes
+it stronger where there is less shielding (Mars transit, the Moon and Mars surfaces).
 """
 from __future__ import annotations
 
 import time
 from datetime import datetime, timezone
 
-from . import alerts, store
+from . import alerts, radiation_feed, store
 from .rules.judge import bounds, judge
 from .rules.regions import derive_daily
 
@@ -53,8 +55,16 @@ def stop() -> None:
     _state.update(started=None, minutes=None)
 
 
-def active(now: float | None = None) -> dict | None:
-    """The running event, or None. Ends by itself when the replay time is over."""
+def scale(env: str | None) -> float:
+    """How much stronger the event is at this location than on the ISS (event.json location_scale, DRAFT)."""
+    table = (store.space_event() or {}).get("location_scale") or {}
+    value = store.pick_for_env(table, env) if env else table.get("iss")
+    return float(value) if isinstance(value, (int, float)) else 1.0
+
+
+def active(now: float | None = None, env: str | None = None) -> dict | None:
+    """The running event, or None. Ends by itself when the replay time is over. With `env`, doses are for that
+    location (location_scale); without, the ISS reference."""
     cfg = store.space_event()
     if cfg is None or _state["started"] is None:
         return None
@@ -68,11 +78,16 @@ def active(now: float | None = None) -> dict | None:
     curve_len = cfg["dose_curve"][-1]["minute"]
     curve_min = elapsed_min * curve_len / minutes
     ev = cfg["event"]
+    factor = scale(env)
+    reasons = cfg.get("location_reason") or {}
     return {
         "sep_id": ev["sep_id"], "sep_time": ev["sep_time"], "link": ev["link"], "instruments": ev.get("instruments", []),
         "flare": ev.get("flare"), "started_at": _iso(_state["started"]), "ends_at": _iso(_state["started"] + minutes * 60),
-        "remaining_s": round((minutes - elapsed_min) * 60), "dose_rate_msv_h": round(_curve_at(cfg["dose_curve"], curve_min), 3),
-        "event_dose_msv": round(_dose_until(cfg["dose_curve"], curve_min) * curve_len / minutes, 3),
+        "remaining_s": round((minutes - elapsed_min) * 60),
+        "dose_rate_msv_h": round(_curve_at(cfg["dose_curve"], curve_min) * factor, 3),
+        "event_dose_msv": round(_dose_until(cfg["dose_curve"], curve_min) * curve_len / minutes * factor, 3),
+        "location_scale": factor, "location_reason": (store.pick_for_env(reasons, env) if env else reasons.get("iss")) or "",
+        "dose_note": cfg.get("dose_note", "dose simulated; timing from real DONKI event"),
         "alert": cfg["alert"], "simulated_dose": True, "note": cfg.get("_status", ""),
     }
 
@@ -88,7 +103,7 @@ def summary(persona: str, env: str) -> dict:
     data = store.persona(persona)
     daily = derive_daily(data, store.regions())
     thresholds = store.thresholds()
-    event = active()
+    event = active(env=env)
     extra = event["event_dose_msv"] if event else 0.0
     total = daily[-1]["radiation_total_msv"] + extra
     entry = thresholds.get("radiation_total_msv") if isinstance(thresholds.get("radiation_total_msv"), dict) else {}
@@ -103,16 +118,20 @@ def summary(persona: str, env: str) -> dict:
         "event": {**event, "advice": advice(env)} if event else None,
         "event_available": store.space_event() is not None,
         "fallback_spike_used": store.space_event() is None and bool(data.get("solar_spike_fallback")),
+        "mission_dose_simulated": True,  # the mSv mission total comes from the persona file
+        "feed": radiation_feed.summary(env),  # dose rate at this location: real RadLab replay, DRAFT estimate or None
     }
 
 
-def apply_to_status(rows: list[dict]) -> None:
-    """While the replay runs, the radiation region is red (Act now) with the event in its reason."""
-    event = active()
+def apply_to_status(rows: list[dict], env: str | None = None) -> None:
+    """While the replay runs, the radiation region is red (Act now) at every location, with this location's dose."""
+    event = active(env=env)
     if not event:
         return
+    factor = event["location_scale"]
+    stronger = f", about {factor:g} times the ISS" if factor != 1 else ""
     for row in rows:
         if row["region"] == "radiation":
             row.update(status="red", score=min(row["score"], 10), time_to_act_days=0, advice_level="surgeon_now",
-                       reason=f"Solar particle event in progress (real NASA DONKI event {event['sep_id']}; dose simulated): "
+                       reason=f"Solar particle event in progress (real NASA DONKI event {event['sep_id']}; dose simulated{stronger}): "
                               f"{event['dose_rate_msv_h']:.2f} mSv/h now. Go to the shielded area.")

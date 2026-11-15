@@ -65,10 +65,15 @@ export interface UnresponsiveDetection {
   checkInDeadline: number | null;
   /** The newest camera frame, for drawing the skeleton (read in an animation loop, not via React). */
   frameRef: RefObject<Frame | null>;
+  /** Detection switched on (header toggle). OFF after every page load; nothing can alarm while off. */
+  enabled: boolean;
   start(): Promise<void>;
   stop(): void;
   /** The crew member answered "Are you OK?" (tap, key, voice or button). */
   respond(): void;
+  /** Demo mode: switch detection on and act as if the score stayed high, WITHOUT the camera if it is off
+   *  ("Are you OK?", then the crew alarm if nobody answers). */
+  demoTrigger(): void;
   /** Debug panel only: pretend the score stayed high long enough. */
   forceSuspected(): void;
 }
@@ -88,6 +93,9 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
   const [error, setError] = useState<string | null>(null);
   const [live, setLive] = useState<CvLive>(EMPTY_LIVE);
   const [checkInDeadline, setCheckInDeadline] = useState<number | null>(null);
+  // Detection on/off. OFF after every page load (not saved); start() turns it on, stop() off. While off, nothing here
+  // can raise the "Are you OK?" check-in or the crew alarm (the camera is off and the pulse-only path is skipped).
+  const [enabled, setEnabled] = useState(false);
 
   // The pulse is watched all the time, camera or not.
   const pulse = usePulseMonitor(persona, allThresholds, thresholds);
@@ -98,8 +106,8 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
 
   // The animation-frame loop runs outside React's render, so it reads the newest values from this ref.
   const personaName = personaInfo?.name;
-  const latest = useRef({ thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate });
-  latest.current = { thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate };
+  const latest = useRef({ thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate, env });
+  latest.current = { thresholds, pulse, paused, inEmergency, fallEnabled, sleep: envInfo?.sleep, clockOffsetMs, persona, personaName, navigate, env };
 
   // Things kept between frames (refs, because changing them must not re-render the page).
   const models = useRef<Landmarkers | null>(null);
@@ -140,7 +148,7 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
             eyes_closed_s: round(signals?.eyesClosedSeconds), score: round(signals?.unresponsiveScore), pulse: p.status,
             from: effect.from, to: effect.to, reason: effect.reason, text: `Unresponsive detection: ${effect.reason}`,
           },
-        }, who);
+        }, who, latest.current.env);
       }
       // Show or hide "Are you OK?" here and in every other open tab.
       if (effect.kind === 'showCheckIn') { setCheckInDeadline(effect.deadline); sendCheckIn({ type: 'show', deadlineWallMs: toWallMs(effect.deadline) }); }
@@ -155,16 +163,17 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
     }
   }, []);
 
-  // CAMERA OFF: the pulse alone can still trigger (about once a second, whenever a new reading arrives).
+  // CAMERA OFF: the pulse alone can still trigger (about once a second, whenever a new reading arrives), but only
+  // while detection is switched on. It is OFF after every page load (never saved): the header toggle turns it on.
   useEffect(() => {
-    if (cameraOn || !detector.current) return;
+    if (!enabled || cameraOn || !detector.current) return;
     const { paused: pause, inEmergency: emergency } = latest.current;
     const result = detector.current.update({ now: clockNow(), signals: null, pulse: pulse.status, isSleepTime: sleepingNow(),
       vitalsRed: pulse.vitalsRed, paused: pause, inEmergency: emergency, responded: responded.current });
     responded.current = false;
     perform(result.effects, null);
     setLive((old) => ({ ...old, state: result.state, now: clockNow() }));
-  }, [pulse, cameraOn, perform]);
+  }, [pulse, cameraOn, perform, enabled]);
 
   /** CAMERA ON: one pass of the loop. */
   const step = useCallback(() => {
@@ -257,6 +266,8 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
       setPhase('error');
       return;
     }
+    // Switched on: from here the pulse-only alarm path runs too, even if the camera then fails to start.
+    setEnabled(true);
     setError(null);
     setPhase('loading');
     try {
@@ -292,6 +303,7 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
     setLive(EMPTY_LIVE);
     setError(null);
     setPhase('off');
+    setEnabled(false);
   }, [videoRef]);
 
   // Leaving the app: release the camera.
@@ -325,5 +337,12 @@ export function useUnresponsiveDetection(videoRef: RefObject<HTMLVideoElement>, 
     perform(detector.current.forceSuspected(clockNow()).effects, lastSignals.current);
   }, [perform]);
 
-  return { phase, error, live, pulse, checkInDeadline, frameRef, start, stop, respond, forceSuspected };
+  /** Demo mode: same as the debug trigger, but also with the camera off (the pulse loop then drives the check-in). */
+  const demoTrigger = useCallback(() => {
+    if (!detector.current) return;
+    setEnabled(true);
+    perform(detector.current.forceSuspected(clockNow()).effects, lastSignals.current);
+  }, [perform]);
+
+  return { phase, error, live, pulse, checkInDeadline, frameRef, start, stop, respond, forceSuspected, demoTrigger, enabled };
 }

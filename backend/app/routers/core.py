@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
-from .. import db, store
+from .. import alerts, db, store
 from ..models import Environment, Guidance, Labels, Measurements, Protocol, UnresponsiveEvent
 
 router = APIRouter(prefix="/api")
@@ -22,6 +22,24 @@ def environments() -> list:
 @router.get("/thresholds")
 def thresholds() -> dict:
     return store.thresholds()
+
+
+@router.get("/pvt-norms")
+def pvt_norms() -> dict:
+    """Reaction-test reference group (CSA PRET v4.0, data/pvt_norms.json, built by scripts/pret_pvt_stats.py)."""
+    return store.load("pvt_norms.json")
+
+
+@router.get("/crew-reference")
+def crew_reference() -> dict:
+    """Real crew blood values (NASA OSDR OSD-575, Inspiration4), reference only (data/crew_reference_osd575.json)."""
+    return store.load("crew_reference_osd575.json")
+
+
+@router.get("/sources")
+def sources() -> dict:
+    """Data sources for the /sources page (data/sources.json)."""
+    return store.load("sources.json")
 
 
 @router.get("/regions")
@@ -82,11 +100,24 @@ def labels() -> dict:
     return store.labels()
 
 
+CV_ALERT_LINK = "/emergency?protocol=unresponsive&trigger=cv&preanswer=responsive:no"
+
+
 @router.post("/events")
-def post_event(event: UnresponsiveEvent, persona: str | None = None) -> dict:
-    data = event.model_dump(exclude_none=True)
+def post_event(event: UnresponsiveEvent, persona: str | None = None, env: str = "iss") -> dict:
+    data = event.model_dump(exclude_none=True, by_alias=True)
     db.insert("events", persona=persona, t=data["t"], type=data["type"], data=data)
-    return {"ok": True}
+    alert = None
+    # Unresponsive detection raised the crew alarm: also a backend alert (Act now, heart, source cv), so it shows in
+    # the alerts list and the messages drawer (with a drafted message), and every screen on /ws/alerts hears it.
+    # Only the detector's own alarm: the crew alarm screen and the emergency log also post "alarm" events.
+    if event.type == "alarm" and event.signals.source == "cv":
+        reason = event.signals.reason or "no response to the check-in"
+        alert = alerts.create(persona or "A", "red", f"Crew member not responding (unresponsive detection: {reason})", "cv",
+                              region="heart", link=CV_ALERT_LINK)
+        if alert:
+            alerts.draft_for_alert(alert, None, env)
+    return {"ok": True, "alert_id": alert["id"] if alert else None}
 
 
 @router.get("/events")

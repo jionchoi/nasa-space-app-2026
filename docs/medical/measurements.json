@@ -1,0 +1,116 @@
+{
+  "hr_rest": {
+    "how_to_measure": ["Put on the biometric wristband.", "Sit still and breathe normally for 3 minutes."],
+    "why_check": "A rising resting heart rate is an early sign of stress, fatigue, or illness.",
+    "can_do_in_space": true,
+    "equipment": "Biometric wristband"
+  },
+  "hrv_rmssd": {
+    "how_to_measure": ["Wear the chest strap overnight.", "Sync the data to the app when you wake up."],
+    "why_check": "Heart rate variability shows how well your body recovers from stress and exercise.",
+    "can_do_in_space": true,
+    "equipment": "Chest strap monitor"
+  },
+  "spo2": {
+    "how_to_measure": ["Place the sensor on your index finger.", "Wait 15 seconds for the reading to stabilize."],
+    "why_check": "Checks if your lungs are moving enough oxygen into your blood.",
+    "can_do_in_space": true,
+    "equipment": "Pulse oximeter"
+  },
+  "rr": {
+    "how_to_measure": ["Wear the chest strap or wristband.", "Breathe normally while at rest."],
+    "why_check": "High breathing rates can indicate high CO2 in the cabin or an incoming illness.",
+    "can_do_in_space": true,
+    "equipment": "Chest strap or wristband"
+  },
+  "stand_hr_rise": {
+    "how_to_measure": ["Lie down for 5 minutes and record heart rate.", "Stand up quickly and record heart rate for 1 minute.", "DRAFT: Perform only in gravity environments."],
+    "why_check": "Tests how well your heart responds to gravity, showing if you are dehydrated or dizzy.",
+    "can_do_in_space": true,
+    "equipment": "Wristband or chest strap"
+  },
+  "bp_sys": {
+    "how_to_measure": ["Wrap the cuff around your bare upper arm.", "Keep your arm at heart level and press start."],
+    "why_check": "Measures the maximum pressure in your blood vessels. Important for tracking fluid shifts.",
+    "can_do_in_space": true,
+    "equipment": "Blood pressure cuff"
+  },
+  "bp_dia": {
+    "how_to_measure": ["Wrap the cuff around your bare upper arm.", "Keep your arm at heart level and press start."],
+    "why_check": "Measures the resting pressure in your blood vessels. Helps check heart health.",
+    "can_do_in_space": true,
+    "equipment": "Blood pressure cuff"
+  },
+  "temperature": {
+    "how_to_measure": ["Place the thermometer in your ear.", "Press the button and wait for the beep."],
+    "why_check": "A fever means your body is fighting an infection. Spaceflight can slightly raise normal body temp.",
+    "can_do_in_space": true,
+    "equipment": "Digital ear thermometer"
+  },
+  "glucose": {
+    "how_to_measure": ["Wash your hands.", "Use the lancet to prick your finger.", "Apply a drop of blood to the test strip."],
+    "why_check": "Checks your blood sugar levels. Spaceflight can change how your body processes sugar.",
+    "can_do_in_space": true,
+    "equipment": "Glucometer kit"
+  },
+  "sleep_h": {
+    "how_to_measure": ["Wear the biometric wristband to bed.", "Sync the device in the morning."],
+    "why_check": "Good sleep is critical for quick thinking, mood, and immune health.",
+    "can_do_in_space": true,
+    "equipment": "Biometric wristband"
+  },
+  "mood": {
+    "how_to_measure": ["Open the daily survey in the app.", "Rate your mood on the 1-10 slider."],
+    "why_check": "Isolation and workload affect your mental health. Tracking helps catch burnout early.",
+    "can_do_in_space": true,
+    "equipment": "Tablet"
+  },
+  "stress": {
+    "how_to_measure": ["Open the daily survey in the app.", "Rate your stress level on the 1-10 slider."],
+    "why_check": "High stress lowers immunity and makes mistakes more likely.",
+    "can_do_in_space": true,
+    "equipment": "Tablet"
+  },
+  "pvt_median": {
+    "how_to_measure": ["Open the PVT app on the tablet.", "Tap the screen as fast as possible when the light turns on.", "Complete the 3-minute test."],
+    "why_check": "Measures your reaction time to ensure you are alert enough for critical tasks.",
+    "can_do_in_space": true,
+    "equipment": "Tablet"
+  },
+  "pvt_lapses": {
+    "how_to_measure": ["Counted automatically during your PVT test."],
+    "why_check": "Tracks how many times you zoned out or reacted too slowly. High lapses mean severe fatigue.",
+    "can_do_in_space": true,
+    "equipment": "Tablet"
+  },
+  "hydration": {
+    "how_to_measure": ["Log your water intake in the nutrition app.", "Check your urine color against the chart in the waste unit."],
+    "why_check": "Dehydration worsens dizziness, kidney stones, and fatigue.",
+    "can_do_in_space": true,
+    "equipment": "Tablet, visual chart"
+  },
+  "exercise": {
+    "how_to_measure": ["Log your resistive and aerobic exercise sessions in the app."],
+    "why_check": "Daily exercise is the only way to stop severe bone and muscle loss in zero gravity.",
+    "can_do_in_space": true,
+    "equipment": "Tablet"
+  },
+  "body_mass": {
+    "how_to_measure": ["Use the space mass measurement device.", "Follow the strap-in procedure and record the reading."],
+    "why_check": "Losing body mass means you are losing muscle, bone, or fluids. You must eat enough to maintain weight.",
+    "can_do_in_space": true,
+    "equipment": "Space linear acceleration mass measurement device"
+  },
+  "co2": {
+    "how_to_measure": ["Read the environmental monitor on the wall panel."],
+    "why_check": "High CO2 causes headaches, poor sleep, and slow thinking.",
+    "can_do_in_space": true,
+    "equipment": "Cabin sensors"
+  },
+  "radiation_dose": {
+    "how_to_measure": ["Wear your personal dosimeter at all times.", "Scan it weekly at the base station."],
+    "why_check": "Tracks your exposure to space radiation to keep you below dangerous lifetime limits.",
+    "can_do_in_space": true,
+    "equipment": "Personal dosimeter"
+  }
+}

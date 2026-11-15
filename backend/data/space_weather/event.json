@@ -1,135 +1,154 @@
 {
-  "_status": "Timing, IDs and links are from a real NASA DONKI event. DOSE RATES ARE SIMULATED (shape only, not measured).",
-  "simulated_dose": true,
-  "source": {
-    "name": "NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information)",
-    "file": "donki_2024-05-01_2024-05-31.json",
-    "fetched_at": "2026-11-13T18:18:37+00:00"
-  },
-  "event": {
-    "sep_id": "2024-05-10T13:35:00-SEP-001",
-    "sep_time": "2024-05-10T13:35Z",
-    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30677/-1",
-    "instruments": [
-      "GOES-P: SEISS >10 MeV"
-    ],
-    "linked_events": [
-      "2024-05-08T04:20:00-FLR-001",
-      "2024-05-08T04:37:00-FLR-001",
-      "2024-05-08T05:36:00-CME-001",
-      "2024-05-08T11:26:00-FLR-001",
-      "2024-05-08T12:24:00-CME-001",
-      "2024-05-08T21:08:00-FLR-001",
-      "2024-05-08T22:05:00-FLR-001",
-      "2024-05-08T22:24:00-CME-001",
-      "2024-05-09T08:45:00-FLR-001",
-      "2024-05-09T09:24:00-CME-001",
-      "2024-05-09T17:23:00-FLR-001",
-      "2024-05-09T18:23:00-CME-001",
-      "2024-05-10T06:27:00-FLR-001",
-      "2024-05-10T07:12:00-CME-001"
-    ],
-    "flare": {
-      "flr_id": "2024-05-10T06:27:00-FLR-001",
-      "note": "details not downloaded (FLR endpoint unavailable)"
-    }
-  },
-  "replay": {
-    "duration_min": 20,
-    "note": "The demo replays the event compressed into 20 minutes."
-  },
-  "dose_curve": [
-    {
-      "minute": 0,
-      "msv_per_h": 0.02
-    },
-    {
-      "minute": 1,
-      "msv_per_h": 0.847
-    },
-    {
-      "minute": 2,
-      "msv_per_h": 1.29
-    },
-    {
-      "minute": 3,
-      "msv_per_h": 1.527
-    },
-    {
-      "minute": 4,
-      "msv_per_h": 1.654
-    },
-    {
-      "minute": 5,
-      "msv_per_h": 1.722
-    },
-    {
-      "minute": 6,
-      "msv_per_h": 1.491
-    },
-    {
-      "minute": 7,
-      "msv_per_h": 1.279
-    },
-    {
-      "minute": 8,
-      "msv_per_h": 1.092
-    },
-    {
-      "minute": 9,
-      "msv_per_h": 0.931
-    },
-    {
-      "minute": 10,
-      "msv_per_h": 0.792
-    },
-    {
-      "minute": 11,
-      "msv_per_h": 0.674
-    },
-    {
-      "minute": 12,
-      "msv_per_h": 0.574
-    },
-    {
-      "minute": 13,
-      "msv_per_h": 0.489
-    },
-    {
-      "minute": 14,
-      "msv_per_h": 0.417
-    },
-    {
-      "minute": 15,
-      "msv_per_h": 0.356
-    },
-    {
-      "minute": 16,
-      "msv_per_h": 0.305
-    },
-    {
-      "minute": 17,
-      "msv_per_h": 0.261
-    },
-    {
-      "minute": 18,
-      "msv_per_h": 0.224
-    },
-    {
-      "minute": 19,
-      "msv_per_h": 0.193
-    },
-    {
-      "minute": 20,
-      "msv_per_h": 0.166
-    }
+ "_status": "Timing, IDs and links are from a real NASA DONKI event. DOSE RATES ARE SIMULATED (shape only, not measured).",
+ "simulated_dose": true,
+ "dose_note": "dose simulated; timing from real DONKI event",
+ "source": {
+  "name": "NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information)",
+  "file": "donki_2024-05-01_2024-05-31.json",
+  "fetched_at": "2026-11-13T18:18:37+00:00"
+ },
+ "event": {
+  "sep_id": "2024-05-10T13:35:00-SEP-001",
+  "sep_time": "2024-05-10T13:35Z",
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30677/-1",
+  "instruments": [
+   "GOES-P: SEISS >10 MeV"
   ],
-  "alert": "Solar particle event: go to the shielded area",
-  "advice": {
-    "iss": "Go to the most shielded module now and stay there until the event ends. Tell your crew.",
-    "moon": "Go to the base shelter now and stay inside until the event ends. Stop surface activity.",
-    "mars": "Go to the storm shelter (the water-wall area) now and stay there until the event ends.",
-    "rover": "DRAFT: Drive back to the base shelter now. If you cannot reach it in time, stay inside the rover cabin and tell the base crew.",
-    "default": "Go to the most shielded area now and stay there until the event ends."
+  "linked_events": [
+   "2024-05-08T04:20:00-FLR-001",
+   "2024-05-08T04:37:00-FLR-001",
+   "2024-05-08T05:36:00-CME-001",
+   "2024-05-08T11:26:00-FLR-001",
+   "2024-05-08T12:24:00-CME-001",
+   "2024-05-08T21:08:00-FLR-001",
+   "2024-05-08T22:05:00-FLR-001",
+   "2024-05-08T22:24:00-CME-001",
+   "2024-05-09T08:45:00-FLR-001",
+   "2024-05-09T09:24:00-CME-001",
+   "2024-05-09T17:23:00-FLR-001",
+   "2024-05-09T18:23:00-CME-001",
+   "2024-05-10T06:27:00-FLR-001",
+   "2024-05-10T07:12:00-CME-001"
+  ],
+  "flare": {
+   "flr_id": "2024-05-10T06:27:00-FLR-001",
+   "note": "details not downloaded (FLR endpoint unavailable)"
   }
+ },
+ "replay": {
+  "duration_min": 20,
+  "note": "The demo replays the event compressed into 20 minutes."
+ },
+ "dose_curve_note": "Reference curve for the ISS (mSv/h), dose simulated; timing from real DONKI event. Multiplied by location_scale per location.",
+ "dose_curve": [
+  {
+   "minute": 0,
+   "msv_per_h": 0.01
+  },
+  {
+   "minute": 1,
+   "msv_per_h": 0.075
+  },
+  {
+   "minute": 2,
+   "msv_per_h": 0.11
+  },
+  {
+   "minute": 3,
+   "msv_per_h": 0.129
+  },
+  {
+   "minute": 4,
+   "msv_per_h": 0.139
+  },
+  {
+   "minute": 5,
+   "msv_per_h": 0.144
+  },
+  {
+   "minute": 6,
+   "msv_per_h": 0.126
+  },
+  {
+   "minute": 7,
+   "msv_per_h": 0.109
+  },
+  {
+   "minute": 8,
+   "msv_per_h": 0.094
+  },
+  {
+   "minute": 9,
+   "msv_per_h": 0.082
+  },
+  {
+   "minute": 10,
+   "msv_per_h": 0.071
+  },
+  {
+   "minute": 11,
+   "msv_per_h": 0.061
+  },
+  {
+   "minute": 12,
+   "msv_per_h": 0.054
+  },
+  {
+   "minute": 13,
+   "msv_per_h": 0.047
+  },
+  {
+   "minute": 14,
+   "msv_per_h": 0.041
+  },
+  {
+   "minute": 15,
+   "msv_per_h": 0.036
+  },
+  {
+   "minute": 16,
+   "msv_per_h": 0.032
+  },
+  {
+   "minute": 17,
+   "msv_per_h": 0.029
+  },
+  {
+   "minute": 18,
+   "msv_per_h": 0.026
+  },
+  {
+   "minute": 19,
+   "msv_per_h": 0.024
+  },
+  {
+   "minute": 20,
+   "msv_per_h": 0.021
+  }
+ ],
+ "location_scale": {
+  "_note": "DRAFT - Yenna reviews. Multiplier on the reference (ISS) dose curve. Simulated, not measured.",
+  "iss": 1.0,
+  "moon": 5.0,
+  "rover:moon": 5.0,
+  "mars": 10.0,
+  "rover:mars": 3.0,
+  "default": 1.0
+ },
+ "location_reason": {
+  "iss": "Earth's magnetic field turns most of the particles away from the ISS.",
+  "moon": "No magnetic field on the Moon; the ground blocks only the half of the sky below you.",
+  "rover:moon": "No magnetic field on the Moon, and the rover cabin is thinner than the base walls.",
+  "mars": "Deep space: no magnetic field and no planet to block the particles. The biggest effect.",
+  "rover:mars": "The thin Martian air and the planet block part of the particles, but no magnetic field protects you.",
+  "default": "Effect depends on the shielding where you are."
+ },
+ "alert": "Solar particle event: go to the shielded area",
+ "advice": {
+  "iss": "Go to the most shielded module now and stay there until the event ends. Tell your crew.",
+  "moon": "Go to the base shelter now and stay inside until the event ends. Stop surface activity.",
+  "mars": "Go to the storm shelter (the water-wall area) now and stay there until the event ends.",
+  "rover": "DRAFT: Drive back to the base shelter now. If you cannot reach it in time, stay inside the rover cabin and tell the base crew.",
+  "default": "Go to the most shielded area now and stay there until the event ends."
+ }
 }

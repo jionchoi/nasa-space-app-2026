@@ -77,16 +77,16 @@ export class UnresponsiveDetector {
     }
   }
 
-  /** MONITORING: watch for a high unresponsive score that lasts (or a fall on the Moon). */
+  /** MONITORING: watch for a high unresponsive score that lasts (or a fall where there is gravity). */
   private whileMonitoring({ now, signals, isSleepTime, vitalsRed, paused }: DetectorInput): DetectorResult {
     // Camera off, asleep, on a screen where stillness is expected, or nobody at the module: the camera cannot
     // trigger, and the timer starts over. (A sleeping crew member floats in the same relaxed posture.)
     if (!signals || isSleepTime || paused || !signals.present) {
       return this.stay({ ...this.current, highSince: null });
     }
-    // Moon base only: a fall followed by stillness goes straight to SUSPECTED.
+    // Gravity only (Moon base, rover on the Moon or Mars): a fall followed by stillness goes straight to SUSPECTED.
     if (signals.fallDetected) {
-      return this.moveTo('SUSPECTED', now, 'Fell, then stayed still (Moon base)');
+      return this.moveTo('SUSPECTED', now, 'Fell, then stayed still (gravity: Moon or Mars surface)');
     }
     // Score below the threshold: the timer starts over.
     if (signals.unresponsiveScore < this.thresholds.unresponsive_threshold) {

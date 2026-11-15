@@ -13,7 +13,7 @@ interface Props {
 export function CheckShell({ steps, current, onCancel, children }: Props) {
   return (
     <div className="flex min-h-[100dvh] flex-col">
-      <AppHeader>
+      <AppHeader noVitals>
         <div className="flex items-center gap-4 border-t border-white/[0.06] px-4 py-2.5">
           <div className="shrink-0 leading-tight">
             <h1 className="text-sm font-semibold">Daily check</h1>

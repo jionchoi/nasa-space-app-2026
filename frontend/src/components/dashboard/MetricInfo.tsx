@@ -11,8 +11,29 @@ interface Props {
   info?: MeasurementInfo;
   /** regions.json function: what this body part or system does. */
   functionText?: string;
-  /** regions.json spaceflight_note. */
+  /** regions.json space_effect (or the old spaceflight_note). May cite [REF-xx]. */
   spaceNote: string;
+  /** REF id -> status; ids without a known source get "(source pending)". */
+  refs?: Record<string, { status: 'ok' | 'pending'; citation?: string }>;
+  /** Where the values on screen come from (cabin telemetry, radiation feed), with a note for the reader. */
+  dataSource?: { badge: string; note?: string | null; url?: string | null };
+}
+
+/** Text with [REF-xx] citations: a known source shows its citation on hover; an unknown one gets "(source pending)". */
+export function WithRefs({ text, refs }: { text: string; refs?: Props['refs'] }) {
+  const parts = text.split(/(\[REF-\d+\])/);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const id = /^\[(REF-\d+)\]$/.exec(part)?.[1];
+        if (!id) return <span key={i}>{part}</span>;
+        const ref = refs?.[id];
+        return ref?.status === 'ok'
+          ? <span key={i} className="text-xs text-muted" title={ref.citation}>{part}</span>
+          : <span key={i} className="text-xs text-muted">{part} <span className="text-watch">(source pending)</span></span>;
+      })}
+    </>
+  );
 }
 
 function Section({ title, draft, children }: { title: string; draft?: boolean; children: ReactNode }) {
@@ -26,7 +47,7 @@ function Section({ title, draft, children }: { title: string; draft?: boolean; c
 
 /** "Learn" tab, in this order: what this does, why we check this, how to measure, why this happens in space, source.
  *  A PLACEHOLDER source gets the amber tag so a placeholder is never presented as a reviewed value. */
-export function MetricInfo({ entry, info, functionText, spaceNote }: Props) {
+export function MetricInfo({ entry, info, functionText, spaceNote, refs, dataSource }: Props) {
   const placeholder = (entry?.source ?? 'PLACEHOLDER').toUpperCase().startsWith('PLACEHOLDER');
   const steps = info?.how_to_measure ?? [];
   const metric = entry?.label ? ` ${entry.label.toLowerCase()}` : '';
@@ -55,8 +76,18 @@ export function MetricInfo({ entry, info, functionText, spaceNote }: Props) {
         )}
       </Section>
       <Section title="Why this happens in space">
-        <span className="text-soft [text-wrap:pretty]">{spaceNote}</span>
+        <span className="text-soft [text-wrap:pretty]"><WithRefs text={spaceNote} refs={refs} /></span>
       </Section>
+      {dataSource && (
+        <Section title="Where these numbers come from">
+          <span className="text-soft [text-wrap:pretty]">
+            {dataSource.url
+              ? <a href={dataSource.url} target="_blank" rel="noreferrer" className="text-info hover:underline">{dataSource.badge}</a>
+              : <span className="text-text">{dataSource.badge}</span>}
+            {dataSource.note ? `. ${dataSource.note}` : ''}
+          </span>
+        </Section>
+      )}
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         Source:
         {placeholder ? (

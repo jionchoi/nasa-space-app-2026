@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>v4 Main: body + timeline</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#050608}
+button{font-family:inherit}
+@keyframes pulseSlow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pulseFast{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(-14deg)}40%{transform:rotate(14deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}}
+.tl-scroll{cursor:grab;user-select:none;touch-action:pan-y}
+.tl-scroll:active{cursor:grabbing}
+</style>
+</helmet>
+<div style="position: relative; min-height: 1120px; background: #050608; color: #EEF1F5; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-direction: column; overflow: hidden">
+
+  <!-- ============ TOP BAR ============ -->
+  <header style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 10px 24px; border-bottom: 1px solid #16191F; background: #07080B">
+    <div style="display: flex; align-items: center; gap: 14px; min-width: 0">
+      <button type="button" onClick="{{ openSidebar }}" aria-label="Open menu: change location and pages" style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+        <span style="width: 16px; height: 2px; background: #EEF1F5"></span><span style="width: 16px; height: 2px; background: #EEF1F5"></span><span style="width: 16px; height: 2px; background: #EEF1F5"></span>
+      </button>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.04em">CO-PILOT</span>
+      <span style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0">
+        <span style="font-size: 13px; font-weight: 600; white-space: nowrap">Alex Moreno · Day 45</span>
+        <button type="button" onClick="{{ openSidebar }}" style="all: unset; cursor: pointer; font-size: 12px; color: #9CC3FF; white-space: nowrap">{{ loc.name }} ▾</button>
+      </span>
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8A93A0; white-space: nowrap"><span style="width: 7px; height: 7px; border-radius: 50%; background: #4ADE80"></span>Surgeon link live · {{ loc.delay }}</span>
+      <button type="button" onClick="{{ goRoutine }}" style="{{ routineBtnStyle }}">
+        <span>Today's routine</span>
+        <span style="font-family: 'JetBrains Mono', monospace">{{ routineCount }}</span>
+        <span style="color: #FACC15">▲ {{ streak }}-day streak</span>
+      </button>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-self: center">
+      <button type="button" onClick="{{ pickRadiation }}" style="{{ radPillStyle }}">
+        <span style="font-size: 11px; letter-spacing: 0.12em; color: #8A93A0">RADIATION</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600">{{ loc.rate }}</span><span style="font-size: 11px; color: #8A93A0">µGy/h</span>
+        <span style="font-size: 10px; padding: 1px 6px; border-radius: 999px; border: 1px solid #2A2F38; color: {{ loc.srcColor }}">{{ loc.srcTag }}</span>
+      </button>
+      <button type="button" onClick="{{ pickCabin }}" style="{{ co2PillStyle }}">
+        <span style="font-size: 11px; letter-spacing: 0.12em; color: #8A93A0">CABIN CO₂</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600">{{ co2.value }}</span><span style="font-size: 11px; color: #8A93A0">ppm</span>
+        <span style="font-size: 11px; color: {{ co2.color }}">{{ co2.note }}</span>
+      </button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 10px; justify-self: end">
+      <span style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2"><span style="font-family: 'JetBrains Mono', monospace; font-size: 15px">14:22</span><span style="font-size: 11px; color: #8A93A0">mission time · next 16:00</span></span>
+      <button type="button" onClick="{{ toggleCam }}" aria-pressed="{{ camOn }}" aria-label="Unresponsive detection camera" title="Camera: unresponsive detection" style="{{ camBtnStyle }}">◉ Camera</button>
+      <button type="button" onClick="{{ toggleMute }}" aria-pressed="{{ muted }}" title="Mute alarms (M)" style="{{ muteBtnStyle }}">{{ muteLabel }}</button>
+      <button type="button" onClick="{{ openInbox }}" style="position: relative; height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; font-weight: 600; cursor: pointer">Inbox<span style="{{ inboxBadgeStyle }}">{{ inboxCount }}</span></button>
+      <button type="button" onClick="{{ goEmergency }}" style="height: 44px; padding: 0 20px; border-radius: 999px; border: none; background: #E5484D; color: #FFFFFF; font-weight: 800; letter-spacing: 0.06em; cursor: pointer">EMERGENCY</button>
+    </div>
+  </header>
+
+  <!-- ============ LIVE VITALS ============ -->
+  <div style="display: flex; align-items: stretch; gap: 0; padding: 0 24px; border-bottom: 1px solid #16191F; background: #06070A">
+    <span style="align-self: center; font-size: 11px; letter-spacing: 0.12em; color: #5C6470; padding-right: 16px">LIVE · {{ sensorLabel }}</span>
+    <sc-for list="{{ vitals }}" as="v" hint-placeholder-count="4">
+      <div style="{{ v.box }}">
+        <span style="display: flex; align-items: baseline; gap: 6px">
+          <span style="font-size: 12px; color: #8A93A0">{{ v.name }}</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 600; color: {{ v.color }}">{{ v.value }}</span>
+          <span style="font-size: 11px; color: #8A93A0">{{ v.unit }}</span>
+        </span>
+        <span style="font-size: 11px; color: #6B7380">usual {{ v.usual }} · signal {{ v.signal }}</span>
+        <span style="{{ v.flagStyle }}">{{ v.flag }}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- ============ MAIN ============ -->
+  <div style="flex: 1 1 auto; display: flex; min-height: 0">
+
+    <!-- BODY -->
+    <section aria-label="Body map" style="flex: 0 0 600px; display: flex; flex-direction: column; align-items: center; padding: 16px 20px 24px; box-sizing: border-box; background: #08090C; border-right: 1px solid #12151A">
+      <span style="{{ badgeStyle }}">{{ badgeText }}</span>
+      <div style="position: relative; width: 560px; height: 860px; margin-top: 8px">
+        <div aria-hidden="true" style="{{ auraStyle }}"></div>
+        <img src="/_blob/8ef03ac6b34d5d88173711656b29d4ab" alt="Human body figure" style="position: absolute; left: 148px; top: 10px; width: 264px; height: 840px; opacity: 0.9">
+        <svg width="560" height="860" viewBox="0 0 560 860" aria-hidden="true" style="position: absolute; left: 0; top: 0; pointer-events: none">
+          <sc-for list="{{ leaders }}" as="l" hint-placeholder-count="6">
+            <polyline points="{{ l.pts }}" fill="none" stroke="{{ l.color }}" stroke-width="{{ l.w }}" stroke-opacity="{{ l.op }}"></polyline>
+            <circle cx="{{ l.cx }}" cy="{{ l.cy }}" r="3.5" fill="{{ l.color }}"></circle>
+          </sc-for>
+        </svg>
+        <sc-for list="{{ zones }}" as="z" hint-placeholder-count="6">
+          <button type="button" onClick="{{ z.pick }}" aria-label="{{ z.aria }}" style="{{ z.style }}"></button>
+        </sc-for>
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="7">
+          <button type="button" onClick="{{ c.pick }}" aria-pressed="{{ c.on }}" style="{{ c.style }}">
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700"><span style="{{ c.dot }}"></span>{{ c.name }}</span>
+            <span style="font-size: 12px; color: {{ c.color }}">{{ c.label }} · <span style="font-family: 'JetBrains Mono', monospace; color: #C9CFD8">{{ c.value }}</span></span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section aria-label="Selected area" style="flex: 1 1 auto; min-width: 0; padding: 18px 28px 32px; display: flex; flex-direction: column; gap: 16px">
+
+      <!-- status explanation (small, top) -->
+      <div style="{{ statusBoxStyle }}">
+        <span style="{{ statusPillStyle }}">{{ s.label }}</span>
+        <span style="font-size: 14px; font-weight: 700">{{ s.name }}</span>
+        <span style="font-size: 14px; color: #C9CFD8; flex: 1 1 240px">{{ s.sentence }}</span>
+        <span style="font-size: 12px; color: {{ s.color }}">{{ s.timeToAct }}</span>
+      </div>
+
+      <!-- draggable mission timeline -->
+      <div style="border: 1px solid #16191F; border-radius: 14px; background: #08090C; padding: 12px 14px 10px">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px">
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #8A93A0">MISSION TIMELINE</span>
+          <span style="font-size: 12px; color: #5C6470">drag left / right · tap an event</span>
+          <span style="flex: 1 1 auto"></span>
+          <button type="button" onClick="{{ tlBack }}" aria-label="Earlier" style="width: 32px; height: 28px; border-radius: 8px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer">‹</button>
+          <button type="button" onClick="{{ tlNow }}" style="height: 28px; padding: 0 10px; border-radius: 8px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; font-size: 12px; cursor: pointer">Now</button>
+          <button type="button" onClick="{{ tlFwd }}" aria-label="Later" style="width: 32px; height: 28px; border-radius: 8px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer">›</button>
+        </div>
+        <div class="tl-scroll" onPointerDown="{{ tlDown }}" onPointerMove="{{ tlMove }}" onPointerUp="{{ tlUp }}" onPointerLeave="{{ tlUp }}" style="position: relative; height: 112px; overflow: hidden">
+          <div style="{{ tlInnerStyle }}">
+            <div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 56px; height: 2px; background: #1C2028"></div>
+            <div aria-hidden="true" style="{{ tlForecastStyle }}"></div>
+            <span aria-hidden="true" style="{{ tlForecastLabelStyle }}">Forecast</span>
+            <sc-for list="{{ tlDays }}" as="d" hint-placeholder-count="5">
+              <span aria-hidden="true" style="{{ d.line }}"></span>
+              <span aria-hidden="true" style="{{ d.label }}">{{ d.text }}</span>
+            </sc-for>
+            <div aria-hidden="true" style="{{ tlNowLine }}"></div>
+            <span aria-hidden="true" style="{{ tlNowLabel }}">NOW 14:22</span>
+            <sc-for list="{{ tlEvents }}" as="e" hint-placeholder-count="12">
+              <button type="button" onClick="{{ e.pick }}" aria-label="{{ e.aria }}" style="{{ e.style }}">
+                <span style="{{ e.dot }}"></span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6B7380">{{ e.time }}</span>
+                <span style="{{ e.textStyle }}">{{ e.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display: flex; gap: 14px; font-size: 11px; color: #6B7380; margin-top: 2px">
+          <span><span style="color: #4ADE80">●</span> done</span><span><span style="color: #FB923C">●</span> missed / not done</span><span><span style="color: #8A93A0">○</span> upcoming</span><span><span style="color: #FACC15">◆</span> alert</span>
+        </div>
+      </div>
+
+      <!-- selected area -->
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap">
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 30px; font-weight: 700">{{ s.name }}</span>
+          <span style="font-size: 13px; color: #8A93A0">Health score <span style="font-family: 'JetBrains Mono', monospace; color: #EEF1F5">{{ s.score }}</span>/100</span>
+          <span style="flex: 1 1 auto"></span>
+          <button type="button" onClick="{{ openLearn }}" style="height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid #2E4A7A; background: rgba(91,157,255,0.10); color: #9CC3FF; font-weight: 700; cursor: pointer">ⓘ Learn</button>
+        </div>
+        <div role="tablist" aria-label="All metrics in this area" style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{ metricTabs }}" as="m" hint-placeholder-count="4">
+            <button type="button" role="tab" aria-selected="{{ m.on }}" onClick="{{ m.pick }}" style="{{ m.style }}">
+              <span style="{{ m.dot }}"></span><span>{{ m.name }}</span><span style="font-family: 'JetBrains Mono', monospace; color: {{ m.valColor }}">{{ m.value }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-end">
+          <div style="display: flex; flex-direction: column; min-width: 180px">
+            <span style="font-size: 13px; color: #8A93A0">{{ m.name }}</span>
+            <span style="display: flex; align-items: baseline; gap: 8px"><span style="font-family: 'JetBrains Mono', monospace; font-size: 64px; line-height: 1; font-weight: 600; color: {{ m.color }}">{{ m.value }}</span><span style="font-size: 17px; color: #8A93A0">{{ m.unit }}</span></span>
+            <span style="font-size: 14px; color: #C9CFD8">Your usual: <span style="font-family: 'JetBrains Mono', monospace">{{ m.usual }}</span> {{ m.unit }}</span>
+            <span style="font-size: 12px; color: #6B7380">{{ m.delta }}</span>
+          </div>
+          <div style="flex: 1 1 380px; min-width: 0">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px">
+              <span style="font-size: 12px; color: #6B7380">{{ m.lineLegend }}</span>
+              <span style="flex: 1 1 auto"></span>
+              <button type="button" onClick="{{ set7 }}" style="{{ r7Style }}">7 days</button>
+              <button type="button" onClick="{{ set30 }}" style="{{ r30Style }}">30 days</button>
+            </div>
+            <svg viewBox="0 0 600 170" width="100%" height="170" role="img" aria-label="{{ m.chartAria }}" preserveAspectRatio="none">
+              <sc-for list="{{ chart.bands }}" as="b" hint-placeholder-count="2">
+                <line x1="0" x2="600" y1="{{ b.y }}" y2="{{ b.y }}" stroke="{{ b.color }}" stroke-width="1" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"></line>
+                <text x="596" y="{{ b.ty }}" text-anchor="end" font-size="10" fill="{{ b.color }}" font-family="Inter">{{ b.label }}</text>
+              </sc-for>
+              <line x1="0" x2="600" y1="{{ chart.usualY }}" y2="{{ chart.usualY }}" stroke="#3A414D" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+              <text x="4" y="{{ chart.usualTy }}" font-size="10" fill="#6B7380" font-family="Inter">usual</text>
+              <polyline points="{{ chart.pts }}" fill="none" stroke="{{ m.color }}" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+              <polyline points="{{ chart.fpts }}" fill="none" stroke="{{ m.color }}" stroke-width="2" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"></polyline>
+              <circle cx="{{ chart.lastX }}" cy="{{ chart.lastY }}" r="4.5" fill="{{ m.color }}"></circle>
+            </svg>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #5C6470"><span>{{ chart.from }}</span><span>today</span><span>{{ chart.to }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- radiation extras -->
+      <sc-if value="{{ isRad }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+          <sc-for list="{{ radStats }}" as="r" hint-placeholder-count="4">
+            <div style="border: 1px solid #16191F; border-radius: 12px; padding: 10px 12px"><span style="display: block; font-size: 11px; color: #8A93A0">{{ r.k }}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 20px">{{ r.v }}</span> <span style="font-size: 11px; color: #8A93A0">{{ r.u }}</span></div>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <div style="flex: 2 1 360px; border: 1px solid #16191F; border-radius: 12px; padding: 10px 12px">
+            <span style="font-size: 12px; color: #8A93A0">Last 24 h dose rate · spikes = South Atlantic Anomaly passes · {{ loc.srcLong }}</span>
+            <svg viewBox="0 0 600 70" width="100%" height="70" preserveAspectRatio="none" aria-label="24 hour dose rate"><polyline points="{{ saaPts }}" fill="none" stroke="#9CC3FF" stroke-width="1.5" vector-effect="non-scaling-stroke"></polyline></svg>
+          </div>
+          <div style="flex: 1 1 220px; border: 1px solid #3A2A12; background: rgba(250,204,21,0.05); border-radius: 12px; padding: 10px 12px; font-size: 13px">
+            <span style="display: block; font-size: 11px; letter-spacing: 0.1em; color: #FACC15">SOLAR EVENT WATCH (NASA DONKI)</span>
+            None active. Replay of the 10 May 2024 storm is in Admin → Solar replay. If one starts: go to the shielded area, Act now pop-up fires.
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- what to do -->
+      <div style="border-top: 1px solid #16191F; padding-top: 16px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #8A93A0">WHAT TO DO</span>
+          <sc-for list="{{ s.actions }}" as="a" hint-placeholder-count="3">
+            <button type="button" onClick="{{ a.toggle }}" aria-pressed="{{ a.done }}" style="{{ a.style }}">
+              <span style="{{ a.box }}">{{ a.mark }}</span><span style="{{ a.textStyle }}">{{ a.text }}</span>
+            </button>
+          </sc-for>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px">
+            <sc-for list="{{ s.buttons }}" as="b" hint-placeholder-count="2">
+              <button type="button" onClick="{{ b.go }}" style="{{ b.style }}">{{ b.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #8A93A0">WHO TO TELL</span>
+          <sc-for list="{{ ladder }}" as="l" hint-placeholder-count="4">
+            <div style="{{ l.style }}"><span style="font-family: 'JetBrains Mono', monospace; color: {{ l.numColor }}">{{ l.n }}</span><span>{{ l.text }}</span><span style="margin-left: auto; font-size: 11px; color: {{ l.numColor }}">{{ l.tag }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ CAMERA PANEL ============ -->
+  <sc-if value="{{ camOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; right: 24px; bottom: 24px; width: 300px; border-radius: 14px; border: 1px solid #22262E; background: #0B0D11; box-shadow: 0 20px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 20">
+      <div style="height: 160px; background: repeating-linear-gradient(135deg,#0E1116 0 10px,#10141A 10px 20px); position: relative; display: flex; align-items: center; justify-content: center; color: #5C6470; font-size: 12px">camera feed + pose skeleton
+        <span style="position: absolute; left: 8px; top: 8px; font-size: 11px; color: #4ADE80">● tracking · on device only</span>
+      </div>
+      <div style="padding: 10px 12px; font-size: 12px; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px">
+        <span style="color: #8A93A0">Posture</span><span>Neutral body posture</span>
+        <span style="color: #8A93A0">Limb motion (vs body drift)</span><span style="font-family: 'JetBrains Mono', monospace">0.82</span>
+        <span style="color: #8A93A0">Still for</span><span style="font-family: 'JetBrains Mono', monospace">0 s / 30 s</span>
+        <span style="color: #8A93A0">Fall check</span><span>{{ loc.fall }}</span>
+      </div>
+      <div style="padding: 0 12px 12px; font-size: 11px; color: #6B7380">If still too long → "Are you OK?" check-in → crew alarm. Pulse lost skips the check-in.</div>
+    </div>
+  </sc-if>
+
+  <!-- ============ SIDEBAR ============ -->
+  <sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeAll }}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.55); z-index: 30"></div>
+    <aside aria-label="Menu" style="position: absolute; left: 0; top: 0; bottom: 0; width: 300px; background: #0A0C10; border-right: 1px solid #1C2028; z-index: 31; display: flex; flex-direction: column; padding: 16px; box-sizing: border-box; gap: 18px">
+      <div style="display: flex; align-items: center; gap: 10px"><span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.04em">CO-PILOT</span><span style="flex: 1 1 auto"></span><button type="button" onClick="{{ closeAll }}" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer">✕</button></div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 11px; letter-spacing: 0.12em; color: #5C6470">LOCATION</span>
+        <sc-for list="{{ locList }}" as="o" hint-placeholder-count="5">
+          <button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="{{ o.style }}"><span>{{ o.name }}</span><span style="font-size: 11px; color: #6B7380">{{ o.sub }}</span></button>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: 0.12em; color: #5C6470">PAGES</span>
+        <sc-for list="{{ pages }}" as="p" hint-placeholder-count="6">
+          <button type="button" onClick="{{ p.go }}" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 10px; border-radius: 8px; border: none; background: transparent; color: #EEF1F5; font-size: 14px; text-align: left; cursor: pointer"><span>{{ p.name }}</span><span style="margin-left: auto; font-size: 11px; color: {{ p.badgeColor }}">{{ p.badge }}</span></button>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; border: 1px dashed #2A2F38; border-radius: 10px; padding: 10px">
+        <span style="font-size: 11px; letter-spacing: 0.12em; color: #5C6470">DEMO MODE ONLY (presenter)</span>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap">
+          <sc-for list="{{ scenList }}" as="o" hint-placeholder-count="3">
+            <button type="button" onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.name }}</button>
+          </sc-for>
+        </div>
+        <span style="font-size: 11px; color: #6B7380">Also: fast-forward clock, jump to event, simulate reply, Shift+D presenter bar.</span>
+      </div>
+      <span style="flex: 1 1 auto"></span>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #8A93A0">
+        <span style="display: flex; gap: 6px; align-items: center"><span style="width: 7px; height: 7px; border-radius: 50%; background: #FACC15"></span>{{ sensorLabel }} · Jian's PPG pipeline</span>
+        <span>Runs on board · works offline · Mock data where labelled</span>
+        <span style="color: #5C6470">Admin (/admin) is hidden from crew</span>
+      </div>
+    </aside>
+  </sc-if>
+
+  <!-- ============ INBOX DRAWER ============ -->
+  <sc-if value="{{ inboxOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeAll }}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.55); z-index: 30"></div>
+    <aside aria-label="Inbox" style="position: absolute; right: 0; top: 0; bottom: 0; width: 460px; background: #0A0C10; border-left: 1px solid #1C2028; z-index: 31; display: flex; flex-direction: column; padding: 18px; box-sizing: border-box; gap: 14px; overflow: auto">
+      <div style="display: flex; align-items: center"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Inbox</span><span style="flex: 1 1 auto"></span><button type="button" onClick="{{ closeAll }}" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer">✕</button></div>
+      <span style="font-size: 11px; letter-spacing: 0.12em; color: #5C6470">ALERTS</span>
+      <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="2">
+        <div style="{{ a.box }}">
+          <span style="display: flex; gap: 8px; align-items: baseline"><span style="font-size: 12px; font-weight: 700; color: {{ a.color }}">{{ a.level }}</span><span style="font-weight: 600">{{ a.title }}</span><span style="margin-left: auto; font-size: 11px; color: #6B7380">{{ a.time }}</span></span>
+          <span style="font-size: 13px; color: #C9CFD8">{{ a.text }}</span>
+          <span style="display: flex; gap: 8px"><button type="button" onClick="{{ a.view }}" style="height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid #2A2F38; background: transparent; color: #EEF1F5; font-size: 12px; cursor: pointer">View</button><button type="button" style="height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid #2A2F38; background: transparent; color: #EEF1F5; font-size: 12px; cursor: pointer">Acknowledge</button><button type="button" onClick="{{ goEmergency }}" style="{{ a.openStyle }}">Open emergency</button></span>
+        </div>
+      </sc-for>
+      <span style="font-size: 11px; letter-spacing: 0.12em; color: #5C6470">MESSAGE TO FLIGHT SURGEON</span>
+      <div style="border: 1px solid #22262E; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+        <span style="font-size: 11px; color: #9CC3FF">✦ Auto-drafted from your data · check and edit before sending</span>
+        <div contenteditable="true" style="font-size: 13px; line-height: 1.55; color: #EEF1F5; white-space: pre-line; background: #07080B; border: 1px solid #1C2028; border-radius: 8px; padding: 10px">{{ draft }}</div>
+        <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+          <button type="button" onClick="{{ sendMsg }}" style="height: 36px; padding: 0 18px; border-radius: 999px; border: none; background: #EEF1F5; color: #050608; font-weight: 700; cursor: pointer">{{ sendLabel }}</button>
+          <span style="font-size: 12px; color: #8A93A0">{{ deliveryText }}</span>
+          <button type="button" style="margin-left: auto; height: 30px; padding: 0 10px; border-radius: 999px; border: 1px dashed #2A2F38; background: transparent; color: #8A93A0; font-size: 11px; cursor: pointer">Simulate reply (demo)</button>
+        </span>
+      </div>
+      <div style="font-size: 12px; color: #6B7380">Earlier: "Emergency handled · Day 41" → opens the saved emergency log.</div>
+    </aside>
+  </sc-if>
+
+  <!-- ============ LEARN POP-UP ============ -->
+  <sc-if value="{{ learnOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeAll }}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.65); z-index: 40"></div>
+    <div role="dialog" aria-label="Learn" style="position: absolute; left: 50%; top: 70px; transform: translateX(-50%); width: 780px; max-height: 960px; overflow: auto; background: #0B0D11; border: 1px solid #22262E; border-radius: 18px; z-index: 41; padding: 24px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center"><span style="font-size: 12px; letter-spacing: 0.12em; color: #9CC3FF">LEARN</span><span style="flex: 1 1 auto"></span><button type="button" onClick="{{ closeAll }}" style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid #22262E; background: transparent; color: #EEF1F5; cursor: pointer">✕</button></div>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700">{{ s.name }} · {{ m.name }}</span>
+      <sc-for list="{{ learn }}" as="q" hint-placeholder-count="6">
+        <div style="display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; border-top: 1px solid #16191F; padding-top: 12px">
+          <span style="font-size: 13px; font-weight: 700; color: #8A93A0">{{ q.k }}</span><span style="font-size: 15px; color: #DDE2EA">{{ q.v }}</span>
+        </div>
+      </sc-for>
+      <div style="border-top: 1px solid #16191F; padding-top: 12px; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 13px; font-weight: 700; color: #8A93A0">Where these numbers come from</span>
+        <sc-for list="{{ sources }}" as="r" hint-placeholder-count="3">
+          <span style="font-size: 13px; color: #C9CFD8">· {{ r.t }} <span style="{{ r.tagStyle }}">{{ r.tag }}</span></span>
+        </sc-for>
+        <span style="font-size: 12px; color: #9CC3FF">See all sources →</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ ACT NOW POP-UP ============ -->
+  <sc-if value="{{ actOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: rgba(40,0,4,0.72); z-index: 50; animation: pulseFast 1s infinite"></div>
+    <div role="alertdialog" aria-label="Act now" style="position: absolute; left: 50%; top: 120px; transform: translateX(-50%); width: 720px; background: #16070A; border: 2px solid #FF4D5E; border-radius: 20px; z-index: 51; padding: 26px 30px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 0 80px rgba(255,77,94,0.45)">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="font-size: 13px; font-weight: 800; letter-spacing: 0.16em; color: #FF4D5E">ACT NOW · {{ act.area }}</span>
+        <span style="flex: 1 1 auto"></span>
+        <button type="button" onClick="{{ toggleMute }}" style="{{ act.alarmStyle }}"><span style="{{ act.bellStyle }}">🔔</span>{{ act.alarmText }}</button>
+      </div>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 30px; font-weight: 700; line-height: 1.2">{{ act.headline }}</span>
+      <span style="font-size: 14px; color: #F3B7BD">{{ act.why }}</span>
+      <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #3A1218; padding-top: 14px">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #F3B7BD">DO THIS NOW</span>
+        <sc-for list="{{ act.steps }}" as="t" hint-placeholder-count="3">
+          <span style="display: flex; gap: 14px; font-size: 19px"><span style="font-family: 'JetBrains Mono', monospace; color: #FF4D5E">{{ t.n }}</span>{{ t.text }}</span>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px">
+        <button type="button" onClick="{{ goEmergency }}" style="height: 54px; padding: 0 26px; border-radius: 999px; border: none; background: #FF4D5E; color: #FFFFFF; font-size: 17px; font-weight: 800; cursor: pointer">Open emergency mode</button>
+        <button type="button" onClick="{{ openInbox }}" style="height: 54px; padding: 0 22px; border-radius: 999px; border: 1px solid #FF8A95; background: transparent; color: #FFFFFF; font-weight: 700; cursor: pointer">Draft message to surgeon</button>
+        <button type="button" onClick="{{ ackAct }}" style="height: 54px; padding: 0 22px; border-radius: 999px; border: 1px solid #5A2A30; background: transparent; color: #F3B7BD; font-weight: 600; cursor: pointer">Acknowledge</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["Normal day","Slow drift","Acute event"],"default":"Slow drift"},"location":{"editor":"enum","options":["ISS","Moon base","Mars transit","Rover (Moon)","Rover (Mars)"],"default":"ISS"},"open":{"editor":"enum","options":["None","Sidebar","Inbox","Learn","Act now","Camera"],"default":"None"},"$preview":{"width":1440,"height":1120}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: null, metric: 0, range: 7, off: 1210, drag: null, muted: false, overlay: null, ackd: false, cam: null, ticks: {}, sent: false, scenario: null, location: null };
+  }
+  renderVals() {
+    var self = this, S = this.state, P = this.props;
+    var scen = S.scenario || P.scenario || 'Slow drift';
+    var locName = S.location || P.location || 'ISS';
+    var si = scen === 'Normal day' ? 0 : scen === 'Slow drift' ? 1 : 2;
+    var pv = function (a) { return a[si]; };
+    var ST = { nominal: ['#4ADE80', 'Nominal', 0], watch: ['#FACC15', 'Watch', 1], warning: ['#FB923C', 'Warning', 2], act: ['#FF4D5E', 'Act now', 3] };
+    var rank = function (st) { return ST[st][2]; };
+
+    // ---------- locations ----------
+    var LOCS = {
+      'ISS': { name: 'ISS', sub: 'Low Earth orbit · microgravity', delay: 'live', rate: '17.6', srcTag: 'REAL', srcColor: '#4ADE80', srcLong: 'NASA RadLab DOSTEL1 (real)', fall: 'Off (microgravity)', rover: false, deliver: 'Delivered in seconds' },
+      'Moon base': { name: 'Moon base', sub: 'Lunar surface · 1/6 g', delay: '1.3 s delay', rate: '13.2', srcTag: 'EST', srcColor: '#FACC15', srcLong: 'Estimate from published lunar surface values', fall: 'On (1/6 g)', rover: false, deliver: 'Arrives in about 1.3 s' },
+      'Mars transit': { name: 'Mars transit', sub: 'Deep space · microgravity', delay: '~12 min each way', rate: '20.1', srcTag: 'EST', srcColor: '#FACC15', srcLong: 'Estimate from MSL cruise measurements', fall: 'Off (microgravity)', rover: false, deliver: 'Arrives in 11:48' },
+      'Rover (Moon)': { name: 'Surface rover · Moon', sub: 'Away from base · limited kit', delay: '1.3 s + relay', rate: '13.2', srcTag: 'EST', srcColor: '#FACC15', srcLong: 'Estimate from published lunar surface values', fall: 'On (1/6 g)', rover: true, deliver: 'Arrives in about 2 s' },
+      'Rover (Mars)': { name: 'Surface rover · Mars', sub: 'Away from base · limited kit', delay: '~12 min each way', rate: '9.4', srcTag: 'REAL', srcColor: '#4ADE80', srcLong: 'Curiosity MSL-RAD (real)', fall: 'On (3/8 g)', rover: true, deliver: 'Arrives in 11:48' }
+    };
+    var loc = LOCS[locName];
+
+    // ---------- areas & metrics ----------
+    // metric: [name, unit, values[3], usual, statuses[3], lo, hi, watch, warn, dir(+1 high bad / -1 low bad), drift(0/1 per scen)]
+    function M(name, unit, vals, usual, sts, lo, hi, w, x, dir) { return { name: name, unit: unit, vals: vals, usual: usual, sts: sts, lo: lo, hi: hi, w: w, x: x, dir: dir }; }
+    var A = [
+      { id: 'brain', name: 'Brain and mood', zx: 48, zy: 6, zw: 76, zh: 76, side: 'L',
+        sentence: ['Sleep, mood and reaction time are steady.', 'Under 6 h of sleep for three nights in a row.', 'Reaction time is normal. Focus on the heart.'],
+        tta: ['', 'If this continues: Warning in about 2 days.', ''],
+        metrics: [M('Sleep last night', 'h', [6.9, 5.6, 6.6], 6.9, ['nominal', 'watch', 'nominal'], 3, 9, 6, 5, -1), M('Reaction time (median)', 'ms', [282, 312, 290], 280, ['nominal', 'nominal', 'nominal'], 220, 380, 318, 346, 1), M('Lapses', '%', [6, 11, 7], 6, ['nominal', 'nominal', 'nominal'], 0, 55, 30.2, 47.5, 1), M('Mood', '/10', [7, 5, 6], 7, ['nominal', 'nominal', 'nominal'], 0, 10, 4, 3, -1)],
+        actions: [['Keep your usual sleep window.'], ['Get one extra hour of sleep tonight.', 'Drop non-essential tasks today.', 'Take the reaction test before 16:00.'], ['Keep your usual sleep window.']],
+        buttons: ['Take reaction test', 'Log mood'] },
+      { id: 'immune', name: 'Immune system', zx: 54, zy: 15, zw: 56, zh: 40, side: 'R',
+        sentence: ['No signs of infection. Temperature normal.', 'No signs of infection. Temperature normal.', 'Temperature normal.'],
+        tta: ['', '', ''],
+        metrics: [M('Temperature', '°C', [36.7, 36.8, 36.9], 36.7, ['nominal', 'nominal', 'nominal'], 35.5, 39, 37.5, 38, 1), M('Symptoms logged', '', [0, 0, 0], 0, ['nominal', 'nominal', 'nominal'], 0, 5, 1, 3, 1)],
+        actions: [['Keep washing hands and wiping shared surfaces.'], ['Keep washing hands and wiping shared surfaces.'], ['Keep washing hands and wiping shared surfaces.']],
+        buttons: ['Log a symptom'] },
+      { id: 'lungs', name: 'Lungs and air', zx: 45, zy: 21, zw: 120, zh: 76, side: 'L',
+        sentence: ['Oxygen and breathing normal. Cabin air fine.', 'Oxygen normal. Cabin CO₂ has been high for 6 h.', 'Blood oxygen is dropping and breathing is fast.'],
+        tta: ['', 'Ask crew to check the CO₂ scrubber.', 'Act now if oxygen drops below 90%.'],
+        metrics: [M('Blood oxygen', '%', [98, 98, 91], 98, ['nominal', 'nominal', 'warning'], 85, 100, 95, 92, -1), M('Breathing rate', '/min', [14, 15, 24], 14, ['nominal', 'nominal', 'warning'], 8, 30, 20, 24, 1), M('Cabin CO₂', 'ppm', [2700, 3300, 3000], 2600, ['nominal', 'watch', 'nominal'], 1500, 6000, 3000, 5300, 1), M('Cabin temperature', '°C', [22.8, 23.4, 23.0], 22.8, ['nominal', 'nominal', 'nominal'], 18, 28, 26, 27, 1), M('Cabin humidity', '%', [45, 47, 46], 45, ['nominal', 'nominal', 'nominal'], 20, 80, 65, 70, 1)],
+        actions: [['Nothing to do. Keep your routine.'], ['Ask a crewmate to check the CO₂ scrubber.', 'Take short breaks if you get a headache.'], ['Stop all activity and anchor yourself.', 'Breathe slowly; put on the O₂ mask if available.']],
+        buttons: ['See cabin details'] },
+      { id: 'heart', name: 'Heart', zx: 56, zy: 25, zw: 52, zh: 52, side: 'R',
+        sentence: ['Resting heart rate is steady.', 'Your resting heart rate has climbed 9 bpm in a week.', 'Heart rate above 140 bpm for 10 s, rhythm irregular.'],
+        tta: ['', 'At this pace: Act now in about 4 days.', 'Happening now.'],
+        metrics: [M('Resting heart rate', 'bpm', [61, 70, 63], 61, ['nominal', 'warning', 'nominal'], 50, 90, 66, 69, 1), M('Heart rate now', 'bpm', [60, 74, 148], 60, ['nominal', 'nominal', 'act'], 40, 170, 100, 120, 1), M('HRV', 'ms', [52, 34, 18], 52, ['nominal', 'watch', 'warning'], 10, 70, 40, 30, -1), M('Blood pressure (sys)', 'mmHg', [118, 124, 96], 118, ['nominal', 'nominal', 'watch'], 80, 160, 135, 145, 1)],
+        actions: [['Keep up your daily aerobic exercise.'], ['Stop heavy work and rest for 15 minutes.', 'Drink 500 mL of water and measure again.', 'Send the auto-drafted message to your flight surgeon.'], ['Stop and anchor yourself.', 'Call a crewmate now.', 'Open emergency mode → Chest pain.']],
+        buttons: ['Review message to surgeon', 'Measure again'] },
+      { id: 'metabolism', name: 'Metabolism', zx: 50, zy: 36, zw: 104, zh: 80, side: 'L',
+        sentence: ['Eating, drinking and body mass on target.', 'Eating and drinking on target.', 'On target.'],
+        tta: ['', '', ''],
+        metrics: [M('Water today', 'L', [2.5, 2.2, 1.9], 2.5, ['nominal', 'nominal', 'nominal'], 0, 4, 1.5, 1, -1), M('Blood glucose', 'mg/dL', [92, 96, 88], 92, ['nominal', 'nominal', 'nominal'], 50, 200, 140, 180, 1), M('Body mass', 'kg', [72.4, 72.1, 72.3], 72.5, ['nominal', 'nominal', 'nominal'], 66, 78, 70, 68, -1), M('Calories', 'kcal', [2800, 2650, 2400], 2800, ['nominal', 'nominal', 'nominal'], 1500, 3500, 2200, 1800, -1)],
+        actions: [['Log meals as you go.'], ['Log meals as you go.'], ['Log meals as you go.']],
+        buttons: ['Log meal and water', 'Weekly biomarkers'] },
+      { id: 'bones', name: 'Bones and muscles', zx: 50, zy: 70, zw: 150, zh: 300, side: 'R',
+        sentence: ['Exercise on target this week.', 'Exercise a little under target this week.', 'Exercise on hold.'],
+        tta: ['', '', ''],
+        metrics: [M('Exercise today', 'min', [118, 95, 60], 120, ['nominal', 'nominal', 'nominal'], 0, 160, 90, 60, -1), M('Exercise this week', 'h', [14, 11.5, 12], 14, ['nominal', 'nominal', 'nominal'], 0, 18, 10, 7, -1)],
+        actions: [['Finish the treadmill session at 16:00.'], ['Finish the treadmill session at 16:00.'], ['Skip exercise until a surgeon clears you.']],
+        buttons: ['Log exercise'] },
+      { id: 'radiation', name: 'Radiation', zx: 50, zy: 93, zw: 0, zh: 0, side: 'L',
+        sentence: ['Dose today is in the usual range. No solar events.', 'Dose today is in the usual range. No solar events.', 'Dose today is in the usual range.'],
+        tta: ['', '', ''],
+        metrics: [M('Dose rate now', 'µGy/h', [parseFloat(loc.rate), parseFloat(loc.rate), parseFloat(loc.rate)], parseFloat(loc.rate), ['nominal', 'nominal', 'nominal'], 0, 60, 40, 50, 1)],
+        actions: [['Keep your dosimeter on.'], ['Keep your dosimeter on.'], ['Keep your dosimeter on.']],
+        buttons: ['See radiation feed'] }
+    ];
+    A.forEach(function (a) {
+      a.ms = a.metrics.map(function (m) { return { name: m.name, unit: m.unit, value: m.vals[si], usual: m.usual, st: m.sts[si], lo: m.lo, hi: m.hi, w: m.w, x: m.x, dir: m.dir }; });
+      a.st = a.ms.reduce(function (acc, m) { return rank(m.st) > rank(acc) ? m.st : acc; }, 'nominal');
+      a.worstIdx = a.ms.reduce(function (bi, m, i) { return rank(m.st) > rank(a.ms[bi].st) ? i : bi; }, 0);
+    });
+    var byId = {}; A.forEach(function (a) { byId[a.id] = a; });
+    var worst = A.slice().sort(function (a, b) { return rank(b.st) - rank(a.st); })[0];
+    var selId = S.selected || (rank(worst.st) > 0 ? worst.id : 'heart');
+    var s = byId[selId];
+    var mIdx = (S.selected === selId && S.metric != null && S.metric < s.ms.length) ? S.metric : s.worstIdx;
+    if (S.selectedFresh) { mIdx = s.worstIdx; }
+    var m = s.ms[mIdx];
+    var attention = A.filter(function (a) { return rank(a.st) >= 1; }).length;
+    var anyAct = rank(worst.st) >= 3;
+
+    // ---------- overlays ----------
+    var ov = S.overlay != null ? S.overlay : (P.open && P.open !== 'None' && P.open !== 'Camera' ? P.open : (anyAct && !S.ackd ? 'Act now' : 'None'));
+    var camOn = S.cam != null ? S.cam : P.open === 'Camera';
+    var setOv = function (v) { return function () { self.setState({ overlay: v }); }; };
+    var pick = function (id) { return function () { self.setState({ selected: id, metric: byId[id].worstIdx, overlay: 'None' }); }; };
+
+    // ---------- body ----------
+    var FX = 148, FY = 10, FW = 264, FH = 840;
+    var zones = [], chips = [], leaders = [];
+    var leftY = [], rightY = [];
+    A.forEach(function (a) {
+      var st = ST[a.st], c = st[0], on = a.id === selId, r = rank(a.st);
+      var cx = FX + a.zx / 100 * FW, cy = FY + a.zy / 100 * FH;
+      if (a.zw > 0) {
+        var glow = r === 0 ? 8 : r === 1 ? 22 : r === 2 ? 34 : 48;
+        var anim = r === 2 ? 'animation: pulseSlow 2.4s infinite;' : r === 3 ? 'animation: pulseFast 0.8s infinite;' : '';
+        zones.push({ pick: pick(a.id), aria: a.name + ', ' + st[1],
+          style: 'position: absolute; left: ' + (cx - a.zw / 2).toFixed(0) + 'px; top: ' + (cy - a.zh / 2).toFixed(0) + 'px; width: ' + a.zw + 'px; height: ' + a.zh + 'px; border-radius: 50%; cursor: pointer; padding: 0; background: ' + (r > 0 ? c.replace(')', '') + '' : 'transparent') + (r > 0 ? '22' : '') + '; border: ' + (on ? '2px solid #EEF1F5' : '1.5px solid ' + c + (r === 0 ? '55' : '')) + '; box-shadow: 0 0 ' + glow + 'px ' + (r === 0 ? '2px ' : (r * 6) + 'px ') + c + (r === 0 ? '44' : '') + ', inset 0 0 ' + (glow / 2) + 'px ' + c + (r === 0 ? '33' : '88') + ';' + anim });
+      }
+      var chipW = 128, chipH = 46;
+      var isL = a.side === 'L';
+      var chipX = isL ? 4 : 560 - chipW - 4;
+      var chipY = cy - chipH / 2;
+      if (a.id === 'radiation') { chipY = 780; }
+      var arr = isL ? leftY : rightY;
+      arr.forEach(function (y) { if (Math.abs(y - chipY) < chipH + 8) { chipY = y + chipH + 8; } });
+      arr.push(chipY);
+      chips.push({ pick: pick(a.id), on: on, name: a.name, label: st[1], value: a.ms[a.worstIdx].value + (a.ms[a.worstIdx].unit ? ' ' + a.ms[a.worstIdx].unit : ''), color: c,
+        dot: 'width: 8px; height: 8px; border-radius: 50%; background: ' + c + '; box-shadow: 0 0 ' + (4 + r * 5) + 'px ' + c,
+        style: 'position: absolute; left: ' + chipX + 'px; top: ' + chipY.toFixed(0) + 'px; width: ' + chipW + 'px; min-height: ' + chipH + 'px; box-sizing: border-box; padding: 5px 9px; border-radius: 10px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 1px; color: #EEF1F5; background: ' + (on ? '#161A21' : '#0B0D11') + '; border: 1px solid ' + (on ? '#EEF1F5' : r > 0 ? c : '#22262E') + ';' + (r >= 2 ? ' box-shadow: 0 0 18px ' + c + '55;' : '') });
+      if (a.zw > 0) {
+        var ex = isL ? chipX + chipW : chipX, ey = chipY + chipH / 2;
+        var zx = isL ? cx - a.zw / 2 + 4 : cx + a.zw / 2 - 4;
+        var mid = isL ? ex + 18 : ex - 18;
+        leaders.push({ pts: ex + ',' + ey.toFixed(0) + ' ' + mid + ',' + ey.toFixed(0) + ' ' + zx.toFixed(0) + ',' + cy.toFixed(0), cx: zx.toFixed(0), cy: cy.toFixed(0), color: on ? '#EEF1F5' : c, w: on ? 1.6 : 1, op: on ? 1 : r > 0 ? 0.9 : 0.35 });
+      }
+    });
+    var wc = ST[worst.st][0], wr = rank(worst.st);
+    var auraStyle = 'position: absolute; left: 110px; right: 110px; top: 0; bottom: 0; border-radius: 50%; background: radial-gradient(ellipse at 50% 35%, ' + wc + (wr === 0 ? '14' : wr === 1 ? '22' : wr === 2 ? '33' : '55') + ', transparent 65%);' + (wr >= 2 ? ' animation: ' + (wr === 3 ? 'pulseFast 0.8s' : 'pulseSlow 2.4s') + ' infinite;' : '');
+    var badgeText = attention === 0 ? 'All areas nominal' : attention + (attention === 1 ? ' area needs attention' : ' areas need attention');
+    var badgeStyle = 'display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid ' + wc + '; color: ' + wc + '; background: ' + wc + '14;' + (wr >= 2 ? ' box-shadow: 0 0 20px ' + wc + '55;' : '');
+
+    // ---------- vitals ----------
+    var hr = byId.heart.ms[1], hrv = byId.heart.ms[2], spo = byId.lungs.ms[0], br = byId.lungs.ms[1];
+    var poor = false;
+    var vit = [['Heart rate', hr.value, 'bpm', '60', hr.st, '96%', si === 2 ? 'Irregular rhythm' : ''], ['HRV', hrv.value, 'ms', '52', hrv.st, '96%', ''], ['SpO₂', spo.value, '%', '98', spo.st, '94%', ''], ['Breathing', br.value, '/min', '14', br.st, '90%', '']];
+    var vitals = vit.map(function (v) {
+      var c = v[4] === 'nominal' ? '#EEF1F5' : ST[v[4]][0];
+      return { name: v[0], value: v[1], unit: v[2], usual: v[3], signal: v[5], flag: v[6], color: poor ? '#4A505A' : c,
+        box: 'display: flex; flex-direction: column; padding: 8px 18px; border-left: 1px solid #16191F; min-width: 150px;' + (v[4] !== 'nominal' ? ' background: ' + ST[v[4]][0] + '0D;' : ''),
+        flagStyle: v[6] ? 'font-size: 11px; font-weight: 700; color: #FF4D5E' : 'display: none' };
+    });
+
+    // ---------- chart ----------
+    var N = S.range === 30 ? 30 : 7;
+    var series = [];
+    for (var i = 0; i < N; i++) {
+      var ago = N - 1 - i, v;
+      var wob = Math.sin(i * 1.7 + m.name.length) * (m.hi - m.lo) * 0.015;
+      if (ago < 7 && m.value !== m.usual) { v = m.usual + (m.value - m.usual) * (1 - ago / 7) + (ago === 0 ? 0 : wob); }
+      else { v = m.usual + wob; }
+      if (ago === 0) { v = m.value; }
+      series.push(v);
+    }
+    var Y = function (v) { return 160 - (Math.max(m.lo, Math.min(m.hi, v)) - m.lo) / (m.hi - m.lo) * 150; };
+    var forecast = rank(m.st) >= 1 && rank(m.st) < 3 && m.value !== m.usual;
+    var W = forecast ? 480 : 590;
+    var pts = series.map(function (v, k) { return (k / (N - 1) * W).toFixed(1) + ',' + Y(v).toFixed(1); });
+    var lastX = W, lastY = Y(m.value);
+    var fpts = '';
+    if (forecast) {
+      var slope = (m.value - m.usual) / 7;
+      var f = []; for (var j = 0; j <= 4; j++) { f.push((W + j * 27).toFixed(1) + ',' + Y(m.value + slope * j).toFixed(1)); }
+      fpts = f.join(' ');
+    }
+    var bands = [[m.w, 'Watch', '#FACC15'], [m.x, 'Warning', '#FB923C']].map(function (b) { var y = Y(b[0]); return { y: y.toFixed(1), ty: (y - 3).toFixed(1), label: b[1] + ' ' + b[0], color: b[2] }; });
+    var chart = { pts: pts.join(' '), fpts: fpts, lastX: lastX, lastY: lastY.toFixed(1), bands: bands, usualY: Y(m.usual).toFixed(1), usualTy: (Y(m.usual) - 4).toFixed(1), from: N + ' days ago', to: forecast ? '+4 days (forecast)' : '' };
+    var mcol = ST[m.st][0];
+    var dlt = m.value - m.usual;
+    var mOut = { name: m.name, unit: m.unit, value: m.value, usual: m.usual, color: m.st === 'nominal' ? '#EEF1F5' : mcol,
+      delta: dlt === 0 ? 'Same as usual' : (dlt > 0 ? '+' : '') + (Math.round(dlt * 10) / 10) + ' ' + m.unit + ' vs your usual · ' + ST[m.st][1],
+      lineLegend: 'dashed lines = Watch / Warning limits' + (forecast ? ' · dotted = forecast' : ''), chartAria: m.name + ' over ' + N + ' days' };
+    var rStyle = function (on) { return 'height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12px; cursor: pointer; border: 1px solid ' + (on ? '#EEF1F5' : '#22262E') + '; background: ' + (on ? '#EEF1F5' : 'transparent') + '; color: ' + (on ? '#050608' : '#C9CFD8'); };
+
+    // ---------- metric tabs ----------
+    var metricTabs = s.ms.map(function (x, k) {
+      var on = k === mIdx, c = ST[x.st][0];
+      return { name: x.name, value: x.value + (x.unit ? ' ' + x.unit : ''), on: on, valColor: on ? '#050608' : (x.st === 'nominal' ? '#8A93A0' : c),
+        pick: function () { self.setState({ selected: selId, metric: k }); },
+        dot: 'width: 7px; height: 7px; border-radius: 50%; background: ' + c,
+        style: 'display: flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid ' + (on ? '#EEF1F5' : '#22262E') + '; background: ' + (on ? '#EEF1F5' : 'transparent') + '; color: ' + (on ? '#050608' : '#C9CFD8') };
+    });
+
+    // ---------- status / actions ----------
+    var sc = ST[s.st][0], sr = rank(s.st);
+    var acts = s.actions[si].map(function (t, k) {
+      var key = s.id + k, done = !!S.ticks[key];
+      return { text: t, done: done, mark: done ? '✓' : '', toggle: function () { var tk = Object.assign({}, S.ticks); tk[key] = !done; self.setState({ ticks: tk }); },
+        style: 'all: unset; cursor: pointer; display: flex; gap: 12px; align-items: flex-start; font-size: 17px',
+        box: 'flex: 0 0 22px; height: 22px; margin-top: 2px; border-radius: 6px; border: 1.5px solid ' + (done ? '#4ADE80' : sc) + '; background: ' + (done ? '#4ADE80' : 'transparent') + '; color: #050608; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center',
+        textStyle: done ? 'color: #6B7380; text-decoration: line-through' : 'color: #EEF1F5' };
+    });
+    var btnGo = function (label) {
+      if (/message/i.test(label)) { return setOv('Inbox'); }
+      if (/radiation/i.test(label)) { return pick('radiation'); }
+      if (/cabin/i.test(label)) { return function () { self.setState({ selected: 'lungs', metric: 2 }); }; }
+      return function () {};
+    };
+    var buttons = s.buttons.map(function (b, k) { return { label: b, go: btnGo(b), style: k === 0 ? 'height: 42px; padding: 0 18px; border-radius: 999px; border: none; background: #EEF1F5; color: #050608; font-weight: 700; cursor: pointer' : 'height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid #2A2F38; background: transparent; color: #EEF1F5; font-weight: 600; cursor: pointer' }; });
+    var level = sr === 0 ? 1 : sr === 1 ? 2 : sr === 2 ? 3 : (loc.rover ? 5 : 4);
+    var L = [['Handle it yourself', 'self-care'], ['Tell your crew', 'today'], ['Message flight surgeon', loc.delay]];
+    if (loc.rover) { L.push(['Return to base', 'rover']); }
+    L.push(['Emergency mode', 'now']);
+    var ladder = L.map(function (l, k) {
+      var on = k + 1 === level, past = k + 1 < level;
+      var c = on ? sc : past ? '#8A93A0' : '#3A414D';
+      return { n: k + 1, text: l[0], tag: on ? '← you are here' : l[1], numColor: c,
+        style: 'display: flex; gap: 10px; align-items: center; font-size: 14px; padding: 7px 10px; border-radius: 8px; color: ' + (on || past ? '#EEF1F5' : '#5C6470') + '; border: 1px solid ' + (on ? sc : 'transparent') + '; background: ' + (on ? sc + '12' : 'transparent') };
+    });
+
+    // ---------- timeline ----------
+    var PX = 20, D0 = 42, NOWH = 3 * 24 + 14 + 22 / 60, TOT = 5 * 24 * PX;
+    var tlEvents = [], tlDays = [];
+    for (var d = 0; d < 5; d++) {
+      tlDays.push({ text: 'Day ' + (D0 + d) + (d === 3 ? ' · today' : d === 4 ? ' · tomorrow' : ''), line: 'position: absolute; left: ' + (d * 24 * PX) + 'px; top: 0; bottom: 18px; width: 1px; background: #1C2028', label: 'position: absolute; left: ' + (d * 24 * PX + 6) + 'px; bottom: 0; font-size: 11px; color: ' + (d === 3 ? '#EEF1F5' : '#5C6470') + '; white-space: nowrap' });
+      var routine = [[7.5, 'Daily check'], [12.5, 'Lunch + water'], [16, 'Exercise'], [19, 'Dinner']];
+      routine.forEach(function (r) {
+        var h = d * 24 + r[0];
+        var past = h < NOWH, missed = past && ((d === 2 && r[1] === 'Exercise' && si === 1) || (d === 3 && r[1] === 'Lunch + water' && si >= 1));
+        tlEvents.push({ h: h, time: (r[0] < 10 ? '0' : '') + Math.floor(r[0]) + ':' + (r[0] % 1 ? '30' : '00'), label: r[1], kind: missed ? 'missed' : past ? 'done' : 'next', area: r[1] === 'Exercise' ? 'bones' : r[1] === 'Daily check' ? 'heart' : 'metabolism' });
+      });
+    }
+    var alertsTl = [[], [[1 * 24 + 7, 'Brain: Watch', 'watch', 'brain'], [2 * 24 + 9, 'Heart: Watch', 'watch', 'heart'], [3 * 24 + 6, 'CO₂ high', 'watch', 'lungs'], [3 * 24 + 11, 'Heart: Warning', 'warning', 'heart'], [NOWH + 4 * 24 - 4 * 24 + 30, 'Heart may hit Act now', 'forecast', 'heart']], [[NOWH - 0.1, 'Heart: ACT NOW', 'act', 'heart'], [NOWH - 0.4, 'SpO₂ dropping', 'warning', 'lungs']]][si];
+    alertsTl.forEach(function (a) { tlEvents.push({ h: a[0], time: (Math.floor(a[0] % 24) < 10 ? '0' : '') + Math.floor(a[0] % 24) + ':' + (Math.round((a[0] % 1) * 60) < 10 ? '0' : '') + Math.round((a[0] % 1) * 60), label: a[1], kind: a[2], area: a[3] }); });
+    tlEvents.sort(function (a, b) { return a.h - b.h; });
+    var lastRow = {};
+    tlEvents = tlEvents.map(function (e, k) {
+      var isAlert = /watch|warning|act|forecast/.test(e.kind);
+      var col = e.kind === 'done' ? '#4ADE80' : e.kind === 'missed' ? '#FB923C' : e.kind === 'next' ? '#8A93A0' : e.kind === 'forecast' ? '#FB923C' : ST[e.kind][0];
+      var up = isAlert;
+      var x = e.h * PX;
+      return { pick: pick(e.area), time: e.time, label: e.label, aria: e.label + ' at ' + e.time,
+        style: 'position: absolute; left: ' + (x - 6).toFixed(0) + 'px; top: ' + (up ? 4 : 50) + 'px; display: flex; flex-direction: ' + (up ? 'column-reverse' : 'column') + '; align-items: flex-start; gap: 1px; background: none; border: none; padding: 0; color: #EEF1F5; cursor: pointer; text-align: left',
+        dot: 'width: 12px; height: 12px; box-sizing: border-box; ' + (isAlert ? 'transform: rotate(45deg); border-radius: 2px;' : 'border-radius: 50%;') + ' background: ' + (e.kind === 'next' || e.kind === 'forecast' ? '#08090C' : col) + '; border: 2px ' + (e.kind === 'forecast' ? 'dashed ' : 'solid ') + col + (e.kind === 'act' ? '; box-shadow: 0 0 12px ' + col : ''),
+        textStyle: 'font-size: 11px; font-weight: 600; white-space: nowrap; color: ' + (e.kind === 'done' ? '#8A93A0' : e.kind === 'missed' ? '#FB923C' : isAlert ? col : '#C9CFD8') };
+    });
+    var off = Math.max(0, Math.min(TOT - 700, S.off));
+    var tlShift = function (dh) { return function () { self.setState({ off: Math.max(0, Math.min(TOT - 700, off + dh * PX)) }); }; };
+
+    // ---------- radiation ----------
+    var rate = parseFloat(loc.rate);
+    var saa = []; for (var q = 0; q <= 96; q++) { var spike = (q % 16 > 11 && q % 16 < 14 && locName === 'ISS') ? 3.2 : 1; var vv = rate * (0.85 + 0.15 * Math.sin(q / 3)) * spike; saa.push((q / 96 * 600).toFixed(1) + ',' + (66 - Math.min(64, vv / (rate * 3.6) * 64)).toFixed(1)); }
+    var radStats = [{ k: 'Now', v: loc.rate, u: 'µGy/h' }, { k: 'Today', v: Math.round(rate * 14.4), u: 'µGy' }, { k: 'Last 30 days', v: (rate * 24 * 30 / 1000).toFixed(1), u: 'mGy' }, { k: 'Mission so far (sim.)', v: (rate * 24 * 45 / 1000).toFixed(1), u: 'mGy' }];
+
+    // ---------- co2 / routine ----------
+    var co2m = byId.lungs.ms[2];
+    var co2 = { value: co2m.value.toLocaleString('en-US'), color: ST[co2m.st][0], note: co2m.st === 'nominal' ? 'normal' : 'high for 6 h' };
+    var pill = function (c, hot) { return 'display: flex; align-items: baseline; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; cursor: pointer; color: #EEF1F5; background: ' + (hot ? c + '12' : '#0B0D11') + '; border: 1px solid ' + (hot ? c : '#22262E') + '; align-items: center'; };
+    var undone = si === 0 ? 1 : 2;
+    var routineCount = (5 - undone) + '/5';
+
+    // ---------- learn ----------
+    var LEARN = {
+      heart: ['Watches how hard your heart is working at rest and how well it recovers (HRV).', 'A climbing resting rate can be the first sign of dehydration, poor sleep, infection or heart strain.', 'Optical sensor (PPG) on the wrist or finger, every few seconds; blood pressure with the cuff in the daily check.', 'Yes. Fully on board, no internet needed.', 'Without gravity, about 2 L of fluid shifts to your head and chest. The heart gets lighter and less fit over weeks, and stress and short sleep push the resting rate up.', 'Daily aerobic exercise, drink 2.5 L a day, keep your sleep window.'],
+      brain: ['Tracks sleep, mood and reaction speed (the PVT reaction test).', 'Tired brains make mistakes during tasks like spacewalks and docking.', 'Sleep from the wrist sensor; reaction time from a 3-minute tap test; mood from a quick 1–10 check.', 'Yes. All on board.', 'No real day and night, noise, light and workload break up sleep. Isolation affects mood.', 'Keep a fixed sleep window, use the eye mask and earplugs, dim screens before sleep.'],
+      immune: ['Looks for early signs of infection.', 'The immune system is weaker in space, and a cold can spread fast in a small cabin.', 'Skin temperature from the sensor; symptoms you log.', 'Yes.', 'Stress, radiation and microgravity weaken immune cells; dormant viruses can wake up.', 'Wash hands, wipe shared surfaces, log symptoms early.'],
+      lungs: ['Checks blood oxygen, breathing rate and the air you breathe (CO₂, temperature, humidity).', 'Low oxygen or high CO₂ causes headaches, slow thinking and, at worst, unconsciousness.', 'SpO₂ and breathing from the PPG sensor; cabin air from the station sensors.', 'Yes.', 'Air does not rise and mix on its own in microgravity, so CO₂ can pool around your face, especially when sleeping.', 'Keep fans on, do not sleep in dead-air corners, report scrubber alarms.'],
+      metabolism: ['Tracks water, food, blood sugar and body mass.', 'Astronauts often eat and drink too little, which affects heart, bones and mood.', 'Meals and water you log; glucose finger-stick in the daily check; body mass device weekly.', 'Yes.', 'Fluid shift reduces thirst; food tastes blander; metabolism changes (seen in the Inspiration4 crew blood panels).', 'Drink 2.5 L, log every meal, keep vitamin D and calcium up.'],
+      bones: ['Tracks exercise that protects bones and muscles.', 'Astronauts can lose 1–2% of bone mass per month without exercise.', 'Exercise minutes you log or the device records.', 'Yes.', 'Bones and muscles that do not carry weight start to break down.', 'About 2 h of resistive and aerobic exercise daily.'],
+      radiation: ['Shows how much space radiation you are getting.', 'Radiation raises long-term cancer risk; solar storms can give a big dose in hours.', 'Station detectors (dosimeters) and your personal dosimeter.', 'Yes. The display is on board; space-weather alerts come from the ground.', 'Outside Earth\'s protection, cosmic rays and solar particles pass through the hull. On the ISS, doses spike over the South Atlantic Anomaly.', 'Wear your dosimeter; go to the shielded area during solar events.']
+    };
+    var Lr = LEARN[s.id];
+    var learn = [['What this does', Lr[0]], ['Why we check it', Lr[1]], ['How it is measured', Lr[2]], ['Can it be done on board?', Lr[3]], ['Why this happens in space', Lr[4]], ['How to stay healthy', Lr[5]]].map(function (x) { return { k: x[0], v: x[1] }; });
+    if (s.id === 'metabolism') { learn.push({ k: 'Real crew comparison', v: 'Inspiration4 crew blood panel (NASA OSDR, OSD-575): glucose, sodium and potassium before, during and after flight.' }); }
+    var tag = function (t, c) { return { tag: t, tagStyle: 'font-size: 10px; padding: 1px 6px; border-radius: 999px; border: 1px solid ' + c + '; color: ' + c }; };
+    var SRC = {
+      brain: [['Reaction-time limits: CSA PRET study, 145 people (90th / 97.5th percentiles)', 'REAL', '#4ADE80'], ['Sleep limits: Yenna (medical lead), REF list', 'PLACEHOLDER', '#FACC15']],
+      radiation: [[loc.srcLong, loc.srcTag, loc.srcColor], ['Solar events: NASA DONKI', 'REAL', '#4ADE80']],
+      lungs: [['Cabin air: NASA Environmental Data App (RR-23 / SpaceX-21)', 'REAL', '#4ADE80'], ['SpO₂ and breathing limits: medical lead, REF list', 'PLACEHOLDER', '#FACC15']],
+      metabolism: [['Inspiration4 metabolic panel: NASA OSDR OSD-575', 'REAL', '#4ADE80'], ['Water and calorie targets: medical lead, REF list', 'PLACEHOLDER', '#FACC15']]
+    };
+    var sources = (SRC[s.id] || [['Limits: medical lead (Yenna), REF list', 'PLACEHOLDER', '#FACC15'], ['Your usual: your own 14-day baseline', 'ON DEVICE', '#9CC3FF']]).map(function (r) { var t = tag(r[1], r[2]); return { t: r[0], tag: t.tag, tagStyle: t.tagStyle }; });
+
+    // ---------- act now ----------
+    var actA = A.filter(function (a) { return rank(a.st) >= 3; })[0] || byId.heart;
+    var muted = !!S.muted;
+    var act = { area: actA.name.toUpperCase(), headline: 'Your heart rate is very high and the rhythm is irregular.', why: 'Heart rate has been above 140 bpm for 10 seconds (now ' + hr.value + ' bpm, usual 60). Blood oxygen ' + spo.value + '%.',
+      steps: actA.actions[si].map(function (t, k) { return { n: '0' + (k + 1), text: t }; }),
+      alarmText: muted ? 'Alarm muted · M to unmute' : 'Alarm sounding · M to mute',
+      bellStyle: muted ? 'opacity: .4' : 'display: inline-block; animation: ring 0.6s infinite',
+      alarmStyle: 'display: flex; gap: 8px; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid #5A2A30; background: transparent; color: #F3B7BD; font-size: 12px; cursor: pointer' };
+
+    // ---------- inbox ----------
+    var alerts = A.filter(function (a) { return rank(a.st) >= 1; }).sort(function (a, b) { return rank(b.st) - rank(a.st); }).map(function (a) {
+      var c = ST[a.st][0];
+      return { level: ST[a.st][1].toUpperCase(), title: a.name, text: a.sentence[si], time: a.st === 'act' ? '14:22' : '11:00', color: c, view: pick(a.id),
+        box: 'border: 1px solid ' + c + '55; border-left: 3px solid ' + c + '; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px',
+        openStyle: a.st === 'act' ? 'height: 30px; padding: 0 12px; border-radius: 999px; border: none; background: #FF4D5E; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer' : 'display: none' };
+    });
+    var ath = A.filter(function (a) { return rank(a.st) >= 1; });
+    var draft = 'Day 45, ' + loc.name + '. Auto-summary for review.\n' +
+      (ath.length ? ath.map(function (a) { var mm = a.ms[a.worstIdx]; return '• ' + a.name + ': ' + ST[a.st][1] + ' — ' + mm.name + ' ' + mm.value + ' ' + mm.unit + ' (usual ' + mm.usual + ').'; }).join('\n') : '• All areas nominal.') +
+      '\nVitals now: HR ' + hr.value + ' bpm, HRV ' + hrv.value + ' ms, SpO₂ ' + spo.value + '%, breathing ' + br.value + '/min.' +
+      '\nDone so far: ' + (Object.keys(S.ticks).filter(function (k) { return S.ticks[k]; }).length || 'no') + ' recommended steps ticked.' +
+      '\nPlease advise.';
+
+    // ---------- lists ----------
+    var locList = Object.keys(LOCS).map(function (k) { var on = k === locName; return { name: LOCS[k].name, sub: LOCS[k].sub + ' · radiation ' + LOCS[k].srcTag.toLowerCase(), on: on, pick: function () { self.setState({ location: k, overlay: 'None' }); },
+      style: 'display: flex; flex-direction: column; align-items: flex-start; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-align: left; color: #EEF1F5; font-size: 14px; font-weight: 600; border: 1px solid ' + (on ? '#9CC3FF' : '#1C2028') + '; background: ' + (on ? 'rgba(91,157,255,0.10)' : 'transparent') }; });
+    var pages = [['Dashboard', '', '#8A93A0'], ["Today's routine", undone + ' to do', '#FB923C'], ['Inbox', alerts.length ? alerts.length + ' new' : '', '#FACC15'], ['Daily check', si ? 'not done' : 'done', si ? '#FB923C' : '#4ADE80'], ['Reaction test', '', '#8A93A0'], ['Sources', '', '#8A93A0'], ['Emergency logs', '', '#8A93A0']].map(function (p) { return { name: p[0], badge: p[1], badgeColor: p[2], go: p[0] === 'Inbox' ? setOv('Inbox') : setOv('None') }; });
+    var scenList = ['Normal day', 'Slow drift', 'Acute event'].map(function (n) { var on = n === scen; return { name: n, pick: function () { self.setState({ scenario: n, overlay: null, ackd: false, selected: null }); }, style: 'height: 30px; padding: 0 10px; border-radius: 999px; font-size: 12px; cursor: pointer; border: 1px solid ' + (on ? '#EEF1F5' : '#2A2F38') + '; background: ' + (on ? '#EEF1F5' : 'transparent') + '; color: ' + (on ? '#050608' : '#C9CFD8') }; });
+
+    var nowX = NOWH * PX;
+    return {
+      loc: loc, vitals: vitals, sensorLabel: 'Replay (mock PPG)',
+      routineCount: routineCount, streak: 12,
+      routineBtnStyle: 'display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; color: #EEF1F5; background: ' + (undone ? 'rgba(251,146,60,0.10)' : 'transparent') + '; border: 1px solid ' + (undone ? '#FB923C' : '#22262E'),
+      radPillStyle: pill('#9CC3FF', selId === 'radiation'), co2PillStyle: pill(co2.color, co2m.st !== 'nominal'), co2: co2,
+      camOn: camOn, muted: muted, muteLabel: muted ? '🔇 Muted' : '🔊',
+      camBtnStyle: 'height: 40px; padding: 0 12px; border-radius: 999px; cursor: pointer; font-weight: 600; border: 1px solid ' + (camOn ? '#4ADE80' : '#22262E') + '; background: ' + (camOn ? 'rgba(74,222,128,0.10)' : 'transparent') + '; color: ' + (camOn ? '#4ADE80' : '#EEF1F5'),
+      muteBtnStyle: 'height: 40px; min-width: 40px; padding: 0 10px; border-radius: 999px; cursor: pointer; border: 1px solid ' + (muted ? '#FACC15' : '#22262E') + '; background: transparent; color: ' + (muted ? '#FACC15' : '#EEF1F5'),
+      inboxCount: alerts.length, inboxBadgeStyle: alerts.length ? 'position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 999px; background: ' + wc + '; color: #050608; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px' : 'display: none',
+      openSidebar: setOv('Sidebar'), openInbox: setOv('Inbox'), openLearn: setOv('Learn'), closeAll: setOv('None'),
+      ackAct: function () { self.setState({ overlay: 'None', ackd: true }); },
+      toggleMute: function () { self.setState({ muted: !muted }); }, toggleCam: function () { self.setState({ cam: !camOn }); },
+      goEmergency: function () {}, goRoutine: function () {},
+      pickRadiation: pick('radiation'), pickCabin: function () { self.setState({ selected: 'lungs', metric: 2, overlay: 'None' }); },
+      badgeText: badgeText, badgeStyle: badgeStyle, auraStyle: auraStyle, zones: zones, chips: chips, leaders: leaders,
+      s: { name: s.name, label: ST[s.st][1], color: sc, sentence: s.sentence[si], timeToAct: s.tta[si], score: [92, 74, 58, 31][sr], actions: acts, buttons: buttons },
+      statusBoxStyle: 'display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; border: 1px solid ' + sc + '44; background: ' + sc + '0D',
+      statusPillStyle: 'font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: ' + sc + '; color: #050608',
+      m: mOut, metricTabs: metricTabs, chart: chart, set7: function () { self.setState({ range: 7 }); }, set30: function () { self.setState({ range: 30 }); }, r7Style: rStyle(N === 7), r30Style: rStyle(N === 30),
+      isRad: s.id === 'radiation', radStats: radStats, saaPts: saa.join(' '),
+      ladder: ladder,
+      tlInnerStyle: 'position: absolute; top: 0; left: 0; height: 112px; width: ' + TOT + 'px; transform: translateX(' + (-off) + 'px); transition: ' + (S.drag ? 'none' : 'transform .25s'),
+      tlForecastStyle: 'position: absolute; left: ' + nowX + 'px; right: 0; top: 0; bottom: 18px; background: repeating-linear-gradient(135deg, transparent 0 8px, rgba(255,255,255,0.025) 8px 16px)',
+      tlForecastLabelStyle: 'position: absolute; left: ' + (nowX + 70) + 'px; top: 2px; font-size: 10px; letter-spacing: 0.12em; color: #3A414D',
+      tlNowLine: 'position: absolute; left: ' + nowX + 'px; top: 0; bottom: 18px; width: 2px; background: #9CC3FF', tlNowLabel: 'position: absolute; left: ' + (nowX + 5) + 'px; bottom: 18px; font-family: JetBrains Mono, monospace; font-size: 10px; color: #9CC3FF',
+      tlDays: tlDays, tlEvents: tlEvents, tlBack: tlShift(-8), tlFwd: tlShift(8), tlNow: function () { self.setState({ off: Math.round(nowX - 520) }); },
+      tlDown: function (e) { self.setState({ drag: { x: e.clientX, off: off } }); },
+      tlMove: function (e) { if (S.drag) { self.setState({ off: Math.max(0, Math.min(TOT - 700, S.drag.off - (e.clientX - S.drag.x))) }); } },
+      tlUp: function () { if (S.drag) { self.setState({ drag: null }); } },
+      sidebarOpen: ov === 'Sidebar', inboxOpen: ov === 'Inbox', learnOpen: ov === 'Learn', actOpen: ov === 'Act now',
+      locList: locList, pages: pages, scenList: scenList, alerts: alerts, draft: draft,
+      sendMsg: function () { self.setState({ sent: true }); }, sendLabel: S.sent ? 'Sent ✓' : 'Send to surgeon', deliveryText: S.sent ? loc.deliver : 'Delivery: ' + loc.delay,
+      learn: learn, sources: sources, act: act
+    };
+  }
+}
+</script>
+</body>
+</html>

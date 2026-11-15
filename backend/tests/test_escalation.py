@@ -90,11 +90,13 @@ def test_fallback_spike_when_event_missing(client, temp_data):
 
 # ---------- cabin ----------
 
-def test_cabin_feed_and_co2_context(client):
+def test_cabin_feed_and_co2_context(client, temp_data):
     cabin = client.get("/api/cabin").json()
-    assert cabin["simulated"] and len(cabin["last_24h"]) == 96
-    assert {"co2_ppm", "temp_c", "noise_dba", "t"} <= cabin["now"].keys()
-    assert cabin["co2_high_hours_24h"] >= 2  # the simulated afternoon peak is above the watch level
+    assert cabin["kind"] == "real" and not cabin["simulated"] and len(cabin["last_24h"]) == 96
+    assert {"co2_ppm", "temp_c", "rh_pct", "t", "measured_at"} <= cabin["now"].keys()
+    # The real ISS CO2 rarely passes the PLACEHOLDER watch level; lower it to check the context note.
+    temp_data("thresholds.json", lambda d: d["co2_ppm"].update(yellow=[None, 1000]))
+    assert client.get("/api/cabin").json()["co2_high_hours_24h"] >= 2
     brain = next(r for r in client.get("/api/status?persona=B").json() if r["region"] == "brain_mood")
     assert "Cabin CO2 has been high" in brain["reason"]
     healthy = next(r for r in client.get("/api/status?persona=A").json() if r["region"] == "brain_mood")

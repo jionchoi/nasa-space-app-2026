@@ -1,5 +1,5 @@
 {
-  "_status": "DRAFT - Yenna writes the real 'spaceflight_note' and 'function' texts and reviews which metrics drive each region.",
+  "_status": "Region 'function' and 'space_effect' are Yenna's text (docs/medical/regions.json, merged by scripts/merge_medical.py). Everything else (metrics, layout, forecast settings) is the app's.",
   "_how_to_read": "metrics = daily values judged against thresholds.json (worst wins). key_metric = the one charted and forecast. daily_fields = raw daily fields used for the 'unusual for you' check. live_metrics = VitalsFrame fields judged live. context_metrics = cabin values shown with the region (not used for its status). function = one plain sentence on what this body part or system does (shown under the region name).",
   "forecast": {
     "window_days": 14,
@@ -14,13 +14,13 @@
     {
       "id": "brain_mood",
       "label": "Brain and mood",
-      "function": "DRAFT: The brain runs your thinking, memory, sleep and feelings.",
+      "function": "Your brain controls your thoughts, sleep, reflexes, and feelings.",
       "metrics": [
         "sleep_h",
         "mood",
         "stress",
         "pvt_median_ms",
-        "pvt_lapses"
+        "pvt_lapse_rate_pct"
       ],
       "key_metric": "sleep_h",
       "daily_fields": [
@@ -33,12 +33,21 @@
       "spaceflight_note": "PLACEHOLDER: Isolation, noise and shifted light cycles can disturb sleep and mood on long missions.",
       "context_metrics": [
         "co2_ppm"
-      ]
+      ],
+      "space_effect": "Isolation and schedule changes can disrupt sleep and increase stress [REF-01]. Fluid shifting to your head can also affect your vision and mental sharpness [REF-02].",
+      "refs": {
+        "REF-01": {
+          "status": "pending"
+        },
+        "REF-02": {
+          "status": "pending"
+        }
+      }
     },
     {
       "id": "heart",
       "label": "Heart",
-      "function": "DRAFT: The heart pumps blood and oxygen to every organ.",
+      "function": "Your heart pumps blood to deliver oxygen and energy to your body.",
       "metrics": [
         "hr_rest",
         "hrv_rmssd",
@@ -58,12 +67,21 @@
         "hrv_rmssd",
         "irregular"
       ],
-      "spaceflight_note": "PLACEHOLDER: Without gravity, body fluids shift toward the head and the heart and blood vessels adapt, so heart rate and its response to standing can change."
+      "spaceflight_note": "PLACEHOLDER: Without gravity, body fluids shift toward the head and the heart and blood vessels adapt, so heart rate and its response to standing can change.",
+      "space_effect": "Zero gravity makes your heart work less, which can reduce its size and strength over time [REF-03]. Returning to gravity can make you feel dizzy because your heart has to work harder to pump blood up to your head [REF-04].",
+      "refs": {
+        "REF-03": {
+          "status": "pending"
+        },
+        "REF-04": {
+          "status": "pending"
+        }
+      }
     },
     {
       "id": "lungs",
       "label": "Lungs",
-      "function": "DRAFT: The lungs bring oxygen into the blood and remove carbon dioxide.",
+      "function": "Your lungs bring in oxygen and remove carbon dioxide.",
       "metrics": [
         "spo2",
         "rr"
@@ -79,13 +97,24 @@
       ],
       "spaceflight_note": "PLACEHOLDER: Cabin air is recycled, so carbon dioxide and dust can build up and affect breathing.",
       "context_metrics": [
-        "co2_ppm"
-      ]
+        "co2_ppm",
+        "cabin_temp_c",
+        "cabin_rh_pct"
+      ],
+      "space_effect": "Dust, floating particles, and high cabin CO2 can irritate your breathing [REF-05]. Fluid shifts can also slightly change how air moves in your lungs [REF-06].",
+      "refs": {
+        "REF-05": {
+          "status": "pending"
+        },
+        "REF-06": {
+          "status": "pending"
+        }
+      }
     },
     {
       "id": "immune",
       "label": "Immune system",
-      "function": "DRAFT: The immune system finds and fights germs and infections.",
+      "function": "Your immune system fights off germs and keeps you from getting sick.",
       "metrics": [
         "symptoms_immune",
         "temp_c"
@@ -100,12 +129,21 @@
         "fever",
         "rash"
       ],
-      "spaceflight_note": "PLACEHOLDER: Spaceflight stress can weaken the body's defences and let dormant viruses become active again."
+      "spaceflight_note": "PLACEHOLDER: Spaceflight stress can weaken the body's defences and let dormant viruses become active again.",
+      "space_effect": "Spaceflight stress, radiation, and altered sleep can weaken your immune system [REF-07]. This makes it easier for dormant viruses to wake up or for you to catch a cold [REF-08].",
+      "refs": {
+        "REF-07": {
+          "status": "pending"
+        },
+        "REF-08": {
+          "status": "pending"
+        }
+      }
     },
     {
       "id": "metabolism",
       "label": "Metabolism",
-      "function": "DRAFT: Metabolism turns food and water into the energy your body runs on.",
+      "function": "Your metabolism turns food into energy and manages your body temperature.",
       "metrics": [
         "hydration_l",
         "body_mass_change_pct",
@@ -116,12 +154,21 @@
         "hydration_l"
       ],
       "live_metrics": [],
-      "spaceflight_note": "PLACEHOLDER: Appetite, fluid balance and body mass often change in flight, so eating and drinking enough takes effort."
+      "spaceflight_note": "PLACEHOLDER: Appetite, fluid balance and body mass often change in flight, so eating and drinking enough takes effort.",
+      "space_effect": "Spaceflight changes how your body uses sugar and stores fat [REF-09]. You might lose your appetite, making it hard to maintain your body mass [REF-10].",
+      "refs": {
+        "REF-09": {
+          "status": "pending"
+        },
+        "REF-10": {
+          "status": "pending"
+        }
+      }
     },
     {
       "id": "bones_muscles",
       "label": "Bones and muscles",
-      "function": "DRAFT: Bones hold you up and muscles move you; both stay strong only when they are used.",
+      "function": "Your bones and muscles give you strength, structure, and the ability to move.",
       "metrics": [
         "exercise_min_7d"
       ],
@@ -133,12 +180,21 @@
         "exercise_min"
       ],
       "live_metrics": [],
-      "spaceflight_note": "PLACEHOLDER: Without weight on the body, bones and muscles get weaker unless the crew exercises every day."
+      "spaceflight_note": "PLACEHOLDER: Without weight on the body, bones and muscles get weaker unless the crew exercises every day.",
+      "space_effect": "Without gravity loading your body, muscles shrink and bones lose density very quickly [REF-11]. Daily heavy exercise is required to prevent major bone and muscle loss [REF-12].",
+      "refs": {
+        "REF-11": {
+          "status": "pending"
+        },
+        "REF-12": {
+          "status": "pending"
+        }
+      }
     },
     {
       "id": "radiation",
       "label": "Radiation",
-      "function": "DRAFT: Radiation is energy from the Sun and deep space that can damage body cells; this tracks the dose you receive.",
+      "function": "Your body's cells constantly repair themselves from daily wear and tear.",
       "metrics": [
         "radiation_total_msv"
       ],
@@ -147,7 +203,16 @@
         "radiation_msv"
       ],
       "live_metrics": [],
-      "spaceflight_note": "PLACEHOLDER: Outside Earth's protective magnetic field the crew receives more radiation, with spikes during solar storms."
+      "spaceflight_note": "PLACEHOLDER: Outside Earth's protective magnetic field the crew receives more radiation, with spikes during solar storms.",
+      "space_effect": "Space radiation damages your DNA faster than your cells can fix it [REF-13]. High doses increase your lifetime risk of illness and can cause immediate fatigue or nausea [REF-14].",
+      "refs": {
+        "REF-13": {
+          "status": "pending"
+        },
+        "REF-14": {
+          "status": "pending"
+        }
+      }
     }
   ],
   "co2_context": {

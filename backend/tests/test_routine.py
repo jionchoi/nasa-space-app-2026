@@ -19,8 +19,10 @@ PVT_OK = {"median_ms": 262, "lapses": 1, "false_starts": 0, "n": 22, "duration_s
 
 def test_personas_have_reaction_test_values():
     a, b = store.persona("A")["daily"], store.persona("B")["daily"]
-    assert all("pvt_median_ms" in d and "pvt_lapses" in d for d in a + b)
-    assert b[-1]["pvt_median_ms"] > b[0]["pvt_median_ms"] + 60  # B gets slower over time
+    assert all("pvt_median_ms" in d and "pvt_lapse_rate_pct" in d for d in a + b)
+    p = store.load("pvt_norms.json")["percentiles"]["median_rt_ms"]
+    assert abs(sum(d["pvt_median_ms"] for d in a) / len(a) - p["p50"]) < 10  # A near the PRET median
+    assert abs(b[-1]["pvt_median_ms"] - p["p90"]) < 15 and b[0]["pvt_median_ms"] < p["p50"] + 15  # B drifts to p90
     assert store.persona("B")["body_mass_start_kg"] > 0
 
 
@@ -75,9 +77,14 @@ def test_known_forms_are_validated(client):
 
 
 def test_standalone_reaction_test_feeds_brain(client):
-    form(client, "A", "pvt", {**PVT_OK, "median_ms": 420, "lapses": 7, "version": "demo", "duration_s": 60})
+    form(client, "A", "pvt", {**PVT_OK, "median_ms": 420, "lapses": 7})
     brain = region(client, "A", "brain_mood")
     assert brain["status"] != "green"
+
+
+def test_demo_reaction_test_is_not_compared(client):
+    form(client, "A", "pvt", {**PVT_OK, "median_ms": 420, "lapses": 7, "version": "demo", "duration_s": 60})
+    assert region(client, "A", "brain_mood")["status"] == "green"
 
 
 def test_daily_check_mission_and_streak(client):

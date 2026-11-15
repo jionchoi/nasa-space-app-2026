@@ -1,6 +1,8 @@
 import { Drop, Thermometer } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useGlucoseUnit } from '../../lib/crewReference';
 import { undraft } from '../../lib/env';
+import { CrewGlucoseLine } from '../common/CrewReference';
 import type { Measurements, Questionnaire } from '../../types/contracts';
 
 interface Props {
@@ -16,7 +18,7 @@ type Unit = 'mmol' | 'mgdl';
 export function TempGlucoseStep({ limits, measurements, onDone }: Props) {
   const [temp, setTemp] = useState('');
   const [glucose, setGlucose] = useState('');
-  const [unit, setUnit] = useState<Unit>('mmol');
+  const [unit, setUnit] = useGlucoseUnit();  // remembered, so the metabolism region shows the same unit
   const [tried, setTried] = useState(false);
   const g = unit === 'mmol' ? limits.glucose_mmol : limits.glucose_mgdl;
 
@@ -72,6 +74,7 @@ export function TempGlucoseStep({ limits, measurements, onDone }: Props) {
             <span className="text-xl text-muted">{g.unit}</span>
           </div>
           {tried && glucoseError ? <p className="text-sm text-alert">{glucoseError}</p> : <p className="text-xs text-muted">{hint('glucose_mmol')}</p>}
+          <CrewGlucoseLine className="border-t border-white/[0.06] pt-2" />
         </div>
       </div>
       <div className="flex gap-3">

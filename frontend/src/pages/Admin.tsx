@@ -1,17 +1,19 @@
-import { ArrowCounterClockwise, Database, Play, Radioactive, Siren, Stop } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, Database, Play, PresentationChart, Radioactive, Siren, Stop, UserSwitch } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { getAdminSummary, getRadiation, replayRadiation, resetDemoData, type AdminSummary } from '../api/client';
 import { AppHeader } from '../components/common/AppHeader';
 import { Card } from '../components/common/Card';
 import { CvDebugPanel } from '../components/cv/CvDebugPanel';
+import { startDemo } from '../lib/demo';
+import { SCENARIOS } from '../lib/locations';
 import { useApp } from '../state/AppContext';
 import type { RadiationSummary } from '../types/contracts';
 import { CV_EMERGENCY_URL, CV_PULSE_LOST_URL, triggerCrewAlarm } from '../lib/crewAlarm';
 
 /** Hidden page (/admin, not linked anywhere): what the local database holds, and a reset before each demo. */
 export default function Admin() {
-  const { setCheckDoneAt, refreshStreak, persona, env } = useApp();
+  const { setCheckDoneAt, refreshStreak, persona, setPersona, env } = useApp();
   const [radiation, setRadiation] = useState<RadiationSummary | null>(null);
   const [minutes, setMinutes] = useState(10);
   const [summary, setSummary] = useState<AdminSummary | null>(null);
@@ -65,15 +67,41 @@ export default function Admin() {
         </Card>
 
         <Card className="mt-4" inner="p-5">
+          <div className="flex items-center gap-2 text-sm font-medium"><UserSwitch className="h-4 w-4 text-info" aria-hidden /> Scenario</div>
+          <p className="mt-1 text-sm text-muted">
+            The astronaut is always Alex Moreno; the scenario picks which simulated data file plays. Also in the presenter bar and
+            the sidebar while demo mode is on.
+          </p>
+          <div role="radiogroup" aria-label="Scenario" className="mt-4 flex flex-wrap gap-2">
+            {SCENARIOS.map((sc) => (
+              <button key={sc.id} type="button" role="radio" aria-checked={persona === sc.id} onClick={() => setPersona(sc.id)}
+                className={`btn ${persona === sc.id ? 'btn-primary' : ''}`}>{sc.label} <span className="text-xs opacity-70">({sc.id})</span></button>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="mt-4" inner="p-5">
+          <div className="flex items-center gap-2 text-sm font-medium"><PresentationChart className="h-4 w-4 text-info" aria-hidden /> Demo mode (live pitch)</div>
+          <p className="mt-1 text-sm text-muted">
+            8 steps, about 3 minutes. A presenter bar (bottom right) shows the step, what to say, and the data badges; Next, Back
+            and Pause. Each step sets the scenario, location, replay position and screen. Shortcuts: Shift+D on/off, arrow
+            keys or a presenter clicker for Back / Next. Also works with the backend off. Tip: reset the demo data first.
+          </p>
+          <button className="btn btn-primary mt-4" onClick={() => startDemo()}><Play className="h-4 w-4" weight="fill" aria-hidden /> Start demo mode</button>
+        </Card>
+
+        <Card className="mt-4" inner="p-5">
           <div className="flex items-center gap-2 text-sm font-medium"><Radioactive className="h-4 w-4 text-warn" aria-hidden /> Replay solar event</div>
           {radiation?.event_available ? (
             <>
               <p className="mt-1 text-sm text-muted">
-                Real NASA DONKI solar particle event, replayed compressed; the dose is simulated. The radiation area turns
-                Act now for the whole crew, with a shelter alert and a drafted message.
+                Real NASA DONKI solar particle event, replayed compressed, at every location at once (dose simulated;
+                timing from real DONKI event). The dose is bigger on the way to Mars and on the Moon and Mars surfaces than
+                on the ISS. The radiation area turns Act now for the whole crew, with a shelter alert and a drafted message.
               </p>
               {radiation.event ? (
-                <p className="mt-3 text-sm">Running: <span className="font-mono">{radiation.event.sep_id}</span>, ends at {new Date(radiation.event.ends_at).toLocaleTimeString()}</p>
+                <p className="mt-3 text-sm">Running: <span className="font-mono">{radiation.event.sep_id}</span>, ends at {new Date(radiation.event.ends_at).toLocaleTimeString()}
+                  {radiation.event.location_scale ? <span className="text-muted"> · here about {radiation.event.location_scale}× the ISS dose</span> : null}</p>
               ) : <p className="mt-3 text-sm text-muted">Not running.</p>}
               <div className="mt-4 flex items-center gap-3 border-t border-white/[0.06] pt-4">
                 <label className="flex items-center gap-2 text-sm text-muted">Length
@@ -88,7 +116,7 @@ export default function Admin() {
               </div>
             </>
           ) : (
-            <p className="mt-2 text-sm text-watch">No event file. Run once with internet: python scripts/fetch_donki.py 2024-05-01 2024-05-31 --build-event</p>
+            <p className="mt-2 text-sm text-watch">No event file. Build it offline from the saved DONKI file: python scripts/fetch_donki.py --from-file data/space_weather/donki_2024-05-01_2024-05-31.json --sep-id 2024-05-10T13:35:00-SEP-001</p>
           )}
         </Card>
 
