@@ -1,6 +1,6 @@
 # Astronaut Health Co-Pilot (nasa-space-app-2026)
 
-**Live demo:** _link coming soon_ (public build: mock data only, no backend; see [Public demo build](#public-demo-build-vercel))
+**Live demo:** https://nasa-space-app-2026-red.vercel.app (public build: mock data only, no backend; see [Public demo build](#public-demo-build-vercel))
 
 NASA Space Apps 2026, challenge "Create Health Monitoring Software for Astronauts on Space Missions".
 A medical co-pilot for astronauts who are not doctors: a 5-minute daily check feeding a color-coded body map
