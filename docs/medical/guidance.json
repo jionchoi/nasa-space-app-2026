@@ -83,7 +83,7 @@
     },
     "act": {
       "summary": "Critical breathing emergency.",
-      "self_care": ["Use the emergency oxygen mask.", "Use the approved crew medical kit procedure.", "If on Surface rover, initiate emergency return to base."],
+      "self_care": ["Call the crew medical officer immediately and follow approved medical/atmosphere procedures.", "Use the approved crew medical kit procedure.", "If on Surface rover, initiate emergency return to base."],
       "tell_crew": "Declare a medical emergency.",
       "contact_surgeon": "Contact the flight surgeon immediately.",
       "prevention": ["Requires environmental system overhaul."]

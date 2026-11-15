@@ -7,6 +7,7 @@ import { useApp, useStatusLabel } from '../../state/AppContext';
 import type { VitalsFrame } from '../../types/contracts';
 import { personaBadge } from '../demo/demoSteps';
 import { MuteToggle } from '../shell/TopBar';
+import { RESEARCH_NOTE } from '../common/ResearchNote';
 
 interface BarProps {
   title: string;
@@ -27,6 +28,7 @@ export function EmergencyBar({ title, where, draft, startedAt, now, onEnd }: Bar
       {draft && <span className="rounded-full border border-watch/50 px-2 text-[11px] text-watch">{draft}</span>}
       <span className="text-[13px] text-[#D9A9AE]">{ASTRONAUT_NAME} · {where}</span>
       <span className="text-[11px] text-[#B8999C]">{source === 'sensor' ? 'Live sensor' : 'Replay'}{usingMock ? ' · Mock data (backend off)' : ' · runs on board'}</span>
+      <span role="note" className="text-[11px] font-semibold text-watch">{RESEARCH_NOTE}</span>
       <span className="flex-1" />
       {startedAt !== undefined && now !== undefined && (
         <span className="flex items-baseline gap-2"><span className="text-xs text-[#B8999C]">Time since start</span><span className="font-mono text-[22px]">{mmss((now - startedAt) / 1000)}</span></span>
