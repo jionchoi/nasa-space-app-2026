@@ -207,7 +207,7 @@ def import_catalog() -> dict:
                    "over regions.json / measurements.json text where they disagree (those files are kept unchanged). "
                    "Re-run backend/scripts/import_medical.py after a new export.",
         "source_file": f"data/medical/{path.name}",
-        "disclaimer": "Research prototype · not clinically validated",
+        "disclaimer": "Prototype · Simulated astronaut, real NASA & CSA data · Thresholds not yet clinically tested",
         "indicators": indicators,
         "metric_index": {m: iid for iid, ind in indicators.items() for m in ind["metrics"]},
         "data_source_types": DATA_SOURCE_NOTE,

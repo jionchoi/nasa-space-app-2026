@@ -9,11 +9,13 @@ import { currentLocation, locationEntries, SCENARIOS } from '../../lib/locations
 import { useApp } from '../../state/AppContext';
 import { useHealth } from '../../state/HealthContext';
 import { useShell } from '../../state/ShellContext';
+import { useResearchNote } from '../common/ResearchNote';
 
 export function Sidebar() {
   const { panel, close, openInbox } = useShell();
   const { environments, env, setEnv, setPlanet, persona, setPersona, checkDoneAt } = useApp();
   const { attention, radiation } = useHealth();
+  const researchNote = useResearchNote();
   const { todo } = useRoutineTasks();
   const { active } = useDemo();
   const usingMock = useUsingMock();
@@ -105,7 +107,7 @@ export function Sidebar() {
           {PUBLIC_DEMO && (
             <span>Measurement and Research mode: <a className="underline underline-offset-2 hover:text-text" href={README_URL} target="_blank" rel="noreferrer">{NEEDS_BACKEND}</a></span>
           )}
-          <span className="font-semibold text-watch">Research prototype · not clinically validated</span>
+          <span className="font-semibold text-watch">{researchNote}</span>
           <span>Runs on board · works offline · Mock data where labelled</span>
           <span className="text-muted/70">Admin (/admin) is hidden from crew</span>
         </footer>

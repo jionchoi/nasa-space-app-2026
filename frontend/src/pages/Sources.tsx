@@ -1,8 +1,10 @@
 import { ArrowSquareOut } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getSources } from '../api/client';
 import { AppHeader } from '../components/common/AppHeader';
 import { Card } from '../components/common/Card';
+import { ResearchNote } from '../components/common/ResearchNote';
 import { DraftTag } from '../components/dashboard/GuidanceCard';
 import { useReferences } from '../hooks/useMedical';
 import type { DataSource, SourcesConfig } from '../types/contracts';
@@ -14,6 +16,47 @@ const STATUS_BADGE: Record<DataSource['status'], { text: string; cls: string }> 
 };
 const USE_LABEL: Record<string, string> = { replay: 'Replay', test: 'Test', thresholds: 'Thresholds', reference: 'Reference' };
 const TO_FILL = 'TO FILL IN';
+
+const WHATS_REAL: { status: DataSource['status']; heading: string; note: string }[] = [
+  { status: 'real', heading: 'Real', note: 'Real data from space agencies and hospitals, stored in the app.' },
+  { status: 'simulated', heading: 'Simulated', note: "The demo astronaut's vitals, sleep, mood and logs (three scenarios: normal day, slow drift, acute event). No real astronaut health data is public." },
+  { status: 'estimated', heading: 'Estimated', note: 'Values taken from published papers where no data file exists.' },
+];
+
+/** "What's real?": the sources grouped by real / simulated / estimated (from sources.json, so it never drifts),
+ *  plus what has not been tested yet. The note under the top bar links here. */
+function WhatsReal({ sources }: { sources: DataSource[] }) {
+  return (
+    <section id="whats-real" aria-labelledby="whats-real-h" className="scroll-mt-24 rounded-panel border border-line bg-panel p-5">
+      <h2 id="whats-real-h" className="mb-3 text-lg font-semibold">What's real?</h2>
+      <dl className="flex flex-col gap-3">
+        {WHATS_REAL.map((g) => {
+          const items = sources.filter((s) => s.status === g.status);
+          if (!items.length) return null;
+          return (
+            <div key={g.status}>
+              <dt className="flex items-center gap-2 text-sm font-semibold">
+                <span className={`badge ${STATUS_BADGE[g.status].cls}`}>{g.heading}</span>
+                <span className="font-normal text-muted">{g.note}</span>
+              </dt>
+              <dd className="mt-1 text-sm text-soft">{items.map((s) => s.name ?? s.title).join(' · ')}</dd>
+            </div>
+          );
+        })}
+        <div>
+          <dt className="flex items-center gap-2 text-sm font-semibold">
+            <span className="badge bg-watch/10 text-watch ring-watch/25">Not yet tested</span>
+          </dt>
+          <dd className="mt-1 text-sm text-soft">
+            The thresholds, the forecast and the emergency protocols are based on published guidelines (NASA-STD-3001, AHA,
+            ADA; references below) but have not been tested with real crew or in clinical studies. The app has not been
+            used in space.
+          </dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
 
 /** A value a team member still has to add is shown in amber, never as if it were a result. */
 function Pending({ text }: { text: string }) {
@@ -38,19 +81,24 @@ export default function Sources() {
   useEffect(() => { getSources().then(setData); }, []);
   const uses = data?.uses ?? {};
   const references = useReferences();
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (data && hash) document.getElementById(hash.slice(1))?.scrollIntoView();
+  }, [data, hash]);
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <AppHeader />
       <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-8">
         <div>
-          <p role="note" className="mb-3 rounded-lg border border-watch/40 bg-watch/10 px-3 py-2 text-sm font-semibold text-watch">Research prototype · not clinically validated</p>
+          <ResearchNote className="mb-3 !whitespace-normal rounded-lg border border-watch/40 bg-watch/10 px-3 py-2 !text-sm font-semibold" />
           <h1 className="text-2xl font-semibold tracking-tight">Data sources</h1>
           <p className="mt-1 text-sm text-muted">Where the numbers on screen come from. Real files are stored in the app, so everything works without a connection.</p>
           {Object.keys(uses).length > 0 && (
             <p className="mt-2 text-xs text-muted">{Object.entries(uses).map(([k, v]) => `${USE_LABEL[k] ?? k}: ${v}`).join(' · ')}</p>
           )}
         </div>
+        {data && <WhatsReal sources={data.sources} />}
         {(data?.sources ?? []).map((s) => {
           const badge = STATUS_BADGE[s.status];
           return (

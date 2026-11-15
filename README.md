@@ -206,7 +206,20 @@ store but not Python's default bundle; verification stays on. Read the PVT `.sav
 
 ## Limitations
 
-This is a research prototype, **not clinically validated** (the app says so on every screen).
+This is a prototype. Every screen says so in one line: *Prototype · Simulated astronaut, real NASA & CSA data ·
+Thresholds not yet clinically tested* (Measurement and Research modes: *Real PhysioNet hospital recordings*). The line
+links to **What's real?** on `/sources`, built from `backend/data/sources.json`.
+
+**What's real?**
+
+- **Real:** NASA RadLab (ISS DOSTEL1, Curiosity RAD), NASA Environmental Data App (ISS cabin CO₂, temperature,
+  humidity), NASA DONKI (May 2024 solar event), NASA OSDR OSD-575 (Inspiration4 blood panel), CSA PRET (reaction test,
+  145 people), PhysioNet BIDMC and CinC 2015 (PPG checks), and the medical guidelines behind the thresholds
+  (NASA-STD-3001, AHA, ADA).
+- **Simulated:** the demo astronaut's vitals, sleep, mood and logs (personas A, B, C), and the fallback cabin profile.
+- **Estimated:** radiation at the Moon base, the surface rover on the Moon and in Mars transit (published papers).
+- **Not yet tested:** the thresholds, the forecast and the emergency protocols have not been tested with real crew or
+  in clinical studies.
 
 - **Simulated crew.** Personas A (healthy), B (slow drift) and C (acute event) are generated; persona C's emergency is a
   simulated recording and is labelled as such. No in-flight astronaut data (raw PPG or vitals) was available to us.

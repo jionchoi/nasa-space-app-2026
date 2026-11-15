@@ -1,7 +1,7 @@
 {
   "_status": "From the medical lead's workbook (Master Health Indicator Catalog). Shown in the Learn pop-up; it wins over regions.json / measurements.json text where they disagree (those files are kept unchanged). Re-run backend/scripts/import_medical.py after a new export.",
   "source_file": "data/medical/NASA_space_project_medical_research(Master Health Indicator Catalog).csv",
-  "disclaimer": "Research prototype · not clinically validated",
+  "disclaimer": "Prototype · Simulated astronaut, real NASA & CSA data · Thresholds not yet clinically tested",
   "indicators": {
     "01": {
       "id": "01",
