@@ -14,6 +14,7 @@ from ..signals.runtime import registry, recording_path
 from ..signals import storage
 from ..signals.checks import build_check
 from ..signals.bp import configured_model, research_bp_enabled
+from ..config import allowed_origins
 
 router = APIRouter()
 
@@ -26,7 +27,9 @@ def get_session(sid):
 
 
 def allowed_origin(ws):
-    return ws.headers.get('origin') in {None,'http://localhost:5173','http://127.0.0.1:5173'}
+    # No Origin header = a non-browser client (sensor bridge). Browsers: localhost, plus backend/.env additions.
+    origin = ws.headers.get('origin')
+    return origin is None or origin.rstrip('/') in allowed_origins()
 
 
 @router.get('/api/v2/recordings')

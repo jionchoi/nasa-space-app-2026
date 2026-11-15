@@ -1,5 +1,30 @@
 # PPG·혈압 통합 구현 상태
 
+## Summary (English)
+
+Status of the PPG and blood-pressure integration (branch `ppg-bp-integration`, Nov 15, 2026). The Korean original follows.
+
+- **Implemented and tested:** the PPG core is a separate package (`packages/crewsense-signals`) with the original
+  calculation files' hashes preserved. A session runtime isolates each crew member and device, with bounded queues and
+  history, and clears numbers when a source goes stale or ends. The existing UI is connected through an explicit
+  Demo / Measurement / Research mode switch. The daily check keeps its steps; the server summarises its own captured
+  seated and standing intervals and stores cuff, questionnaire and reaction-test results separately.
+- **What is computed from PPG:** pulse rate (8 s window) and PPG RMSSD (pulse-rate variability, 60 s window, not ECG
+  HRV). SpO₂, breathing rate, rhythm diagnosis, clinical alerts and automatic CPR are **not** computed from measured
+  signals. Body areas without measured data show "Not assessed"; no health score or time-to-act is inferred.
+- **Validation:** BIDMC records 01 and 02: pulse-rate MAE 0.94 and 0.62 bpm against the monitor's HR value, with 471 of
+  480 windows giving a valid output. This compares against monitor HR numbers; it does not validate PRV, blood pressure
+  or medical performance.
+- **Blood pressure:** the research model (needs synchronised ECG + PPG) failed its accuracy adoption gate, so its
+  estimate stays unavailable even when the optional add-on is installed and switched on. Cuff entry always works.
+  The add-on is a separate package (`packages/crewsense-bp`, `backend/requirements-bp.txt`), off by default.
+- **Tests at integration time:** 112 Python tests (72 existing app, 16 new integration, 24 core regression) and 55
+  frontend tests, plus TypeScript check and Vite build.
+- **Not done:** the real ESP32/ECG device sync, packet sending and USB reader; clinical thresholds, rhythm, SpO₂
+  calibration, own breathing-rate estimate and automatic CPR on measured data; the camera detector runs in Demo mode
+  only; no automated before/after browser regression suite. No internet is needed to run the app.
+
+
 2026-11-15 · `codex/ppg-bp-integration`
 
 ## 구현 결과

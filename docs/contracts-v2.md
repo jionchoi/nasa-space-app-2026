@@ -1,5 +1,7 @@
 # Signal API v2
 
+> **Covers:** Measurement and Research mode: PPG signal sessions, waveform ingest, measured vitals snapshots, signal daily checks and the optional research BP model (`/api/v2/*`, `/ws/v2/*`). The Demo-mode app (personas, `/api/*`, `/ws/vitals`, status rules, protocols, data files) is in [contracts.md](contracts.md).
+
 The legacy `/api/*` persona and `/ws/vitals` services are demo-only. Real and research signals use this contract. Python schemas live in `app/signals/models.py` and `crewsense_signals.ppg.schemas`; browser types live in `frontend/src/types/signals.ts`.
 
 ## Sessions

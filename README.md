@@ -66,6 +66,18 @@ from measured signals yet, and source loss or end of file clears the numbers (no
 A live producer (sensor) creates a session in the UI, then sends RawBatch messages to
 `/ws/v2/ingest?session_id=<ID>`; see [contracts-v2](docs/contracts-v2.md). The old `/ws/sensor` stays for the demo.
 
+**What is measured from a sensor and what is simulated, per mode** (checked in the code on Nov 15; "not computed"
+means the app shows no number at all):
+
+| Vital | Demo | Measurement | Research |
+|---|---|---|---|
+| Heart rate | Simulated (persona replay). From a device only if it sends ready-made VitalsFrames to `/ws/sensor`; raw samples sent there are ignored (`compute_vitals()` is not implemented) | Measured: pulse rate from PPG peaks, 8 s window (live device, recorded JSONL or BIDMC replay). Shown, not judged against thresholds | As Measurement; with the synthetic input, computed from a synthetic waveform (labelled) |
+| HRV | Simulated, as above | Measured as PPG RMSSD over 60 s (pulse-rate variability, not ECG HRV). Not judged | As Measurement |
+| SpO₂ | Simulated, as above | Not computed (needs red + IR channels and a validated calibration) | Not computed |
+| Breathing | Simulated, as above | Not computed (card shows "Not supported") | Not computed |
+| Rhythm (irregular) | Simulated, as above | Not computed | Not computed |
+| pulse_lost | Worked out in the browser (`cv/pulse.ts`) from the simulated frames: heart-rate red flag, flat pulse wave or no beats with good contact | Not computed: no output, no alarm | Not computed |
+
 **Research blood pressure (optional, off by default).** The model needs synchronized ECG + PPG, and its pilot failed
 its accuracy gate, so it stays unavailable even when switched on. Cuff entry in the daily check always works.
 To try it: `pip install -r backend/requirements-bp.txt`, then

@@ -1,5 +1,7 @@
 # JSON contracts (do not change without telling the team)
 
+> **Covers:** the Demo-mode app: persona replay and `/ws/vitals`, the `/api/*` endpoints, status, alerts, protocols and the JSON data files. Measured and research PPG signals (`/api/v2/*`, `/ws/v2/*`) are in [contracts-v2.md](contracts-v2.md).
+
 Copied from `.claude/CLAUDE.md`. Types: `frontend/src/types/contracts.ts`, `backend/app/models.py`.
 
 VitalsFrame (WebSocket `/ws/vitals`, about 1 per second):

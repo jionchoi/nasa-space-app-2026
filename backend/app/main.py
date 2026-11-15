@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import db, ws
+from .config import allowed_origins
 from .routers import assist, core, environment, records, signals, status
 from .signals.runtime import registry
 
@@ -26,7 +27,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="Astronaut Health Co-Pilot", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=allowed_origins(),  # localhost only, plus COPILOT_ALLOWED_ORIGINS from backend/.env
     allow_methods=["*"],
     allow_headers=["*"],
 )
