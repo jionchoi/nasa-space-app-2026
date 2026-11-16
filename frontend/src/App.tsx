@@ -21,6 +21,7 @@ import Emergency from './pages/Emergency';
 import EmergencyLogView from './pages/EmergencyLogView';
 import ReactionPage from './pages/ReactionPage';
 import Sources from './pages/Sources';
+import Watch from './pages/Watch';
 
 export default function App() {
   const {mode}=useSignals();
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/reaction" element={<ReactionPage />} />
         <Route path="/admin" element={demo ? <Admin /> : <SignalDashboard />} />
         <Route path="/sources" element={<Sources />} />
+        <Route path="/watch" element={demo ? <Watch /> : <SignalDashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Sidebar />

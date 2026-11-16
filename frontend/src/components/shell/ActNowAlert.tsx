@@ -73,7 +73,7 @@ export function ActNowAlert() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [alerts, redVitals.join(','), danger, dangerAcked, lost, pulseAcked, regions, newSymptoms.join(','), symptomsCfg]);
   const open = trigger?.open ?? [];
-  const blocked = !!crewAlarm || checkInDeadline !== null || pathname.startsWith('/emergency') || panel === 'inbox';
+  const blocked = !!crewAlarm || checkInDeadline !== null || pathname.startsWith('/emergency') || pathname === '/watch' || panel === 'inbox';
   const visible = !!trigger && !blocked;
   useAlarmBeep(visible);
 
